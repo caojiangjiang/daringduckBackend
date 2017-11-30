@@ -142,6 +142,8 @@ public class MomentController extends GenericController {
 	public void  name() {
 		
 	}
-	
+	public void  friend() {
+		
+	}
 
 }
