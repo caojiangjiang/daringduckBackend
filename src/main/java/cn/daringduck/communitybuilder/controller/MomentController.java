@@ -139,5 +139,9 @@ public class MomentController extends GenericController {
 		return Response.status(Response.Status.OK).build();
 	}
 	
+	public void  name() {
+		
+	}
+	
 
 }
