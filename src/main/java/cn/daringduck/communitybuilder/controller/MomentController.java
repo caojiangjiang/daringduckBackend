@@ -77,14 +77,14 @@ public class MomentController extends GenericController {
 	/**
 	 * get DD01 newest moment
 	 */
-//	@GET
-//	@Path("/getDD01NewestMoment")
-//	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-//	public Response getDD01NewestMoment() {
-//		Moment moment = momentService.getDD01NewestMoment();
-//		return Response.status(Response.Status.OK).entity(moment).build();
-//	}
-//	
+	@GET
+	@Path("/getDD01NewestMoment")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getDD01NewestMoment() {
+		Moment moment = momentService.getDD01NewestMoment();
+		return Response.status(Response.Status.OK).entity(moment).build();
+	}
+	
 	/**
 	 * add paragraph about a moment with id
 	 * @throws RequestException 
