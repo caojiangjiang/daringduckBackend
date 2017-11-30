@@ -1,0 +1,154 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+ul{
+	list-style: none;
+}
+
+body, html{
+	min-height: 100%;
+}
+
+body.bg {
+	background: url(../images/bg.jpg);
+	background-size: cover;
+}
+
+.login-container {
+	width: 400px;
+	margin: 150px auto 0 auto;
+	padding: 20px;
+	background: rgba(255,255,255,0.4);
+	border-radius: 10px;
+}
+
+.login-container h3 {
+	text-align: center;
+	padding: 0 0 20px 0;
+}
+
+.login-container input[type="submit"] {
+	background: #0ae;
+	padding: 10px;
+	color: #fff;
+	width: 100%;
+	margin: 20px 30px 0 0;
+	border: none;
+	border-radius: 10px;
+	font-size: 20px;
+}
+
+/** MAIN PAGE **/
+
+header {
+	position: abolsute;
+	top: 0;
+	left: 0; 
+	right: 0;
+	background: url(../images/bg.jpg) no-repeat 0 -1000px;
+	height: 70px;
+	color: #fff;
+}
+
+header h3{
+	margin: 20px 0 0 20px;
+	float: left;
+}
+
+.logout {
+	margin: 18px;
+	float: right;
+}
+
+.leftnav {
+	background: #fff;
+	position: absolute;
+	top: 70px;
+	bottom: 0;
+	width: 300px;
+	border-right: 1px solid #eee;
+}
+
+.leftnav ul li {
+	padding: 10px;
+	border-bottom: 1px solid #eee;
+}
+
+.main {
+	background: #f3f3f3;
+	position: absolute;
+	left: 300px;
+	top: 70px;
+	bottom: 0;
+	right: 0;
+	padding: 20px;	
+}
+
+nav.pagination {
+	display: block;
+	text-align: center;
+	margin: 0;
+}
+
+table {
+	border: 1px solid #ddd;
+	border-top: none;
+	border-radius: 10px;
+}
+
+table th {
+	text-align: center;
+}
+
+.panel-head {
+	border: 1px solid #ddd;
+	padding: 10px;
+	border-radius: 5px 5px 0 0;
+	background: #0ae;
+	background: url(../images/bg.jpg) 0 -1000px;
+	color: #fff;
+}
+
+.panel > button {
+	float: left;
+	margin: 20px;
+}
+
+.body-content {
+	padding: 20px;
+}
+
+.body-content .input-group {
+	max-width: 500px;
+}
+
+tr.disabled {
+	color: #bbb;
+}
+
+.upload-btn{
+	position: absolute;
+    top: 0px;
+    right: 0px;
+    z-index: 2;
+}
+.btn-bar{
+	margin-top:10px;
+	float:right;
+}
+.btn-bar input[type="button"]
+{
+	margin-left:20px;
+}
+.paragraph{
+	overflow:hidden;
+	padding-bottom:10px;
+	border-bottom:1px #ccc solid;
+}
+.container-fluid
+{
+	position:fixed;
+	top:150px;
+}

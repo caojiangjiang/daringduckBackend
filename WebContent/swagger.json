@@ -1,0 +1,528 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Community Builder API",
+        "description": "Community Builder API for Daring Duck",
+        "version": "0.0.1"
+    },
+    "host": "203.195.147.70:8080",
+    "schemes": [
+        "http"
+    ],
+    "basePath": "/daringduckBackend-0.0.1-SNAPSHOT/api",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/login": {
+            "get": {
+                "summary": "Login",
+                "description": "Get an auth-token to access other RESTful calls",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "Username",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "Password",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "tags": [
+                    "Login"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An authentication token"
+                    },
+                    "400": {
+                        "description": "Wrong username or password"
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
+        },
+        "/users/": {
+            "get": {
+                "summary": "Users",
+                "description": "The Users endpoint returns information about the Users.\n",
+                "parameters": [
+                    {
+                        "name": "auth-token",
+                        "in": "header",
+                        "description": "Authentication Token",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An array of Users",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User has no access"
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Users",
+                "description": "Create a new user\n",
+                "parameters": [
+                    {
+                        "name": "auth-token",
+                        "in": "header",
+                        "description": "Authentication Token",
+                        "required": false,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "username",
+                        "in": "header",
+                        "description": "Username",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "header",
+                        "description": "Password",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "nickname",
+                        "in": "header",
+                        "description": "Nickname",
+                        "required": false,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "gender",
+                        "in": "header",
+                        "description": "Gender",
+                        "required": false,
+                        "type": "number",
+                        "format": "1 = male, 2= female"
+                    },
+                    {
+                        "name": "phone",
+                        "in": "header",
+                        "description": "Phone",
+                        "required": false,
+                        "type": "string",
+                        "format": "string -> only digits"
+                    },
+                    {
+                        "name": "wechat",
+                        "in": "header",
+                        "description": "WeChat",
+                        "required": false,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "email",
+                        "in": "header",
+                        "description": "Email",
+                        "required": false,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "role",
+                        "in": "header",
+                        "description": "Role",
+                        "required": false,
+                        "type": "number",
+                        "format": "long"
+                    }
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The created user",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong parameters"
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
+        },
+        "/users/me": {
+            "get": {
+                "summary": "Me",
+                "description": "Returns the user associated with the auth-token\n",
+                "parameters": [
+                    {
+                        "name": "auth-token",
+                        "in": "header",
+                        "description": "Authentication Token",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "tags": [
+                    "Users",
+                    "Me"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The user associated with the auth-token",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User has no access"
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Change Me",
+                "description": "Change the information of the user associated with the auth-token\n",
+                "parameters": [
+                    {
+                        "name": "auth-token",
+                        "in": "header",
+                        "description": "Authentication Token",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "header",
+                        "description": "Password",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "nickname",
+                        "in": "header",
+                        "description": "Nickname",
+                        "required": false,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "gender",
+                        "in": "header",
+                        "description": "Gender",
+                        "required": false,
+                        "type": "number",
+                        "format": "1 = male, 2= female"
+                    },
+                    {
+                        "name": "phone",
+                        "in": "header",
+                        "description": "Phone",
+                        "required": false,
+                        "type": "string",
+                        "format": "string -> only digits"
+                    },
+                    {
+                        "name": "wechat",
+                        "in": "header",
+                        "description": "WeChat",
+                        "required": false,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "email",
+                        "in": "header",
+                        "description": "Email",
+                        "required": false,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "tags": [
+                    "Users",
+                    "Me"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The changed user",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong parameters"
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
+        },
+        "/users/me/friends": {
+            "get": {
+                "summary": "Me Friends",
+                "description": "Returns the friends of the user associated with the auth-token\n",
+                "parameters": [
+                    {
+                        "name": "auth-token",
+                        "in": "header",
+                        "description": "Authentication Token",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    }
+                ],
+                "tags": [
+                    "Users",
+                    "Me"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The friends of the user associated with the auth-token",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User has no access"
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "summary": "User",
+                "description": "Returns the user associated with the id in the path\n",
+                "parameters": [
+                    {
+                        "name": "auth-token",
+                        "in": "header",
+                        "description": "Authentication Token for an admin",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User id",
+                        "required": true,
+                        "type": "number",
+                        "format": "long"
+                    }
+                ],
+                "tags": [
+                    "Users",
+                    "Me"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The user associated with the id",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User has no access"
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
+        },
+        "/users/{id}/friends": {
+            "get": {
+                "summary": "User Friends",
+                "description": "Returns the friends of the user associated with the id in the path\n",
+                "parameters": [
+                    {
+                        "name": "auth-token",
+                        "in": "header",
+                        "description": "Authentication Token for an admin",
+                        "required": true,
+                        "type": "string",
+                        "format": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User id",
+                        "required": true,
+                        "type": "number",
+                        "format": "long"
+                    }
+                ],
+                "tags": [
+                    "Users",
+                    "Me"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The friends of the user associated with the id",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User has no access"
+                    },
+                    "default": {
+                        "description": "Unexpected error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number",
+                    "description": "Unique identifier representing a specific user"
+                },
+                "username": {
+                    "type": "string",
+                    "description": "Unique (not case-sensitive) name."
+                },
+                "nickname": {
+                    "type": "string",
+                    "description": "A nickname that should displayed, if there is no nickname, username should be displayed"
+                },
+                "gender": {
+                    "type": "number",
+                    "description": "0 = male, 1 = female"
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "Phone number -> only digits"
+                },
+                "wechat": {
+                    "type": "string",
+                    "description": "WeChat username"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Email address"
+                },
+                "picture": {
+                    "$ref": "#/definitions/Picture"
+                },
+                "role": {
+                    "$ref": "#/definitions/Role"
+                },
+                "club": {
+                    "$ref": "#/definitions/Club"
+                }
+            }
+        },
+        "Picture": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number",
+                    "description": "Unique identifier representing a specific picture"
+                },
+                "file_location": {
+                    "type": "string",
+                    "description": "Location of the picture on the server. [base_path]/img/[file_location]"
+                }
+            }
+        },
+        "Role": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number",
+                    "description": "Unique identifier representing a specific role"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Display name for the role"
+                },
+                "rank": {
+                    "type": "number",
+                    "description": "Access-level in the system. The higher the rank the more access the User has."
+                }
+            }
+        },
+        "Club": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "number",
+                    "description": "Unique identifier representing a specific club"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "name of the club"
+                },
+                "location": {
+                    "type": "string",
+                    "description": "location of the club"
+                }
+            }
+        }
+    }
+}
