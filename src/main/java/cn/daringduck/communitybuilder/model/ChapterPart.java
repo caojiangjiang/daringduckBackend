@@ -16,6 +16,7 @@ public class ChapterPart {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	@OneToOne private ChapterPart nextPart;
+	@OneToOne private ChapterPart lastPart;
 	
 	private String text;
 	@NotNull @OneToOne private Picture picture;
@@ -39,5 +40,8 @@ public class ChapterPart {
 	
 	public ChapterPart getNextPart() { return nextPart; }
 	public void setNextPart(ChapterPart nextPart) { this.nextPart = nextPart; }
+	
+	public ChapterPart getLastPart() { return lastPart; }
+	public void setLastPart(ChapterPart lastPart) { this.lastPart = lastPart; }
 	
 }
