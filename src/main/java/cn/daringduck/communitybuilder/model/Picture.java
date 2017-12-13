@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Part of a moment
  * 
@@ -14,6 +16,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name = "pictures")
+@JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
 public class Picture {
 	
 	@Id

@@ -8,26 +8,29 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+
 @Entity
 @Table(name = "chapter_parts")
+@JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
 public class ChapterPart {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
-	@OneToOne private ChapterPart nextPart;
-	@OneToOne private ChapterPart lastPart;
 	
 	private String text;
 	@NotNull @OneToOne private Picture picture;
 	
-	public ChapterPart() {
-		super();
-	}
+	private long chapterId;
 	
-	public ChapterPart(String text, Picture picture) {
+	public ChapterPart() {}
+	
+	public ChapterPart(String text, Picture picture,long chapterId) {
 		this.text = text;
 		this.picture = picture;
+		this.chapterId = chapterId;
 	}
 	
 	public long getId() { return id; }
@@ -37,11 +40,15 @@ public class ChapterPart {
 	
 	public Picture getPicture() { return picture; }
 	public void setPicture(Picture picture) { this.picture = picture; }
+
 	
-	public ChapterPart getNextPart() { return nextPart; }
-	public void setNextPart(ChapterPart nextPart) { this.nextPart = nextPart; }
-	
-	public ChapterPart getLastPart() { return lastPart; }
-	public void setLastPart(ChapterPart lastPart) { this.lastPart = lastPart; }
+
+	public long getChapterId() {
+		return chapterId;
+	}
+
+	public void setChapterId(long chapterId) {
+		this.chapterId = chapterId;
+	}
 	
 }

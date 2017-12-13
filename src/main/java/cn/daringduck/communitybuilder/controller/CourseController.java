@@ -1,5 +1,7 @@
 package cn.daringduck.communitybuilder.controller;
 
+import java.util.List;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -108,12 +110,12 @@ public class CourseController extends GenericController {
 	 * @throws RequestException
 	 */
 	@DELETE
-	@Path("/{id: [0-9]*}")
-	public Response deleteCourse(@HeaderParam("Auth-Token") String token, @PathParam("id") int id)
+	@Path("/deleteCourse/{courseId: [0-9]*}")
+	public Response deleteCourse(@HeaderParam("Auth-Token") String token, @PathParam("courseId") int courseId)
 			throws RequestException {
 		secure(token, "admin");
 
-		courseService.deleteCourse(id);
+		courseService.deleteCourse(courseId);
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -129,6 +131,7 @@ public class CourseController extends GenericController {
 	@Path("/{courseId: [0-9]*}/chapters/")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response chapters(@PathParam("courseId") int id) throws RequestException {
+		
 		return Response.status(Response.Status.OK).entity(courseService.getChapters(id)).build();
 	}
 	
@@ -143,21 +146,37 @@ public class CourseController extends GenericController {
 		return Response.status(Response.Status.OK).entity(chapter).build();
 	}
 	
+	
 	/**
 	 * Add a chapter to a course
 	 * 
 	 * @throws RequestException
 	 */
 	@POST
-	@Path("/{id: [0-9]*}/chapters")
+	@Path("/addChapterStep1/{courseId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response addChapter(@HeaderParam("Auth-Token") String token, @PathParam("id") int id,
+	public Response addChapterStep1(@HeaderParam("Auth-Token") String token, @PathParam("courseId") int courseId,
 			@FormParam("title") String title) throws RequestException {
 		secure(token, "admin");
-
-		Chapter chapter = courseService.addChapter(id, title);
+		Chapter chapter = courseService.addChapterStep1(courseId, title);
 		return Response.status(Response.Status.OK).entity(chapter).build();
+	}
+	
+	/**
+	 * Add a chapter to a course
+	 * 
+	 * @throws RequestException
+	 */
+	@POST
+	@Path("/addChapterStep2/{courseId: [0-9]*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response addChapterStep2(@HeaderParam("Auth-Token") String token, @PathParam("courseId") int courseId,
+			@FormParam("lists") String lists) throws RequestException {
+		secure(token, "admin");
+		Boolean result = courseService.addChapterStep2(courseId, lists);
+		return Response.status(Response.Status.OK).entity(result).build();
 	}
 	
 	/**
@@ -166,7 +185,7 @@ public class CourseController extends GenericController {
 	 * @throws RequestException
 	 */
 	@PUT
-	@Path("/{courseId: [0-9]*}/chapters/{chapterId: [0-9]*}")
+	@Path("/chapters/{chapterId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response editChapter(@HeaderParam("Auth-Token") String token, @QueryParam("chapterId") long chapterId,
 			@QueryParam("title") String title) throws RequestException {
@@ -183,32 +202,76 @@ public class CourseController extends GenericController {
 	 */
 	@DELETE
 	@Path("/{courseId: [0-9]*}/chapters/{chapterId: [0-9]*}")
-	public Response deleteChapter(@HeaderParam("Auth-Token") String token, @PathParam("chapterId") long chapterId)
+	public Response deleteChapter(@HeaderParam("Auth-Token") String token,@PathParam("courseId")int courseId, @PathParam("chapterId") long chapterId)
 			throws RequestException {
 		secure(token, "admin");
 
-		courseService.deleteChapter(chapterId);
+		courseService.deleteChapter(courseId , chapterId);
 		return Response.status(Response.Status.OK).build();
 	}
 	
 	////////////////////////////////////////////////////////////////////
 	// Chapter Part
 	////////////////////////////////////////////////////////////////////
+	
+	
+	
+	/**
+	 * Get a chapter
+	 */
+	@GET
+	@Path("/getChapterPartList/{chapterId: [0-9]*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getChapterPartList(@PathParam("chapterId") long chapterId) {
+		List<ChapterPart> chapterParts = courseService.getChapterPartList(chapterId);
+		return Response.status(Response.Status.OK).entity(chapterParts).build();
+	}
+	
+	
+	/**
+	 * Get a chapter
+	 */
+	@GET
+	@Path("/getChapterPart/{chapterPartId: [0-9]*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getChapterPart(@PathParam("chapterPartId") long chapterPartId) {
+		ChapterPart chapterPart = courseService.getChapterPart(chapterPartId);
+		return Response.status(Response.Status.OK).entity(chapterPart).build();
+	}
+	
+	
 	/**
 	 * Add a chapter part to a chapter
 	 * 
 	 * @throws RequestException
 	 */
 	@POST
-	@Path("/{courseId: [0-9]*}/chapters/{chapterId: [0-9]*}")
+	@Path("/addChapterPartStep1/{chapterId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response addChapterPart(@HeaderParam("Auth-Token") String token, @PathParam("chapterId") long chapterId,
-			@FormParam("text") String text, @FormParam("picture") long pictureId) throws RequestException {
+	public Response addChapterPartStep1(@HeaderParam("Auth-Token") String token, @PathParam("chapterId") long chapterId,
+			@FormParam("text") String text, @FormParam("pictureId") long pictureId) throws RequestException {
 		secure(token, "admin");
 
-		ChapterPart part = courseService.addChapterPart(chapterId, text, pictureId);
+		ChapterPart part = courseService.addChapterPartStep1(chapterId, text, pictureId);
 		return Response.status(Response.Status.OK).entity(part).build();
+	}
+	
+	/**
+	 * Add a chapter part to a chapter
+	 * 
+	 * @throws RequestException
+	 */
+	@POST
+	@Path("/addChapterPartStep2/{chapterId: [0-9]*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response addChapterPartStep2(@HeaderParam("Auth-Token") String token, @PathParam("chapterId") long chapterId,
+			@FormParam("lists") String lists) throws RequestException {
+		secure(token, "admin");
+
+		Boolean result = courseService.addChapterPartStep2(chapterId, lists);
+		return Response.status(Response.Status.OK).entity(result).build();
 	}
 	
 	/**
@@ -217,7 +280,7 @@ public class CourseController extends GenericController {
 	 * @throws RequestException
 	 */
 	@PUT
-	@Path("/{courseId: [0-9]*}/chapters/{chapterId: [0-9]*}/parts/{chapterPartId: [0-9]*}")
+	@Path("/chapters/{chapterId: [0-9]*}/parts/{chapterPartId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response editChapterPart(@HeaderParam("Auth-Token") String token, @PathParam("chapterPartId") long chapterPartId,
 			@QueryParam("text") String text, @QueryParam("picture") long pictureId) throws RequestException {
@@ -234,12 +297,13 @@ public class CourseController extends GenericController {
 	 * @throws RequestException
 	 */
 	@DELETE
-	@Path("/{courseId: [0-9]*}/chapters/{chapterId: [0-9]*}/parts/{chapterPartId: [0-9]*}")
-	public Response deleteChapterPart(@HeaderParam("Auth-Token") String token, @PathParam("chapterPartId") long partId)
+	@Path("/deleteChapterPart/{chapterId: [0-9]*}/parts/{chapterPartId: [0-9]*}")
+	public Response deleteChapterPart(@HeaderParam("Auth-Token") String token,@PathParam("chapterId") long chapterId, @PathParam("chapterPartId") long partId)
 			throws RequestException {
 		secure(token, "admin");
 
-		courseService.deleteChapterPart(partId);
+		courseService.deleteChapterPart(chapterId,partId);
+		
 		return Response.status(Response.Status.OK).build();
 	}
 	

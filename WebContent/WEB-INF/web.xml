@@ -65,4 +65,14 @@
 		<servlet-name>default</servlet-name>
 		<url-pattern>*.map</url-pattern>
 	</servlet-mapping>
+	
+	<filter>
+		<filter-name>OpenSessionInViewFilter</filter-name>
+		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>OpenSessionInViewFilter</filter-name>
+		<url-pattern>*.action</url-pattern> 
+	</filter-mapping>
+	
 </web-app>
