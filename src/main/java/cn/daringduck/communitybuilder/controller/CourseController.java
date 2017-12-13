@@ -78,13 +78,14 @@ public class CourseController extends GenericController {
 	 * @throws RequestException
 	 */
 	@POST
+	@Path("/addCourse")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response addCourse(@HeaderParam("Auth-Token") String token, @FormParam("name") String name)
+	public Response addCourse(@HeaderParam("Auth-Token") String token, @FormParam("name") String name,@FormParam("pictureId")long pictureId)
 			throws RequestException {
 		secure(token, "admin");
 
-		Course course = courseService.addCourse(name);
+		Course course = courseService.addCourse(name,pictureId);
 		return Response.status(Response.Status.OK).entity(course).build();
 	}
 

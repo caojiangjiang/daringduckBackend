@@ -61,8 +61,10 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @param name
 	 * @return
 	 */
-	public Course addCourse(String name) {
-		Course course = new Course(name);
+	public Course addCourse(String name,long pictureId) {
+		Picture picture = pictureRepository.getOne(pictureId);
+		
+		Course course = new Course(name,picture);
 		courseRepository.save(course);
 		return course;
 	}
