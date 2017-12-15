@@ -21,17 +21,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Table(name = "chapters")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Chapter{
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
+	
 	@NotNull private String title;
-	@NotNull @OneToOne private Course course;
+	private int courseId;
+	
+	@NotNull private boolean requiredOrNot;
 	
 	public Chapter() {}
 	
-	public Chapter(String title,Course course) {
+	public Chapter(String title,int courseId) {
 		this.title = title;
-		this.course = course;
+		this.courseId= courseId;
 	}
 	
 	public long getId() { return id;}
@@ -40,12 +44,20 @@ public class Chapter{
 	public void setTitle(String title) { this.title = title; }
 
 
-	public Course getCourse() {
-		return course;
+	public boolean isRequiredOrNot() {
+		return requiredOrNot;
 	}
 
-	public void setCourseId(Course course) {
-		this.course = course;
+	public void setRequiredOrNot(boolean requiredOrNot) {
+		this.requiredOrNot = requiredOrNot;
+	}
+
+	public int getCourseId() {
+		return courseId;
+	}
+
+	public void setCourseId(int courseId) {
+		this.courseId = courseId;
 	}
 	
 }

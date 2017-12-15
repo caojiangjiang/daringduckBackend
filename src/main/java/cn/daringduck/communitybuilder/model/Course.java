@@ -1,6 +1,9 @@
 package cn.daringduck.communitybuilder.model;
 
 
+import java.util.Iterator;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,7 +34,7 @@ public class Course{
 	}
 	
 	
-	public long getId() { return id; }
+	public int getId() { return id; }
 	
 	public String getName() { return name; }
 	public void setName(String xname) { this.name = xname; }
@@ -43,5 +46,5 @@ public class Course{
 	public void setPicture(Picture picture) {
 		this.picture = picture;
 	}
-	
+
 }

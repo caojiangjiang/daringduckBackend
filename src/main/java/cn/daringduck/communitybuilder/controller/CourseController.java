@@ -55,20 +55,22 @@ public class CourseController extends GenericController {
 	 * @throws RequestException
 	 */
 	@GET
+	@Path("/getPageOfCourse")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response courses(@QueryParam("page") int page) throws RequestException {
-		Page<Course> courses = courseService.getPage(page);
+		String courses = courseService.getPageOfCourse(page);
 		return Response.status(Response.Status.OK).entity(courses).build();
 	}
 
 	/**
 	 * Get the course with id
+	 * @throws RequestException 
 	 */
 	@GET
-	@Path("/{id: [0-9]*}")
+	@Path("/getCourse/{id: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response course(@PathParam("id") int id) {
-		Course course = courseService.get(id);
+	public Response course(@PathParam("id") int id) throws RequestException {
+		String course = courseService.getCourse(id);
 		return Response.status(Response.Status.OK).entity(course).build();
 	}
 

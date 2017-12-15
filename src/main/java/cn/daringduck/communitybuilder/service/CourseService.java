@@ -13,10 +13,17 @@ import cn.daringduck.communitybuilder.repository.CourseChapterRepository;
 import cn.daringduck.communitybuilder.repository.CourseRepository;
 import cn.daringduck.communitybuilder.repository.PictureRepository;
 
+import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Printable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +74,106 @@ public class CourseService extends GenericService<Course, Integer> {
 		Course course = new Course(name,picture);
 		courseRepository.save(course);
 		return course;
+	}
+	
+	/**
+	 * get list of Course By page
+	 * 
+	 * @param page
+	 * @return String
+	 * */
+	
+	public String getPageOfCourse(int page){
+		
+		//pageNumber and pageSize
+		Page<Course> coursesPage = courseRepository.findAll(new PageRequest(page, PAGE_SIZE));
+		
+		List<Course> courses = coursesPage.getContent();
+		
+		if(courses == null) {
+			return null;
+		}
+		else {
+			JSONObject jsonObject1 = new JSONObject();
+			for(int i =0;i<courses.size();i++) {
+				
+				Course course = courses.get(i);
+				
+				JSONObject jsonObject2 = new JSONObject();
+				jsonObject2.put("id", course.getId());
+				jsonObject2.put("name", course.getName());
+				
+				if(course.getPicture()!=null) {
+					jsonObject2.put("pictureId",course.getPicture().getId());
+					jsonObject2.put("picturePosition",course.getPicture().getFileLocation());
+				}
+				else {
+					jsonObject2.put("pictureId","");
+					jsonObject2.put("picturePosition","");
+				}
+
+				
+				List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(course.getId());
+				
+				if(courseChapters!=null) {
+					List<Chapter> chapters = new ArrayList<>();
+					for(int j=0;j<courseChapters.size();j++) {
+						chapters.add(courseChapters.get(j).getChapter());
+					}
+					jsonObject2.put("chapters", chapters);
+				}
+				jsonObject1.put(i+"", jsonObject2);
+			}
+			
+			return jsonObject1.toString();
+		}
+	}
+	
+	/**
+	 * Get a course By courseId
+	 * 
+	 * @param courseId
+	 * @return String
+	 * @throws RequestException 
+	 * 
+	 * */
+	
+	public String getCourse(int courseId) throws RequestException {
+		
+		Course course = courseRepository.getOne(courseId);
+		
+		if(course == null) {
+			throw new RequestException(Error.COURSE_DOES_NOT_EXIST); 
+		}
+		
+		//add class
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("id", courseId);
+		jsonObject.put("name", course.getName());
+		
+		//add picture
+		Picture picture = course.getPicture();
+		if(picture==null) {
+			jsonObject.put("pictureId", "");
+			jsonObject.put("picturePosition","");
+		}
+		else {
+			jsonObject.put("pictureId", picture.getId());
+			jsonObject.put("picturePosition", picture.getFileLocation());
+		}
+
+		
+		List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId);
+		
+		if(courseChapters!=null) {
+			List<Chapter> chapters = new ArrayList<>();
+			for(int i =0;i<courseChapters.size();i++) {
+				chapters.add(courseChapters.get(i).getChapter());
+			}
+			jsonObject.put("chapters", chapters);
+		}
+		
+		return jsonObject.toString();
 	}
 	
 	/**
@@ -174,15 +281,8 @@ public class CourseService extends GenericService<Course, Integer> {
 	}
 	
 	public Chapter addChapterStep1(int courseId, String title) throws RequestException {
-		Course course = courseRepository.getOne(courseId);
-		
-		
-		if (course == null) {
-			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
-		}
-
-		Chapter chapter = new Chapter(title,course);
-
+		Chapter chapter = new Chapter(title,courseId);
+		chapterRepository.save(chapter);
 		return chapter;
 	}
 	

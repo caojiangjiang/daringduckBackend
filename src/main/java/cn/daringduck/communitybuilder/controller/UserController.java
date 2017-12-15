@@ -23,6 +23,8 @@ import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.StudentsStudyStatus;
 import cn.daringduck.communitybuilder.model.User;
+import cn.daringduck.communitybuilder.model.UserChapter;
+import cn.daringduck.communitybuilder.model.UserCourse;
 import cn.daringduck.communitybuilder.service.StatusService;
 import cn.daringduck.communitybuilder.service.UserService;
 
@@ -72,7 +74,8 @@ public class UserController extends GenericController {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response createUser(@HeaderParam("Auth-Token") String token, @FormParam("username") String username,
 			@FormParam("password") String password, @FormParam("nickname") String nickname,
-			@FormParam("gender") int gender, @FormParam("phone") String phone, @FormParam("wechat") String wechat,
+			@FormParam("gender") int gender, @
+			FormParam("phone") String phone, @FormParam("wechat") String wechat,
 			@FormParam("email") String email, @FormParam("role") int roleId,@FormParam("pictureId") long pictureId, @QueryParam("club") int clubId) throws RequestException {
 
 		secure(token, "admin");
@@ -302,5 +305,46 @@ public class UserController extends GenericController {
 		StudentsStudyStatus studentsStudyStatus = new StudentsStudyStatus();
 		studentsStudyStatus =  statusService.setstudentsChapterStatus(userId, classId, chapterId,status);
 		return Response.status(Response.Status.OK).entity(studentsStudyStatus).build();
+	}
+	
+	///////////
+	// class //
+	///////////
+	
+	/**
+	 * Get the friends of the logged in user
+	 * 
+	 * @throws RequestException
+	 */
+	@POST
+	@Path("/addUserCourse")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response addUserCourse(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,@FormParam("courseId") int courseId,@FormParam("teacherId")long teacherId,@FormParam("passOrNot") boolean passOrNot) throws RequestException {
+		// Get the user data using the entity manager
+		secure(token, "*");
+
+		UserCourse userCourse = userService.addUserCourse(userId,courseId,teacherId,passOrNot);
+
+		// Return the user data to the RESTful service
+		return Response.status(Response.Status.OK).entity(userCourse).build();
+	}
+	
+	
+	/**
+	 * Get the friends of the logged in user
+	 * 
+	 * @throws RequestException
+	 */
+	@POST
+	@Path("/addUserChapter")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response addUserChapter(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,@FormParam("courseId") int courseId,@FormParam("teacherId")long teacherId,@FormParam("score") int score ,@FormParam("passOrNot") boolean passOrNot) throws RequestException {
+		// Get the user data using the entity manager
+		secure(token, "*");
+
+		UserChapter userChapter = userService.addUserChapter(userId,courseId,teacherId,score,passOrNot);
+
+		// Return the user data to the RESTful service
+		return Response.status(Response.Status.OK).entity(userChapter).build();
 	}
 }

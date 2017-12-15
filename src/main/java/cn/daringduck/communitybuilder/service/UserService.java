@@ -1,5 +1,6 @@
 package cn.daringduck.communitybuilder.service;
 
+import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -12,17 +13,25 @@ import cn.daringduck.communitybuilder.Error;
 import cn.daringduck.communitybuilder.PasswordSecurity;
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.AuthToken;
+import cn.daringduck.communitybuilder.model.Chapter;
 import cn.daringduck.communitybuilder.model.Club;
+import cn.daringduck.communitybuilder.model.Course;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.Picture;
 import cn.daringduck.communitybuilder.model.Privacy;
 import cn.daringduck.communitybuilder.model.Role;
 import cn.daringduck.communitybuilder.model.User;
+import cn.daringduck.communitybuilder.model.UserChapter;
+import cn.daringduck.communitybuilder.model.UserCourse;
 import cn.daringduck.communitybuilder.repository.AuthTokenRepository;
+import cn.daringduck.communitybuilder.repository.ChapterRepository;
 import cn.daringduck.communitybuilder.repository.ClubRepository;
+import cn.daringduck.communitybuilder.repository.CourseRepository;
 import cn.daringduck.communitybuilder.repository.MomentRepository;
 import cn.daringduck.communitybuilder.repository.PictureRepository;
 import cn.daringduck.communitybuilder.repository.RoleRepository;
+import cn.daringduck.communitybuilder.repository.UserChapterRepository;
+import cn.daringduck.communitybuilder.repository.UserCourseRepository;
 import cn.daringduck.communitybuilder.repository.UserRepository;
 
 @Service
@@ -35,10 +44,16 @@ public class UserService extends GenericService<User, Long> {
 	private MomentRepository momentRepository;
 	private ClubRepository clubRepository;
 	private PictureRepository pictureRepository;
-
+    private ChapterRepository chapterRepository;
+    private CourseRepository courseRepository;
+    private UserChapterRepository userChapterRepository;
+    private UserCourseRepository userCourseRepository;
+	
 	@Autowired
 	public UserService(UserRepository userRepository, RoleRepository roleRepository, AuthTokenRepository authRepository,
-			MomentRepository momentRepository, ClubRepository clubRepository,PictureRepository pictureRepository) {
+			MomentRepository momentRepository, ClubRepository clubRepository,PictureRepository pictureRepository,
+			ChapterRepository chapterRepository,CourseRepository courseRepository,UserChapterRepository userChapterRepository,
+			UserCourseRepository userCourseRepository) {
 		super(userRepository);
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
@@ -46,6 +61,10 @@ public class UserService extends GenericService<User, Long> {
 		this.momentRepository = momentRepository;
 		this.pictureRepository = pictureRepository;
 		this.clubRepository = clubRepository;
+		this.chapterRepository = chapterRepository;
+		this.courseRepository = courseRepository;
+		this.userChapterRepository = userChapterRepository;
+		this.userCourseRepository = userCourseRepository;
 		this.passwordSecurity = new PasswordSecurity();
 	}
 
@@ -269,11 +288,94 @@ public class UserService extends GenericService<User, Long> {
 	public Moment getUserMoment(long userId, long momentId) throws RequestException {		
 		Moment moment = momentRepository.getOne(momentId);
 		
-		//if (moment.getUser().getId() != userId) {
-		//	throw new RequestException(Error.MOMENT_DOES_NOT_BELONG_TO_USER);
-		//}
-		
 		return moment;
+	}
+	
+	/**
+	 * add a chapter to a user
+	 * @author 曹将将
+	 * 
+	 * @param userId
+	 * @param chapterId
+	 * @param teacherId
+	 * @param score
+	 * @param passedOrNot
+	 * 
+	 * @return UserChapter
+	 * @throws RequestException 
+	 * 
+	 * */
+	public UserChapter addUserChapter(long userId,long chapterId,long teacherId,int score,boolean passedOrNot) throws RequestException {
+		
+		User user = userRepository.getOne(userId);
+		
+		if(user == null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		}
+		
+		Chapter chapter = chapterRepository.getOne(chapterId);
+		
+		if(chapter == null) {
+			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
+		}
+		
+		User teacher = userRepository.getOne(teacherId);
+		
+		if(teacher == null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		}
+		
+		long date = new Date().getTime();
+		
+		UserChapter userChapter = new UserChapter(user,chapter,teacher,date,passedOrNot,score);
+		
+		userChapterRepository.save(userChapter);
+		
+		return userChapter;
+		
+	}
+	
+	/**
+	 * add a course to a user
+	 * @author 曹将将
+	 * 
+	 * @param userId
+	 * @param courseId
+	 * @param teacherId
+	 * @param passedOrNot
+	 * 
+	 * @return UserChapter
+	 * @throws RequestException 
+	 * 
+	 * */
+	public UserCourse addUserCourse(long userId,int courseId,long teacherId,boolean passedOrNot) throws RequestException {
+		
+		User user = userRepository.getOne(userId);
+		
+		if(user == null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		}
+		
+		Course course = courseRepository.getOne(courseId);
+		
+		if(course == null) {
+			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
+		}
+		
+		User teacher = userRepository.getOne(teacherId);
+		
+		if(teacher == null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		}
+		
+		long date = new Date().getTime();
+		
+		UserCourse userCourse = new UserCourse(user,course,teacher,date,passedOrNot);
+		
+		userCourseRepository.save(userCourse);
+		
+		return userCourse;
+		
 	}
 	
 	// Helper methods
@@ -365,6 +467,6 @@ public class UserService extends GenericService<User, Long> {
 		}
 	}
 	
-	
+
 	
 }
