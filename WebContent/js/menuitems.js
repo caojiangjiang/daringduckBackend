@@ -67,6 +67,11 @@ items = {
 			icon : 'area-chart',
 			text : 'Moments'
 		}, {
+			color : 'primary',
+			action : "loadPage(items.userCourses, 0, {'userId': %id%})",
+			icon : "bars",
+			text : "Courses"
+		},{
 			condition : 'disabled',
 			wrong : {
 				color : 'danger',
@@ -89,7 +94,8 @@ items = {
 		}, {
 			name : 'username',
 			type : 'text'
-		}, {
+		}, 
+		{
 			name : 'password',
 			type : 'password',
 			noedit : true
@@ -155,7 +161,15 @@ items = {
 		fields : [ { 
 			name : 'title',
 			type : 'text'
-		} ]
+		} ],
+		buttons : [  
+		{
+			color : 'success',
+			action : "showEditChapterPart(%courseId%,%id%)",
+			icon : "check",
+			text : "Show"
+		}
+	]	
 	},
 	userMoments : {
 		path : "users/%userId%/moments",

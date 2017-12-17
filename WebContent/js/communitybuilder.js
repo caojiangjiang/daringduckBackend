@@ -259,3 +259,28 @@ CommunityBuilder.prototype.uploadImage = function(data, done, fail) {
 		success : done
 	});
 }
+
+/**
+ * get a chapter from the server
+ * 
+ * @param data
+ *            list of data changes seperated by & for example:
+ *            foo=hello&bar=world
+ * @param resource
+ *            The URL to the list of resources
+ * @param done
+ *            Function executed when request was successful
+ * @param fail
+ *            Function executed when request failed
+ */
+CommunityBuilder.prototype.getChapterPart = function(courseId,chapterId,resource, done, fail) {
+	$.ajax({
+		type : "GET",
+		url : "api/" + resource + "/" + courseId+ "/chapters"+ "/" + chapterId,
+		headers : {
+			'auth-token' : this.token
+		},
+		error : fail,
+		success : done
+	});
+}
