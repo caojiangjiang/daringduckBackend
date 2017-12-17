@@ -2,6 +2,7 @@ package cn.daringduck.communitybuilder.controller;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -308,7 +309,7 @@ public class UserController extends GenericController {
 	}
 	
 	///////////
-	// class //
+	// course //
 	///////////
 	
 	/**
@@ -323,7 +324,7 @@ public class UserController extends GenericController {
 		// Get the user data using the entity manager
 		secure(token, "*");
 
-		UserCourse userCourse = userService.addUserCourse(userId,courseId,teacherId,passOrNot);
+		boolean userCourse = userService.addUserCourse(userId,courseId,teacherId,passOrNot);
 
 		// Return the user data to the RESTful service
 		return Response.status(Response.Status.OK).entity(userCourse).build();
@@ -338,13 +339,80 @@ public class UserController extends GenericController {
 	@POST
 	@Path("/addUserChapter")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response addUserChapter(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,@FormParam("courseId") int courseId,@FormParam("teacherId")long teacherId,@FormParam("score") int score ,@FormParam("passOrNot") boolean passOrNot) throws RequestException {
+	public Response addUserChapter(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,@FormParam("chapterId") long chapterId,@FormParam("teacherId")long teacherId,@FormParam("score") int score ,@FormParam("passOrNot") boolean passOrNot) throws RequestException {
 		// Get the user data using the entity manager
 		secure(token, "*");
 
-		UserChapter userChapter = userService.addUserChapter(userId,courseId,teacherId,score,passOrNot);
+		boolean userChapter = userService.addUserChapter(userId,chapterId,teacherId,score,passOrNot);
 
 		// Return the user data to the RESTful service
 		return Response.status(Response.Status.OK).entity(userChapter).build();
 	}
+	
+	
+	/**
+	 * change the status of a user in a course
+	 * 
+	 * @throws RequestException
+	 */
+	@PUT
+	@Path("/changeUserCourse")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response changeUserCourse(@HeaderParam("Auth-Token") String token, @FormParam("userId") long userId,
+			@FormParam("courseId") int courseId, @FormParam("teacherId") long teacherId ,@FormParam("status") String status) throws RequestException {
+		secure(token, "admin");
+		boolean userCourse = userService.changeUserCourse(userId, courseId,teacherId,status);
+		return Response.status(Response.Status.OK).entity(userCourse).build();
+	}
+	
+	/**
+	 * change the status of a user in a chapter
+	 * 
+	 * @throws RequestException
+	 */
+	@PUT
+	@Path("/changeUserChapter")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response changeUserChapter(@HeaderParam("Auth-Token") String token, @FormParam("userId") long userId,
+			@FormParam("chapterId") long chapterId, @FormParam("teacherId") long teacherId,@FormParam("score") int score ,@FormParam("status") String status) throws RequestException {
+		secure(token, "admin");
+		boolean userChapter = userService.changeUserChapter(userId, chapterId,teacherId,score,status);
+		return Response.status(Response.Status.OK).entity(userChapter).build();
+	}
+	
+	/**
+	 * get the course of a user
+	 * 
+	 * @throws RequestException
+	 */
+	@GET
+	@Path("/getUserCourse/{userId: [0-9]*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response getUserCourse(@PathParam("userId") long userId)
+	{
+		String userCourse = userService.getUserCourse(userId);
+		return Response.status(Response.Status.OK).entity(userCourse).build();
+		
+	}
+	
+	/**
+	 * delete a course of a user
+	 * 
+	 * @throws RequestException
+	 */
+	@DELETE
+	@Path("/deleteUserCourse/{userId: [0-9]*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response deleteUserCourse(@PathParam("userId") long userId,@FormParam("courseId") int courseId)
+	{
+		boolean userCourse = userService.deleteUserCourse(userId,courseId);
+		return Response.status(Response.Status.OK).entity(userCourse).build();
+		
+	}
+	
+	
 }

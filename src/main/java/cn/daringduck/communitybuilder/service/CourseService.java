@@ -13,9 +13,6 @@ import cn.daringduck.communitybuilder.repository.CourseChapterRepository;
 import cn.daringduck.communitybuilder.repository.CourseRepository;
 import cn.daringduck.communitybuilder.repository.PictureRepository;
 
-import java.awt.print.PageFormat;
-import java.awt.print.Pageable;
-import java.awt.print.Printable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +20,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -374,6 +370,34 @@ public class CourseService extends GenericService<Course, Integer> {
 		chapterRepository.delete(chapterId);
 		
 	}
+	
+	
+	/**
+	 * change the chapter required or not
+	 * @param chapterId
+	 * @param requiredOrNot
+	 * @return
+	 * @throws RequestException
+	 */
+	public Chapter chapterRequiredOrNot(long chapterId, String requiredOrNot) throws RequestException {
+		Chapter chapter =chapterRepository.getOne(chapterId);
+		
+		if(chapter == null) {
+			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
+		}
+		
+		if(requiredOrNot.equalsIgnoreCase("true")){
+			chapter.setRequiredOrNot(true);
+		}
+		
+		if(requiredOrNot.equalsIgnoreCase("false")) {
+			chapter.setRequiredOrNot(false);
+		}
+		
+		chapterRepository.save(chapter);
+		
+		return chapter;
+	}
 
 	////////////////////////////////////////////////////////////////////
 	// Chapter Part
@@ -514,5 +538,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	public ChapterPart getChapterPart(long chapterPartId) {		
 		return partRepository.getOne(chapterPartId);
 	}
+	
+	
 
 }

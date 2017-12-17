@@ -18,8 +18,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.data.domain.Page;
-
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Chapter;
 import cn.daringduck.communitybuilder.model.ChapterPart;
@@ -213,6 +211,18 @@ public class CourseController extends GenericController {
 		return Response.status(Response.Status.OK).build();
 	}
 	
+	/**
+	 * set a chapter required or not
+	 * */
+	@PUT
+	@Path("/chapterRequiredOrNot/{chapterId: [0-9]*}")
+	public Response chapterRequiredOrNot(@HeaderParam("Auth-Token") String token,@PathParam("chapterId") long chapterId,@FormParam("requiredOrNot") String requiredOrNot)
+			throws RequestException {
+		secure(token, "teacher");
+		Chapter chapter = courseService.chapterRequiredOrNot(chapterId,requiredOrNot);
+		return Response.status(Response.Status.OK).entity(chapter).build();
+	}
+	
 	////////////////////////////////////////////////////////////////////
 	// Chapter Part
 	////////////////////////////////////////////////////////////////////
@@ -226,6 +236,7 @@ public class CourseController extends GenericController {
 	@Path("/getChapterPartList/{chapterId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getChapterPartList(@PathParam("chapterId") long chapterId) {
+		
 		List<ChapterPart> chapterParts = courseService.getChapterPartList(chapterId);
 		return Response.status(Response.Status.OK).entity(chapterParts).build();
 	}
@@ -233,11 +244,13 @@ public class CourseController extends GenericController {
 	
 	/**
 	 * Get a chapter
+	 * @throws RequestException 
 	 */
 	@GET
 	@Path("/getChapterPart/{chapterPartId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getChapterPart(@PathParam("chapterPartId") long chapterPartId) {
+	public Response getChapterPart(@HeaderParam("Auth-Token") String token,@PathParam("chapterPartId") long chapterPartId) throws RequestException {
+		secure(token, "member");
 		ChapterPart chapterPart = courseService.getChapterPart(chapterPartId);
 		return Response.status(Response.Status.OK).entity(chapterPart).build();
 	}
@@ -276,6 +289,7 @@ public class CourseController extends GenericController {
 		Boolean result = courseService.addChapterPartStep2(chapterId, lists);
 		return Response.status(Response.Status.OK).entity(result).build();
 	}
+	
 	
 	/**
 	 * Edit a chapter part

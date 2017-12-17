@@ -14,18 +14,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.hibernate.procedure.internal.Util.ResultClassesResolutionContext;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.research.ws.wadl.Method;
 
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.MomentPart;
-import cn.daringduck.communitybuilder.model.Picture;
 import cn.daringduck.communitybuilder.service.MomentService;
 
 /**

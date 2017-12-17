@@ -24,7 +24,9 @@ public enum Error {
 	UNSAFE_PASSWORD(14, "Password needs 8 characters and at least 1 small letter, 1 Capital letter and 1 number", Status.BAD_REQUEST),
 	GENDER_INVALID(15, "Gender needs to be 1 for male, 2 for female", Status.BAD_REQUEST), 
 	USERNAME_SHORT(16, "Username need at least 6 characters", Status.BAD_REQUEST), 
-	USERNAME_NOT_UNIQUE(17, "Username is already used", Status.BAD_REQUEST);
+	USERNAME_NOT_UNIQUE(17, "Username is already used", Status.BAD_REQUEST),
+	USERCOURSE_NOT_UNIQUE(18,"User has choosed this course",Status.BAD_REQUEST),
+	USERCHAPTER_NOT_UNIQUE(19,"User has choosed this chapter",Status.BAD_REQUEST);
 	
 	public final int errorCode;
 	public final String errorMessage;

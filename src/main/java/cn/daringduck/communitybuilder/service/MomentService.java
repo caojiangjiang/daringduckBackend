@@ -1,18 +1,9 @@
 package cn.daringduck.communitybuilder.service;
 
 import java.util.List;
-
-import org.hibernate.procedure.internal.Util.ResultClassesResolutionContext;
-import org.omg.CORBA.FieldNameHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.css.ElementCSSInlineStyle;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import cn.daringduck.communitybuilder.Error;
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.MomentPart;
@@ -22,7 +13,6 @@ import cn.daringduck.communitybuilder.model.User;
 import cn.daringduck.communitybuilder.repository.MomentPartRepository;
 import cn.daringduck.communitybuilder.repository.MomentRepository;
 import cn.daringduck.communitybuilder.repository.PictureRepository;
-import javassist.expr.NewArray;
 
 @Service
 @Transactional
@@ -142,4 +132,5 @@ public class MomentService extends GenericService<Moment, Long>{
 	public List<MomentPart> getMomentPartWithId(long id){
 		return momentPartRepository.getMomentPart(id);
 	}
+	
 }

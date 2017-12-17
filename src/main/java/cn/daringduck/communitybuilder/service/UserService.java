@@ -1,13 +1,17 @@
 package cn.daringduck.communitybuilder.service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.daringduck.communitybuilder.Error;
 import cn.daringduck.communitybuilder.PasswordSecurity;
@@ -16,6 +20,7 @@ import cn.daringduck.communitybuilder.model.AuthToken;
 import cn.daringduck.communitybuilder.model.Chapter;
 import cn.daringduck.communitybuilder.model.Club;
 import cn.daringduck.communitybuilder.model.Course;
+import cn.daringduck.communitybuilder.model.CourseChapter;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.Picture;
 import cn.daringduck.communitybuilder.model.Privacy;
@@ -26,6 +31,7 @@ import cn.daringduck.communitybuilder.model.UserCourse;
 import cn.daringduck.communitybuilder.repository.AuthTokenRepository;
 import cn.daringduck.communitybuilder.repository.ChapterRepository;
 import cn.daringduck.communitybuilder.repository.ClubRepository;
+import cn.daringduck.communitybuilder.repository.CourseChapterRepository;
 import cn.daringduck.communitybuilder.repository.CourseRepository;
 import cn.daringduck.communitybuilder.repository.MomentRepository;
 import cn.daringduck.communitybuilder.repository.PictureRepository;
@@ -35,6 +41,7 @@ import cn.daringduck.communitybuilder.repository.UserCourseRepository;
 import cn.daringduck.communitybuilder.repository.UserRepository;
 
 @Service
+@Transactional
 public class UserService extends GenericService<User, Long> {
 
 	private UserRepository userRepository;
@@ -48,12 +55,13 @@ public class UserService extends GenericService<User, Long> {
     private CourseRepository courseRepository;
     private UserChapterRepository userChapterRepository;
     private UserCourseRepository userCourseRepository;
+    private CourseChapterRepository courseChapterRepository;
 	
 	@Autowired
 	public UserService(UserRepository userRepository, RoleRepository roleRepository, AuthTokenRepository authRepository,
 			MomentRepository momentRepository, ClubRepository clubRepository,PictureRepository pictureRepository,
 			ChapterRepository chapterRepository,CourseRepository courseRepository,UserChapterRepository userChapterRepository,
-			UserCourseRepository userCourseRepository) {
+			UserCourseRepository userCourseRepository,CourseChapterRepository courseChapterRepository) {
 		super(userRepository);
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
@@ -65,6 +73,7 @@ public class UserService extends GenericService<User, Long> {
 		this.courseRepository = courseRepository;
 		this.userChapterRepository = userChapterRepository;
 		this.userCourseRepository = userCourseRepository;
+		this.courseChapterRepository = courseChapterRepository;
 		this.passwordSecurity = new PasswordSecurity();
 	}
 
@@ -286,7 +295,7 @@ public class UserService extends GenericService<User, Long> {
 	}
 	
 	public Moment getUserMoment(long userId, long momentId) throws RequestException {		
-		Moment moment = momentRepository.getOne(momentId);
+		Moment moment = momentRepository.findOne(momentId);
 		
 		return moment;
 	}
@@ -305,34 +314,42 @@ public class UserService extends GenericService<User, Long> {
 	 * @throws RequestException 
 	 * 
 	 * */
-	public UserChapter addUserChapter(long userId,long chapterId,long teacherId,int score,boolean passedOrNot) throws RequestException {
+	public boolean addUserChapter(long userId,long chapterId,long teacherId,int score,boolean passedOrNot) throws RequestException {
+		UserChapter userChapter1 = userChapterRepository.findByUserIdAndChapterId(userId,chapterId);
 		
-		User user = userRepository.getOne(userId);
-		
-		if(user == null) {
-			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		if(userChapter1!=null) {
+			throw new RequestException(Error.USERCHAPTER_NOT_UNIQUE);
 		}
-		
-		Chapter chapter = chapterRepository.getOne(chapterId);
-		
-		if(chapter == null) {
-			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
+		else {
+			boolean result = false;
+			
+			User user = userRepository.findOne(userId);
+			
+			if(user == null) {
+				throw new RequestException(Error.USER_DOES_NOT_EXIST);
+			}
+			
+			Chapter chapter = chapterRepository.findOne(chapterId);
+			
+			if(chapter == null) {
+				throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
+			}
+			
+			User teacher = userRepository.findOne(teacherId);
+			
+			if(teacher == null) {
+				throw new RequestException(Error.USER_DOES_NOT_EXIST);
+			}
+			
+			long date = 0;
+			
+			UserChapter userChapter = new UserChapter(user,chapter,teacher,date,passedOrNot,score);
+			
+			if(userChapterRepository.save(userChapter)!=null)
+				result = true;
+			
+			return result;
 		}
-		
-		User teacher = userRepository.getOne(teacherId);
-		
-		if(teacher == null) {
-			throw new RequestException(Error.USER_DOES_NOT_EXIST);
-		}
-		
-		long date = new Date().getTime();
-		
-		UserChapter userChapter = new UserChapter(user,chapter,teacher,date,passedOrNot,score);
-		
-		userChapterRepository.save(userChapter);
-		
-		return userChapter;
-		
 	}
 	
 	/**
@@ -348,36 +365,178 @@ public class UserService extends GenericService<User, Long> {
 	 * @throws RequestException 
 	 * 
 	 * */
-	public UserCourse addUserCourse(long userId,int courseId,long teacherId,boolean passedOrNot) throws RequestException {
+	public boolean addUserCourse(long userId,int courseId,long teacherId,boolean passedOrNot) throws RequestException {
 		
-		User user = userRepository.getOne(userId);
+		UserCourse userCourse1 = userCourseRepository.findByUserIdAndCourseId(userId,courseId);
 		
-		if(user == null) {
-			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		if(userCourse1!=null) {
+			throw new RequestException(Error.USERCOURSE_NOT_UNIQUE);
 		}
-		
-		Course course = courseRepository.getOne(courseId);
-		
-		if(course == null) {
-			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
+		else {
+			boolean result = false;
+			
+			User user = userRepository.findOne(userId);
+			
+			if(user == null) {
+				throw new RequestException(Error.USER_DOES_NOT_EXIST);
+			}
+			
+			Course course = courseRepository.findOne(courseId);
+			
+			if(course == null) {
+				throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
+			}
+			
+			User teacher = userRepository.findOne(teacherId);
+			
+			if(teacher == null) {
+				throw new RequestException(Error.USER_DOES_NOT_EXIST);
+			}
+			
+			//Init date
+			long date = 0;
+			
+			UserCourse userCourse = new UserCourse(user,course,teacher,date,passedOrNot);
+			
+			if(userCourseRepository.save(userCourse)!=null)
+				result = true;
+			
+			return result;
 		}
-		
-		User teacher = userRepository.getOne(teacherId);
-		
-		if(teacher == null) {
-			throw new RequestException(Error.USER_DOES_NOT_EXIST);
-		}
-		
-		long date = new Date().getTime();
-		
-		UserCourse userCourse = new UserCourse(user,course,teacher,date,passedOrNot);
-		
-		userCourseRepository.save(userCourse);
-		
-		return userCourse;
-		
 	}
 	
+	
+	/**
+	 * change a user's course status
+	 * 
+	 * @param userId
+	 * @param courseId
+	 * @param teacherId
+	 * @param status
+	 * 
+	 * @return UserCourse
+	 * */
+	public boolean changeUserCourse(long userId,int courseId,long teacherId,String status) {
+		boolean result = false;
+		
+		UserCourse userCourse = userCourseRepository.findByUserIdAndCourseId(userId,courseId);
+		
+		User teacher = userRepository.findOne(teacherId);
+	
+		if(teacher!=null) {
+			userCourse.setTeacher(teacher);
+		}
+		
+		if(status.equalsIgnoreCase("true")) {
+			userCourse.setPassedOrNot(true);
+			//SET DATE
+			long date = new Date().getTime();
+			userCourse.setDate(date);
+		}
+		if(status.equalsIgnoreCase("false")) {
+			userCourse.setPassedOrNot(false);
+		}
+		
+		if(userCourseRepository.save(userCourse)!=null)
+			result = true;
+		
+		return result;
+	}
+	
+	
+	/**
+	 * change a user's chapter status
+	 * 
+	 * @param userId
+	 * @param courseId
+	 * @param teacherId
+	 * @param status
+	 * 
+	 * @return UserCourse
+	 * */
+	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String status) {
+		boolean result = false;
+		
+		UserChapter userChapter = userChapterRepository.findByUserIdAndChapterId(userId,chapterId);
+		
+		User teacher = userRepository.findOne(teacherId);
+		
+		if(teacher!=null) {
+			userChapter.setTeacher(teacher);
+		}
+		
+		if(status.equalsIgnoreCase("true")) {
+			userChapter.setPassOrNot(true);
+			
+			//SET DATE
+			long date = new Date().getTime();
+			userChapter.setDate(date);
+		}
+		if(status.equalsIgnoreCase("false")) {
+			userChapter.setPassOrNot(false);
+		}
+		
+		if(score>0) {
+			userChapter.setScore(score);
+		}
+		
+		if(userChapterRepository.save(userChapter)!=null)
+			result = true;
+		
+		return result;
+	}
+	
+	/**
+	 * get a user's courses 
+	 * */
+	public String getUserCourse(long userId) {
+		
+		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
+		
+		List<Course> courses = new ArrayList<>();
+		
+		for(int i=0;i<userCourses.size();i++) {
+			courses.add(userCourses.get(i).getCourse());
+		}
+		
+		JSONObject jsonObject1 = new JSONObject();
+		for(int i =0;i<courses.size();i++) {
+			
+			Course course = courses.get(i);
+			
+			JSONObject jsonObject2 = new JSONObject();
+			jsonObject2.put("id", course.getId());
+			jsonObject2.put("name", course.getName());
+			
+			if(course.getPicture()!=null) {
+				jsonObject2.put("pictureId",course.getPicture().getId());
+				jsonObject2.put("picturePosition",course.getPicture().getFileLocation());
+			}
+			else {
+				jsonObject2.put("pictureId","");
+				jsonObject2.put("picturePosition","");
+			}
+
+			
+			List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(course.getId());
+			
+			if(courseChapters!=null) {
+				List<Chapter> chapters = new ArrayList<>();
+				for(int j=0;j<courseChapters.size();j++) {
+					chapters.add(courseChapters.get(j).getChapter());
+				}
+				jsonObject2.put("chapters", chapters);
+			}
+			jsonObject1.put(i+"", jsonObject2);
+		}
+		
+		return jsonObject1.toString();
+	}
+	
+	public boolean deleteUserCourse(long userId,int courseId) {
+		userCourseRepository.deleteUserCourseByUserIdAndCourseId(userId, courseId);
+		return true;
+	}
 	// Helper methods
 	
 	/**
@@ -466,6 +625,7 @@ public class UserService extends GenericService<User, Long> {
 			throw new RequestException(Error.GENDER_INVALID);
 		}
 	}
+	
 	
 
 	

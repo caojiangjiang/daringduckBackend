@@ -7,8 +7,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "user_course")
+@JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
 public class UserCourse {
 
 	@Id
