@@ -33,7 +33,7 @@ public class ApplicationConfig {
 		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
 		dataSource.setUrl("jdbc:mysql://localhost:3306/daringduck2?autoReconnect=true&amp;useUnicode=yes&amp;characterEncoding=UTF-8");
 		dataSource.setUsername("root");
-		dataSource.setPassword("123456");
+		dataSource.setPassword("password");
 		
 		return dataSource;
 	}

@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import org.springframework.data.domain.Page;
 
 import java.rmi.AccessException;
+import java.util.List;
 
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Moment;
@@ -59,8 +60,7 @@ public class UserController extends GenericController {
 	public Response users(@HeaderParam("Auth-Token") String token, @QueryParam("page") int page)
 			throws RequestException {
 		secure(token, "admin");
-
-		Page<User> users = userService.getPage(page);
+		List<User> users = userService.getPageOfUser(page);
 		return Response.status(Response.Status.OK).entity(users).build();
 	}
 

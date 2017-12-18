@@ -1,5 +1,7 @@
 package cn.daringduck.communitybuilder.controller;
 
+import java.util.List;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -49,7 +51,10 @@ public class MomentController extends GenericController {
 	public Response moments(@QueryParam("page") int page) {
 	
 		Page<Moment> moments = momentService.getPage(page);
-		return Response.status(200).entity(moments).build();
+		
+		List<Moment> momentList = moments.getContent();
+		
+		return Response.status(200).entity(momentList).build();
 		
 	}
 	

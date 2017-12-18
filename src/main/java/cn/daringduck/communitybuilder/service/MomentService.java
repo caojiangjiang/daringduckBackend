@@ -1,7 +1,11 @@
 package cn.daringduck.communitybuilder.service;
 
 import java.util.List;
+
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import cn.daringduck.communitybuilder.RequestException;
@@ -29,6 +33,31 @@ public class MomentService extends GenericService<Moment, Long>{
     	this.momentPartRepository = momentPartRepository;
     	this.pictureRepository = pictureRepository;
     }
+	
+//	/**
+//	 * get page of moments
+//	 * @param page
+//	 * @return String
+//	 * 
+//	 * */
+//	public String getPageOfMoments(int page) {
+//		Page<Moment> moments = momentRepository.findAll(new PageRequest(page, PAGE_SIZE));
+//		
+//		List<Moment> momentList = moments.getContent();
+//		
+//		JSONObject jsonObject = new JSONObject();
+//		
+//		for(int i =0;i<momentList.size();i++){
+//			
+//			Moment moment = momentList.get(i);
+//			
+//			JSONObject jsonObject = new JSONObject();
+//			
+//			jsonObject.put("id", moment.getId());
+//			
+//			jsonObject.put("", value)
+//		}
+//	}
 	
 	/**
 	 * Add a moment
