@@ -120,7 +120,7 @@ function generateTable(pageInfo, page, props) {
 		var keys = [];
 		for ( var j in data[0]) {
 			var sub_key = j;
-			if ($.inArray(sub_key, [ "email", "members" ]) == -1) {
+			if ($.inArray(sub_key, [ "email", "members","password","picturePosition","chapters"]) == -1) {
 				keys.push(sub_key);
 			}
 		}
