@@ -145,7 +145,10 @@ items = {
 		fields : [ {
 			name : 'name',
 			type : 'text'
-		} ],
+		} ,{
+			name : 'picture',
+			type : 'image'
+		}],
 		buttons : [ {
 			color : 'success',
 			action : "loadPage(items.chapters, 0, {'courseId': %id%})",
@@ -161,7 +164,19 @@ items = {
 		fields : [ { 
 			name : 'title',
 			type : 'text'
-		} ],
+		} ,{
+			name : 'RequiredOrNot',
+			type : 'select',
+			list : 'RequiredOrNot',
+			//optionText : '%name% (%location%)',
+			options : [ {
+				name : 'true',
+				value : true
+			},{
+				name : 'false',
+				value : false
+			}  ]
+		}],
 		buttons : [  
 		{
 			color : 'success',
