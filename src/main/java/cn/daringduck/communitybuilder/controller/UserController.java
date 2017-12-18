@@ -60,7 +60,7 @@ public class UserController extends GenericController {
 	public Response users(@HeaderParam("Auth-Token") String token, @QueryParam("page") int page)
 			throws RequestException {
 		secure(token, "admin");
-		List<User> users = userService.getPageOfUser(page);
+		Page<User> users = userService.getPage(page);
 		return Response.status(Response.Status.OK).entity(users).build();
 	}
 

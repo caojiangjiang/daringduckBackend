@@ -5,7 +5,6 @@ import javax.servlet.ServletContext;
 import cn.daringduck.communitybuilder.Error;
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.User;
-import cn.daringduck.communitybuilder.service.StatusService;
 import cn.daringduck.communitybuilder.service.UserService;
 
 public abstract class GenericController {

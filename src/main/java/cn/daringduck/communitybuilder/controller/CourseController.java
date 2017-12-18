@@ -64,7 +64,7 @@ public class CourseController extends GenericController {
 	 * @throws RequestException 
 	 */
 	@GET
-	@Path("/getCourse/{id: [0-9]*}")
+	@Path("/{id: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response course(@PathParam("id") int id) throws RequestException {
 		String course = courseService.getCourse(id);
@@ -77,7 +77,6 @@ public class CourseController extends GenericController {
 	 * @throws RequestException
 	 */
 	@POST
-	@Path("/addCourse")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response addCourse(@HeaderParam("Auth-Token") String token, @FormParam("name") String name,@FormParam("pictureId")long pictureId)
@@ -110,7 +109,7 @@ public class CourseController extends GenericController {
 	 * @throws RequestException
 	 */
 	@DELETE
-	@Path("/deleteCourse/{courseId: [0-9]*}")
+	@Path("/{courseId: [0-9]*}")
 	public Response deleteCourse(@HeaderParam("Auth-Token") String token, @PathParam("courseId") int courseId)
 			throws RequestException {
 		secure(token, "admin");
@@ -185,7 +184,7 @@ public class CourseController extends GenericController {
 	 * @throws RequestException
 	 */
 	@PUT
-	@Path("/chapters/{chapterId: [0-9]*}")
+	@Path("/{courseId: [0-9]*}/chapters/{chapterId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response editChapter(@HeaderParam("Auth-Token") String token, @QueryParam("chapterId") long chapterId,
 			@QueryParam("title") String title) throws RequestException {
@@ -226,10 +225,8 @@ public class CourseController extends GenericController {
 	// Chapter Part
 	////////////////////////////////////////////////////////////////////
 	
-	
-	
 	/**
-	 * Get a chapter
+	 * Get  chapterPart list
 	 */
 	@GET
 	@Path("/getChapterPartList/{chapterId: [0-9]*}")
@@ -242,7 +239,8 @@ public class CourseController extends GenericController {
 	
 	
 	/**
-	 * Get a chapter
+	 * Get a chapterPart
+	 * 
 	 * @throws RequestException 
 	 */
 	@GET
@@ -256,7 +254,7 @@ public class CourseController extends GenericController {
 	
 	
 	/**
-	 * Add a chapter part to a chapter
+	 * Add a chapterPart to a chapter
 	 * 
 	 * @throws RequestException
 	 */
@@ -273,7 +271,7 @@ public class CourseController extends GenericController {
 	}
 	
 	/**
-	 * Add a chapter part to a chapter
+	 * Add a chapterPart to a chapter
 	 * 
 	 * @throws RequestException
 	 */
@@ -291,7 +289,7 @@ public class CourseController extends GenericController {
 	
 	
 	/**
-	 * Edit a chapter part
+	 * Edit a chapterPart
 	 * 
 	 * @throws RequestException
 	 */
@@ -308,7 +306,7 @@ public class CourseController extends GenericController {
 	}
 	
 	/**
-	 * Delete a chapter
+	 * Delete a chapterPart
 	 * 
 	 * @throws RequestException
 	 */
