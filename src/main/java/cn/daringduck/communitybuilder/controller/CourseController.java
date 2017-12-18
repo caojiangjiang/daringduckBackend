@@ -53,7 +53,6 @@ public class CourseController extends GenericController {
 	 * @throws RequestException
 	 */
 	@GET
-	@Path("/getPageOfCourse")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response courses(@QueryParam("page") int page) throws RequestException {
 		String courses = courseService.getPageOfCourse(page);

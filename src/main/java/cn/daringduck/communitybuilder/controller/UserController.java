@@ -24,8 +24,6 @@ import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.StudentsStudyStatus;
 import cn.daringduck.communitybuilder.model.User;
-import cn.daringduck.communitybuilder.model.UserChapter;
-import cn.daringduck.communitybuilder.model.UserCourse;
 import cn.daringduck.communitybuilder.service.StatusService;
 import cn.daringduck.communitybuilder.service.UserService;
 
