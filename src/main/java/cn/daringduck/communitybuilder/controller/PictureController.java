@@ -1,21 +1,15 @@
 package cn.daringduck.communitybuilder.controller;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.UUID;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -23,22 +17,15 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.springframework.core.io.UrlResource;
-
-import com.sun.research.ws.wadl.Resource;
-
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Picture;
 import cn.daringduck.communitybuilder.service.PictureService;
-import javassist.expr.NewArray;
 
 /**
  * Implements the RESTful calls for pictures
@@ -66,7 +53,8 @@ public class PictureController extends GenericController{
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response uploadFile(@HeaderParam("Auth-Token") String token,
 			@FormDataParam("file") InputStream uploadedInputStream,
-			@FormDataParam("file") FormDataBodyPart body) throws RequestException {
+			@FormDataParam("file") FormDataBodyPart body,
+			@FormDataParam("id") long id) throws RequestException {
 
 		secure(token, "*");
 		
@@ -83,8 +71,20 @@ public class PictureController extends GenericController{
 		}
 		
 		String imageName = UUID.randomUUID().toString() + "." + subtype;
-		String uploadedFileLocation = context.getRealPath("/images/"+imageName);
+		//String uploadedFileLocation = context.getRealPath("/images/"+imageName);
+		String pathName = "/root/img/"+id;
+		//String pathName = "D:\\dms\\img\\"+id;
 		
+		File file = new File(pathName);
+		
+		if(!file.isDirectory()) {
+			file.mkdir();
+		}
+		
+		//String uploadedFileLocation = pathName+"\\"+imageName;
+		String uploadedFileLocation = pathName+"/"+imageName;
+		
+		//String uploadedFileLocation = pathName+"\\"+imageName;
 		
 		Picture picture = pictureService.createPictureReference(uploadedFileLocation);
 		

@@ -9,7 +9,7 @@ import cn.daringduck.communitybuilder.model.ChapterPart;
 
 public interface ChapterPartRepository extends JpaRepository<ChapterPart, Long>{
 
-	@Query(value = "select chapterPart from ChapterPart chapterPart where chapterPart.chapterId = ?1 ")
+	@Query(value = "select chapterPart from ChapterPart chapterPart where chapterPart.chapterId = ?1")
 	public List<ChapterPart> getChapterPartListByChapterId(long chapterId);
 	
 	

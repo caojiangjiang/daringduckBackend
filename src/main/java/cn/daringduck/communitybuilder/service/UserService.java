@@ -100,19 +100,19 @@ public class UserService extends GenericService<User, Long> {
 		return token.getUser();
 	}
 
-	/**
-	 * get list of user By page
-	 * 
-	 * */
-	public List<User> getPageOfUser(int page){
-		
-		//pageNumber and pageSize
-		Page<User> usersPage = userRepository.findAll(new PageRequest(page, PAGE_SIZE));
-		
-		List<User> users = usersPage.getContent();
-		
-		return users;
-	}
+//	/**
+//	 * get list of user By page
+//	 * 
+//	 * */
+//	public List<User> getPageOfUser(int page){
+//		
+//		//pageNumber and pageSize
+//		Page<User> usersPage = userRepository.findAll(new PageRequest(page, PAGE_SIZE));
+//		
+//		List<User> users = usersPage.getContent();
+//		
+//		return users;
+//	}
 	
 	/**
 	 * Adds a new user

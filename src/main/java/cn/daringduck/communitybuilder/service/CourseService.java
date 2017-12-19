@@ -184,12 +184,18 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return
 	 * @throws RequestException
 	 */
-	public Course editCourse(int id, String name) throws RequestException {
+	public Course editCourse(int id, String name,long pictureId) throws RequestException {
 		//find a course by id
 		Course course = courseRepository.findOne(id);
 		
 		if (course == null) {
 			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
+		}
+		
+		Picture picture = pictureRepository.findOne(pictureId);
+		
+		if(picture!=null) {
+			course.setPicture(picture);
 		}
 		
 		//reset the course name
@@ -288,12 +294,21 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * add a chapter
 	 * @param courseId
 	 * @param title
-	 * @return Chapter
 	 * 
 	 * */
-	public Chapter addChapterStep1(int courseId, String title) throws RequestException {
+	public Chapter addChapterStep1(int courseId, String title,String requiredOrNot) throws RequestException {
+		
 		Chapter chapter = new Chapter(title,courseId);
+		
+		if(requiredOrNot.equalsIgnoreCase("true")) {
+			chapter.setRequiredOrNot(true);
+		}
+		else {
+			chapter.setRequiredOrNot(false);
+		}
+
 		chapterRepository.save(chapter);
+		
 		return chapter;
 	}
 	
@@ -336,14 +351,20 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return
 	 * @throws RequestException
 	 */
-	public Chapter editChapter(long chapterId, String title) throws RequestException {
+	public Chapter editChapter(long chapterId, String title,String requiredOrNot) throws RequestException {
 		Chapter chapter = chapterRepository.findOne(chapterId);
 		
 		if (chapter == null) {
 			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
 		}
-//		System.out.println("CHAP:"+ chapter);
-//		System.out.println("TITL:"+ title);
+		
+		if(requiredOrNot.equals("true")) {
+			chapter.setRequiredOrNot(true);
+		}
+		else {
+			chapter.setRequiredOrNot(false);
+		}
+		
 		if (title != null) {
 			chapter.setTitle(title);
 		}
@@ -397,32 +418,32 @@ public class CourseService extends GenericService<Course, Integer> {
 	}
 	
 	
-	/**
-	 * change the chapter required or not
-	 * @param chapterId
-	 * @param requiredOrNot
-	 * @return
-	 * @throws RequestException
-	 */
-	public Chapter chapterRequiredOrNot(long chapterId, String requiredOrNot) throws RequestException {
-		Chapter chapter =chapterRepository.findOne(chapterId);
-		
-		if(chapter == null) {
-			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
-		}
-		
-		if(requiredOrNot.equalsIgnoreCase("true")){
-			chapter.setRequiredOrNot(true);
-		}
-		
-		if(requiredOrNot.equalsIgnoreCase("false")) {
-			chapter.setRequiredOrNot(false);
-		}
-		
-		chapterRepository.save(chapter);
-		
-		return chapter;
-	}
+//	/**
+//	 * change the chapter required or not
+//	 * @param chapterId
+//	 * @param requiredOrNot
+//	 * @return
+//	 * @throws RequestException
+//	 */
+//	public Chapter chapterRequiredOrNot(long chapterId, String requiredOrNot) throws RequestException {
+//		Chapter chapter =chapterRepository.findOne(chapterId);
+//		
+//		if(chapter == null) {
+//			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
+//		}
+//		
+//		if(requiredOrNot.equalsIgnoreCase("true")){
+//			chapter.setRequiredOrNot(true);
+//		}
+//		
+//		if(requiredOrNot.equalsIgnoreCase("false")) {
+//			chapter.setRequiredOrNot(false);
+//		}
+//		
+//		chapterRepository.save(chapter);
+//		
+//		return chapter;
+//	}
 
 	////////////////////////////////////////////////////////////////////
 	// Chapter Part
@@ -513,7 +534,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @throws RequestException
 	 */
 	public ChapterPart editChapterPart(long chapterPartId, String text, long pictureId) throws RequestException {
-		ChapterPart part = partRepository.getOne(chapterPartId);
+		ChapterPart part = partRepository.findOne(chapterPartId);
 		
 		if (part == null) {
 			throw new RequestException(Error.CHAPTER_PART_DOES_NOT_EXIST);
@@ -524,7 +545,7 @@ public class CourseService extends GenericService<Course, Integer> {
 		}
 		
 		if (pictureId != 0) {
-			Picture picture = pictureRepository.getOne(pictureId);
+			Picture picture = pictureRepository.findOne(pictureId);
 			
 			if (picture == null) {
 				throw new RequestException(Error.PICTURE_DOES_NOT_EXIST);
@@ -575,7 +596,22 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * 
 	 * */
 	public List<ChapterPart> getChapterPartList(long chapterId){
-		return partRepository.getChapterPartListByChapterId(chapterId);
+		
+		List<ChapterChapterPart> chapterChapterParts = chapterChapterPartRepository.getByChapterId(chapterId);
+		
+		if(chapterChapterParts!=null) {
+			
+			List<ChapterPart> chapterParts = new ArrayList<>();
+			
+			for(int i =0;i<chapterChapterParts.size();i++) {
+				chapterParts.add(chapterChapterParts.get(i).getChapterPart());
+			}
+			
+			return chapterParts;
+			
+		}
+		else
+			return null;
 	}
 	
 	/**

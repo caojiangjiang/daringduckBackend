@@ -95,11 +95,10 @@ public class CourseController extends GenericController {
 	@PUT
 	@Path("/{id: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response editCourse(@HeaderParam("Auth-Token") String token, @PathParam("id") int id, @QueryParam("name") String name)
+	public Response editCourse(@HeaderParam("Auth-Token") String token, @PathParam("id") int id, @QueryParam("name") String name,@QueryParam("pictureId") long pictureId)
 			throws RequestException {
 		secure(token, "admin");
-
-		Course course = courseService.editCourse(id, name);
+		Course course = courseService.editCourse(id, name,pictureId);
 		return Response.status(Response.Status.OK).entity(course).build();
 	}
 	
@@ -156,9 +155,9 @@ public class CourseController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response addChapterStep1(@HeaderParam("Auth-Token") String token, @PathParam("courseId") int courseId,
-			@FormParam("title") String title) throws RequestException {
+			@FormParam("title") String title,@FormParam("requiredOrNot")  String requiredOrNot) throws RequestException {
 		secure(token, "admin");
-		Chapter chapter = courseService.addChapterStep1(courseId, title);
+		Chapter chapter = courseService.addChapterStep1(courseId, title,requiredOrNot);
 		return Response.status(Response.Status.OK).entity(chapter).build();
 	}
 	
@@ -187,10 +186,10 @@ public class CourseController extends GenericController {
 	@Path("/{courseId: [0-9]*}/chapters/{chapterId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response editChapter(@HeaderParam("Auth-Token") String token, @QueryParam("chapterId") long chapterId,
-			@QueryParam("title") String title) throws RequestException {
+			@QueryParam("title") String title,@QueryParam("requiredOrNot") String requiredOrNot) throws RequestException {
 		secure(token, "admin");
 
-		Chapter chapter = courseService.editChapter(chapterId, title);
+		Chapter chapter = courseService.editChapter(chapterId, title,requiredOrNot);
 		return Response.status(Response.Status.OK).entity(chapter).build();
 	}
 
@@ -209,17 +208,17 @@ public class CourseController extends GenericController {
 		return Response.status(Response.Status.OK).build();
 	}
 	
-	/**
-	 * set a chapter required or not
-	 * */
-	@PUT
-	@Path("/chapterRequiredOrNot/{chapterId: [0-9]*}")
-	public Response chapterRequiredOrNot(@HeaderParam("Auth-Token") String token,@PathParam("chapterId") long chapterId,@FormParam("requiredOrNot") String requiredOrNot)
-			throws RequestException {
-		secure(token, "teacher");
-		Chapter chapter = courseService.chapterRequiredOrNot(chapterId,requiredOrNot);
-		return Response.status(Response.Status.OK).entity(chapter).build();
-	}
+//	/**
+//	 * set a chapter required or not
+//	 * */
+//	@PUT
+//	@Path("/chapterRequiredOrNot/{chapterId: [0-9]*}")
+//	public Response chapterRequiredOrNot(@HeaderParam("Auth-Token") String token,@PathParam("chapterId") long chapterId,@FormParam("requiredOrNot") String requiredOrNot)
+//			throws RequestException {
+//		secure(token, "teacher");
+//		Chapter chapter = courseService.chapterRequiredOrNot(chapterId,requiredOrNot);
+//		return Response.status(Response.Status.OK).entity(chapter).build();
+//	}
 	
 	////////////////////////////////////////////////////////////////////
 	// Chapter Part
@@ -297,7 +296,7 @@ public class CourseController extends GenericController {
 	@Path("/chapters/{chapterId: [0-9]*}/parts/{chapterPartId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response editChapterPart(@HeaderParam("Auth-Token") String token, @PathParam("chapterPartId") long chapterPartId,
-			@QueryParam("text") String text, @QueryParam("picture") long pictureId) throws RequestException {
+			@QueryParam("text") String text, @QueryParam("pictureId") long pictureId) throws RequestException {
 		secure(token, "admin");
 
 		ChapterPart part = courseService.editChapterPart(chapterPartId, text, pictureId);
