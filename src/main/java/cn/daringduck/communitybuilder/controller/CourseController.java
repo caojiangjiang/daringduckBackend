@@ -112,9 +112,7 @@ public class CourseController extends GenericController {
 	public Response deleteCourse(@HeaderParam("Auth-Token") String token, @PathParam("courseId") int courseId)
 			throws RequestException {
 		secure(token, "admin");
-
-		courseService.deleteCourse(courseId);
-		return Response.status(Response.Status.OK).build();
+		return Response.status(Response.Status.OK).entity(courseService.deleteCourse(courseId)).build();
 	}
 
 	////////////////////////////////////////////////////////////////////
@@ -185,10 +183,9 @@ public class CourseController extends GenericController {
 	@PUT
 	@Path("/{courseId: [0-9]*}/chapters/{chapterId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response editChapter(@HeaderParam("Auth-Token") String token, @QueryParam("chapterId") long chapterId,
+	public Response editChapter(@HeaderParam("Auth-Token") String token, @PathParam("chapterId") long chapterId,
 			@QueryParam("title") String title,@QueryParam("requiredOrNot") String requiredOrNot) throws RequestException {
 		secure(token, "admin");
-
 		Chapter chapter = courseService.editChapter(chapterId, title,requiredOrNot);
 		return Response.status(Response.Status.OK).entity(chapter).build();
 	}
@@ -203,9 +200,7 @@ public class CourseController extends GenericController {
 	public Response deleteChapter(@HeaderParam("Auth-Token") String token,@PathParam("courseId")int courseId, @PathParam("chapterId") long chapterId)
 			throws RequestException {
 		secure(token, "admin");
-
-		courseService.deleteChapter(courseId , chapterId);
-		return Response.status(Response.Status.OK).build();
+		return Response.status(Response.Status.OK).entity(courseService.deleteChapter(courseId , chapterId)).build();
 	}
 	
 //	/**
@@ -314,10 +309,7 @@ public class CourseController extends GenericController {
 	public Response deleteChapterPart(@HeaderParam("Auth-Token") String token,@PathParam("chapterId") long chapterId, @PathParam("chapterPartId") long partId)
 			throws RequestException {
 		secure(token, "admin");
-
-		courseService.deleteChapterPart(chapterId,partId);
-		
-		return Response.status(Response.Status.OK).build();
+		return Response.status(Response.Status.OK).entity(courseService.deleteChapterPart(chapterId,partId)).build();
 	}
 	
 }

@@ -6,12 +6,16 @@ import cn.daringduck.communitybuilder.model.ChapterPart;
 import cn.daringduck.communitybuilder.model.Course;
 import cn.daringduck.communitybuilder.model.CourseChapter;
 import cn.daringduck.communitybuilder.model.Picture;
+import cn.daringduck.communitybuilder.model.UserChapter;
+import cn.daringduck.communitybuilder.model.UserCourse;
 import cn.daringduck.communitybuilder.repository.ChapterChapterPartRepository;
 import cn.daringduck.communitybuilder.repository.ChapterPartRepository;
 import cn.daringduck.communitybuilder.repository.ChapterRepository;
 import cn.daringduck.communitybuilder.repository.CourseChapterRepository;
 import cn.daringduck.communitybuilder.repository.CourseRepository;
 import cn.daringduck.communitybuilder.repository.PictureRepository;
+import cn.daringduck.communitybuilder.repository.UserChapterRepository;
+import cn.daringduck.communitybuilder.repository.UserCourseRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +45,14 @@ public class CourseService extends GenericService<Course, Integer> {
 	private final PictureRepository pictureRepository;
 	private final CourseChapterRepository courseChapterRepository;
 	private final ChapterChapterPartRepository chapterChapterPartRepository;
+	private final UserCourseRepository userCourseRepository;
+	private final UserChapterRepository userChapterRepository;
 
 	@Autowired
 	public CourseService(CourseRepository courseRepository, ChapterRepository chapterRepository,
 			ChapterPartRepository partRepository, PictureRepository pictureRepository,
-			CourseChapterRepository courseChapterRepository,ChapterChapterPartRepository chapterChapterPartRepository) {
+			CourseChapterRepository courseChapterRepository,ChapterChapterPartRepository chapterChapterPartRepository,
+			UserCourseRepository userCourseRepository,UserChapterRepository userChapterRepository) {
 		super(courseRepository);
 		this.courseRepository = courseRepository;
 		this.chapterRepository = chapterRepository;
@@ -53,6 +60,8 @@ public class CourseService extends GenericService<Course, Integer> {
 		this.pictureRepository = pictureRepository;
 		this.courseChapterRepository = courseChapterRepository;
 		this.chapterChapterPartRepository = chapterChapterPartRepository;
+		this.userCourseRepository = userCourseRepository;
+		this.userChapterRepository = userChapterRepository;
 	}
 
 	////////////////////////////////////////////////////////////////////
@@ -212,15 +221,12 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * Delete a course
 	 * @param id
 	 */
-	public void deleteCourse(int id) {
-		
+	public boolean deleteCourse(int id) {		
 		//get courseChapters
 		List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(id);
 		
 		//delete courseChapters
 		courseChapterRepository.delete(courseChapters);
-		
-		System.out.println(courseChapters.size());
 		
 		for(int i=0;i<courseChapters.size();i++) {
 			
@@ -233,21 +239,25 @@ public class CourseService extends GenericService<Course, Integer> {
 			//delete chapterChapterParts
 			chapterChapterPartRepository.delete(chapterChapterParts);
 			
-			System.out.println(chapterChapterParts.size());
-			
 			//delete ChapterPart
-			for(int j=0;j<chapterChapterParts.size();j++) {
-				System.out.println(chapterChapterParts.get(j).getChapterPart());
-				
+			for(int j=0;j<chapterChapterParts.size();j++) {	
 				partRepository.delete(chapterChapterParts.get(j).getChapterPart());
 			}
+			
+			//delete User_chapter
+			userChapterRepository.deleteByChapterId(chapter.getId());
 			
 			//delete chapter
 			chapterRepository.delete(chapter);
 		}
 		
+		//delete userCourse
+		userCourseRepository.deleteByCourseId(id);
+		
 		//delete course
 		courseRepository.delete(id);
+		
+		return true;
 	}
 	
 	////////////////////////////////////////////////////////////////////
@@ -352,6 +362,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @throws RequestException
 	 */
 	public Chapter editChapter(long chapterId, String title,String requiredOrNot) throws RequestException {
+		
 		Chapter chapter = chapterRepository.findOne(chapterId);
 		
 		if (chapter == null) {
@@ -379,7 +390,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @param chapterId
 	 * @throws RequestException 
 	 */
-	public void deleteChapter(int courseId , long chapterId) throws RequestException {
+	public boolean deleteChapter(int courseId , long chapterId) throws RequestException {
 		//TODO: UNSAFE, FIRST NEED TO MANAGE LIST IN COURSE
 		//get courseChapters by courseId
 		List <CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId);
@@ -415,35 +426,9 @@ public class CourseService extends GenericService<Course, Integer> {
 		//delete chapter
 		chapterRepository.delete(chapterId);
 		
+		return true;
+		
 	}
-	
-	
-//	/**
-//	 * change the chapter required or not
-//	 * @param chapterId
-//	 * @param requiredOrNot
-//	 * @return
-//	 * @throws RequestException
-//	 */
-//	public Chapter chapterRequiredOrNot(long chapterId, String requiredOrNot) throws RequestException {
-//		Chapter chapter =chapterRepository.findOne(chapterId);
-//		
-//		if(chapter == null) {
-//			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
-//		}
-//		
-//		if(requiredOrNot.equalsIgnoreCase("true")){
-//			chapter.setRequiredOrNot(true);
-//		}
-//		
-//		if(requiredOrNot.equalsIgnoreCase("false")) {
-//			chapter.setRequiredOrNot(false);
-//		}
-//		
-//		chapterRepository.save(chapter);
-//		
-//		return chapter;
-//	}
 
 	////////////////////////////////////////////////////////////////////
 	// Chapter Part
@@ -563,7 +548,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * Delete a chapter part
 	 * @param partId
 	 */
-	public void deleteChapterPart(long chapterId ,long partId) {
+	public boolean deleteChapterPart(long chapterId ,long partId) {
 		//TODO: UNSAFE, FIRST NEED TO MANAGE LIST IN Chapter
 		
 		//partRepository.delete(partId);
@@ -585,6 +570,8 @@ public class CourseService extends GenericService<Course, Integer> {
 			}
 		}
 		partRepository.delete(partId);
+		
+		return true;
 	}
 	
 	/**
