@@ -107,6 +107,18 @@ public class UserController extends GenericController {
 		return Response.status(Response.Status.OK).entity(user).build();
 	}
 
+	  @GET
+	  @Path("/getUserByRoleId/{roleId: [0-9]*}")
+	  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	  public Response getUserByRoleId(@HeaderParam("Auth-Token") String token, @PathParam("roleId") int roleId) throws RequestException {
+	 
+	    secure(token, "admin");
+	 
+	    return Response.status(Response.Status.OK).entity(userService.getUserByRoleId(roleId)).build();
+	 
+	  }
+	 
+	
 	/**
 	 * Update the information for the user with id
 	 * 
@@ -413,4 +425,24 @@ public class UserController extends GenericController {
 	}
 	
 	
+	  ///////////
+	 
+	  // chapter //
+	 
+	  ///////////
+	 
+	  /**
+	   * get the course of a user
+	   *
+	   * @throws RequestException
+	   */
+	  @GET
+	  @Path("/getUserChapter/{userId: [0-9]*}/{courseId: [0-9]*}")
+	  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	  public Response getUserChapter(@PathParam("userId") long userId,@PathParam("courseId") int courseId) throws RequestException
+	  {
+	    String userChapter = userService.getUserChapter(userId,courseId);
+	    return Response.status(Response.Status.OK).entity(userChapter).build();
+	  }
 }

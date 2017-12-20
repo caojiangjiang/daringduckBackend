@@ -20,6 +20,6 @@ public interface CourseChapterRepository extends JpaRepository<CourseChapter, Lo
 	
 	@Modifying
 	@Query(value = "delete from CourseChapter courseChapter where courseChapter.chapter.id = ?1")
-	int deleteChapterFromCourseChapterByChapterId(int chapterId);
+	int deleteChapterFromCourseChapterByChapterId(long chapterId); 
 
 }

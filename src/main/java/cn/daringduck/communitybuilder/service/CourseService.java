@@ -244,7 +244,7 @@ public class CourseService extends GenericService<Course, Integer> {
 				partRepository.delete(chapterChapterParts.get(j).getChapterPart());
 			}
 			
-			//delete User_chapter
+			//delete userChapter
 			userChapterRepository.deleteByChapterId(chapter.getId());
 			
 			//delete chapter
@@ -308,13 +308,13 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * */
 	public Chapter addChapterStep1(int courseId, String title,String requiredOrNot) throws RequestException {
 		
-		Chapter chapter = new Chapter(title,courseId);
+		Chapter chapter;
 		
 		if(requiredOrNot.equalsIgnoreCase("true")) {
-			chapter.setRequiredOrNot(true);
+			chapter = new Chapter(title,courseId,true);
 		}
 		else {
-			chapter.setRequiredOrNot(false);
+			chapter = new Chapter(title,courseId,false);
 		}
 
 		chapterRepository.save(chapter);
@@ -422,6 +422,12 @@ public class CourseService extends GenericService<Course, Integer> {
 		}
 		//delete the relation between chapter and chapterPart
 		chapterChapterPartRepository.deleteChapterPartFromChapterChapterPartByChapterId(chapterId);
+		
+	    //delete user chapter 
+	    userChapterRepository.deleteByChapterId(chapterId); 
+	     
+	    //delete chapterPart 
+	    partRepository.deleteByChapterId(chapterId); 
 		
 		//delete chapter
 		chapterRepository.delete(chapterId);

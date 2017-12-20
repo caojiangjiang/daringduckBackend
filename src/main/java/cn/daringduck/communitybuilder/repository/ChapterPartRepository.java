@@ -15,4 +15,6 @@ public interface ChapterPartRepository extends JpaRepository<ChapterPart, Long>{
 	
 	@Query(value = "select chapterPart from ChapterPart chapterPart where chapterPart.id = ?1")
 	public ChapterPart getChapterPartById(long chapterPartId);
+	
+	public int deleteByChapterId(long chapterId); 
 }

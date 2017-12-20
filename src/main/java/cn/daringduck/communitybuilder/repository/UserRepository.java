@@ -1,5 +1,7 @@
 package cn.daringduck.communitybuilder.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Page<User> getUsersNotInClass(@Param("classid") int classId, Pageable pageable);
 
 	User findByUsernameIgnoreCase(String username);
+	
+	List<User> getByRoleId(int roleId); 
 	
 }

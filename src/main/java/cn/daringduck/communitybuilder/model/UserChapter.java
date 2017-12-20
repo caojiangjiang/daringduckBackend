@@ -92,5 +92,13 @@ public class UserChapter {
 	public void setScore(int score) {
 		this.score = score;
 	}
+	
+	public Chapter getChapter() { 
+		return chapter; 
+	} 
+		   
+	public void setChapter(Chapter chapter) { 
+		this.chapter = chapter; 
+	} 
 
 }

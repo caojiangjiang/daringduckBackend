@@ -171,7 +171,7 @@ public class CourseController extends GenericController {
 	public Response addChapterStep2(@HeaderParam("Auth-Token") String token, @PathParam("courseId") int courseId,
 			@FormParam("lists") String lists) throws RequestException {
 		secure(token, "admin");
-		Boolean result = courseService.addChapterStep2(courseId, lists);
+		boolean result = courseService.addChapterStep2(courseId, lists);
 		return Response.status(Response.Status.OK).entity(result).build();
 	}
 	

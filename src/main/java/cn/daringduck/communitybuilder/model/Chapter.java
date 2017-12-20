@@ -33,10 +33,11 @@ public class Chapter{
 	
 	public Chapter() {}
 	
-	public Chapter(String title,int courseId) {
-		this.title = title;
-		this.courseId= courseId;
-	}
+	public Chapter(String title,int courseId,boolean requiredOrNot) { 
+		this.title = title; 
+		this.courseId= courseId; 
+		this.requiredOrNot = requiredOrNot; 
+	} 
 	
 	public long getId() { return id;}
 	
