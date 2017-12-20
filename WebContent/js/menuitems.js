@@ -165,16 +165,16 @@ items = {
 			name : 'title',
 			type : 'text'
 		} ,{
-			name : 'RequiredOrNot',
+			name : 'requiredOrNot',
 			type : 'select',
-			list : 'RequiredOrNot',
+			//list : 'RequiredOrNot',
 			//optionText : '%name% (%location%)',
 			options : [ {
 				name : 'true',
-				value : true
+				value : 'true'
 			},{
 				name : 'false',
-				value : false
+				value :'false'
 			}  ]
 		}],
 		buttons : [  
@@ -183,6 +183,11 @@ items = {
 			action : "showEditChapterPart(%courseId%,%id%)",
 			icon : "check",
 			text : "Show"
+		},{
+			color : 'primary',
+			action : "addChapter(%courseId%,%id%)",
+			icon : "edit",
+			text : "Add"
 		}
 	]	
 	},

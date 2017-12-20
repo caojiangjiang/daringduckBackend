@@ -273,13 +273,116 @@ CommunityBuilder.prototype.uploadImage = function(data, done, fail) {
  * @param fail
  *            Function executed when request failed
  */
-CommunityBuilder.prototype.getChapterPart = function(courseId,chapterId,resource, done, fail) {
+CommunityBuilder.prototype.getChapterPartList = function(chapterId,resource, done, fail) {
 	$.ajax({
 		type : "GET",
-		url : "api/" + resource + "/" + courseId+ "/chapters"+ "/" + chapterId,
+		url : "api/" + resource + "/getChapterPartList/" + chapterId,
 		headers : {
 			'auth-token' : this.token
 		},
+		error : fail,
+		success : done
+	});
+}
+
+/**
+ * Add a chapter to the server
+ * 
+ * @param data
+ *            list of data changes seperated by & for example:
+ *            title=hello&requireOrNot=world
+ * @param resource
+ *            The URL to the list of resources
+ * @param done
+ *            Function executed when request was successful
+ * @param fail
+ *            Function executed when request failed
+ */
+CommunityBuilder.prototype.addChapterStep1 = function(id, data, resource, done, fail) {
+	$.ajax({
+		type : "POST",
+		url : "api/" + resource+ "/addChapterStep1/" + id,
+		headers : {
+			'auth-token' : this.token
+		},
+		data : data,
+		error : fail,
+		success : done
+	});
+}
+CommunityBuilder.prototype.addChapterStep2 = function(id, data, resource, done, fail) {
+	$.ajax({
+		type : "POST",
+		url : "api/" + resource+ "/addChapterStep2/" + id,
+		headers : {
+			'auth-token' : this.token
+		},
+		data : data,
+		error : fail,
+		success : done
+	});
+}
+
+/**
+ * Edit a single chapterpart on the server
+ * 
+ * @param id
+ *            ID of the item
+ * @param data
+ *            list of data changes seperated by & for example:
+ * @param resource
+ *            The URL to the list of resources
+ * @param done
+ *            Function executed when request was successful
+ * @param fail
+ *            Function executed when request failed
+ */
+CommunityBuilder.prototype.changeChapterPart = function(chapterId,chapterPartId, data, resource, done, fail) {
+	$.ajax({
+		type : "PUT",
+		url :"api/" + resource+ "/chapters/"+chapterId+"/parts/"+chapterPartId+"?" + data,
+		headers : {
+			'auth-token' : this.token
+		},
+		data : data,
+		error : fail,
+		success : done
+	});
+}
+
+/**
+ * Add a chapter part to the server
+ * 
+ * @param data
+ *            list of data changes seperated by & for example:
+ *            title=hello&requireOrNot=world
+ * @param resource
+ *            The URL to the list of resources
+ * @param done
+ *            Function executed when request was successful
+ * @param fail
+ *            Function executed when request failed
+ */
+CommunityBuilder.prototype.addChapterPartStep1 = function(id, data, resource, done, fail) {
+	$.ajax({
+		type : "POST",
+		url : "api/" + resource+ "/addChapterPartStep1/" + id,
+		headers : {
+			'auth-token' : this.token
+		},
+		data : data,
+		error : fail,
+		success : done
+	});
+}
+CommunityBuilder.prototype.addChapterPartStep2 = function(id, data, resource, done, fail) {
+	$.ajax({
+		type : "POST",
+		url : "api/" + resource+ "/addChapterPartStep2/" + id,
+		headers : {
+			'auth-token' : this.token
+		},
+		data : data,
 		error : fail,
 		success : done
 	});
