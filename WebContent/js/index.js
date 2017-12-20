@@ -406,6 +406,10 @@ function showAdd(pageInfo, objectId, props) {
 			input.attr('name', field.name);
 			input.attr('placeholder', field.name.capitalizeFirstLetter());
 			input.val(val);
+			/*if(field.disabled=="disabled"){
+				input.attr('disabled','disabled');
+				input.val(1);
+			}*/
 			return input;
 		}
 	}
@@ -511,8 +515,17 @@ function showAdd(pageInfo, objectId, props) {
  */
 function add(pageInfo, props) {
 	var data = $("form#add").serialize();
-	communityBuilder.add(data, pageInfo.path.replaceWildcards(props),
-			function() {
+	var path;
+	console.log(pageInfo.path.replaceWildcards(props));
+	/*if add user course, need gengerate a new path*/
+	if(pageInfo.path.replaceWildcards(props)=="users/getUserCourse/1/"){
+		console.log("change path");
+		path="users/addUserCourse";
+	}
+	else{
+		path=pageInfo.path.replaceWildcards(props);
+	}
+	communityBuilder.add(data,path,function() {
 				loadPage(pageInfo, currentPage, props)
 			}, fail);
 }

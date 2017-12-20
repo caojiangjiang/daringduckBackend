@@ -161,6 +161,7 @@ items = {
 		name : "chapters",
 		nameSingular : "chapter",
 		editable: true,
+		addable:false,
 		fields : [ { 
 			name : 'title',
 			type : 'text'
@@ -216,21 +217,6 @@ items = {
 				value : 'PRIVATE'
 			} ]
 		} ],
-		/*buttons : [ {
-			condition : 'hidden',
-			wrong : {
-				color : 'danger',
-				action : "hideMoment(%id%)",
-				icon : "close",
-				text : "Hide"
-			},
-			right : {
-				color : 'success',
-				action : "showEditMoment(%id%)",
-				icon : "check",
-				text : "Show"
-			}
-		} ]*/
 		buttons : [  {
 				color : 'danger',
 				action : "hideMoment(%id%)",
@@ -242,6 +228,77 @@ items = {
 				action : "showEditMoment(%id%)",
 				icon : "check",
 				text : "Show"
+			}
+		]
+	},
+	userCourses : {
+		//path : "users/%userId%/courses",
+		path : "users/getUserCourse/%userId%/",
+		name : "userCourses",
+		nameSingular : "courses",
+		editable : true,
+		fields : [ {
+			name : 'userId',
+			type : 'text',
+			disabled:'disabled',
+			value:'%id%'
+			},{
+			name : 'courseId',
+			type : 'select',
+			options : [ {
+				name : 'course1',
+				value : '1'
+			}, {
+				name : 'course2',
+				value : '2'
+			}, {
+				name : 'course3',
+				value : '3'
+			}, {
+				name : 'course4',
+				value : '4'
+			}]},
+			{
+				name : 'teacherId',
+				type : 'text'
+			},
+			/*{
+				name : 'date',
+				type : 'text'
+			},*/{
+				name : 'passOrNot',
+				type : 'text'
+			}],
+		buttons : [  
+			{
+				color : 'success',
+				action : "loadPage(items.userChapters, 0, {'userId': %userId%,'courseId':%id%})",
+				icon : "check",
+				text : "Chapter"
+			}
+		]
+	},
+	userChapters : {
+		path : "users/getUserCourse/%userId%/",
+		name : "userCourses",
+		nameSingular : "courses",
+		editable : true,
+		fields : [ {
+				name : 'date',
+				type : 'text'
+			},{
+				name : 'teacher',
+				type : 'text'
+			},{
+				name : 'status',
+				type : 'text'
+			} ],
+		buttons : [  
+			{
+				color : 'success',
+				action : "loadPage(items.userChapters, 0, {'userId': %userId%,'courseId':%id%})",
+				icon : "check",
+				text : "Chapter"
 			}
 		]
 	},
