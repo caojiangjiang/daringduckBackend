@@ -122,16 +122,6 @@ public class CourseService extends GenericService<Course, Integer> {
 					jsonObject2.put("picturePosition","");
 				}
 
-				
-				List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(course.getId());
-				
-				if(courseChapters!=null) {
-					List<Chapter> chapters = new ArrayList<>();
-					for(int j=0;j<courseChapters.size();j++) {
-						chapters.add(courseChapters.get(j).getChapter());
-					}
-					jsonObject2.put("chapters", chapters);
-				}
 				jsonObject1.put(i+"", jsonObject2);
 			}
 			//change json into String

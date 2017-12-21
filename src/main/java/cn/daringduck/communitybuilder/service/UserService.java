@@ -369,7 +369,7 @@ public class UserService extends GenericService<User, Long> {
 	 * @throws RequestException 
 	 * 
 	 * */
-	public boolean addUserCourse(long userId,int courseId,long teacherId,boolean passedOrNot) throws RequestException {
+	public boolean addUserCourse(long userId,int courseId,long teacherId,boolean passedOrNot,long date) throws RequestException {
 		
 		UserCourse userCourse1 = userCourseRepository.findByUserIdAndCourseId(userId,courseId);
 		
@@ -393,23 +393,16 @@ public class UserService extends GenericService<User, Long> {
 			
 			User teacher = userRepository.findOne(teacherId);
 			
-			if(teacher == null) {
-				throw new RequestException(Error.USER_DOES_NOT_EXIST);
-			}
-			
-			//Init date
-			long date = 0;
-			
 			UserCourse userCourse = new UserCourse(user,course,teacher,date,passedOrNot);
 			
 			if(userCourseRepository.save(userCourse)!=null)
 				result = true;
 			
-		      List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId); 
+		    List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId); 
 		       
-		      for(int i=0;i<courseChapters.size();i++) { 
-		        addUserChapter(userId,courseChapters.get(i).getChapter().getId(),0,0,false); 
-		      } 
+		    for(int i=0;i<courseChapters.size();i++) { 
+		      addUserChapter(userId,courseChapters.get(i).getChapter().getId(),0,0,false); 
+		    } 
 			
 			return result;
 		}
@@ -425,11 +418,16 @@ public class UserService extends GenericService<User, Long> {
 	 * @param status
 	 * 
 	 * @return UserCourse
+	 * @throws RequestException 
 	 * */
-	public boolean changeUserCourse(long userId,int courseId,long teacherId,String status) {
+	public boolean changeUserCourse(long userId,int courseId,long teacherId,String status,long date) throws RequestException {
 		boolean result = false;
 		
 		UserCourse userCourse = userCourseRepository.findByUserIdAndCourseId(userId,courseId);
+		
+		if(userCourse == null) {
+			throw new RequestException(Error.USERCOURSE_DOES_NOT_EXIS);
+		}
 		
 		User teacher = userRepository.findOne(teacherId);
 	
@@ -439,13 +437,12 @@ public class UserService extends GenericService<User, Long> {
 		
 		if(status.equalsIgnoreCase("true")) {
 			userCourse.setPassedOrNot(true);
-			//SET DATE
-			long date = new Date().getTime();
-			userCourse.setDate(date);
 		}
 		if(status.equalsIgnoreCase("false")) {
 			userCourse.setPassedOrNot(false);
 		}
+		
+		userCourse.setDate(date);
 		
 		if(userCourseRepository.save(userCourse)!=null)
 			result = true;
@@ -464,7 +461,7 @@ public class UserService extends GenericService<User, Long> {
 	 * 
 	 * @return UserCourse
 	 * */
-	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String status) {
+	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String status,long date) {
 		boolean result = false;
 		
 		UserChapter userChapter = userChapterRepository.findByUserIdAndChapterId(userId,chapterId);
@@ -477,11 +474,11 @@ public class UserService extends GenericService<User, Long> {
 		
 		if(status.equalsIgnoreCase("true")) {
 			userChapter.setPassOrNot(true);
-			
-			//SET DATE
-			long date = new Date().getTime();
-			userChapter.setDate(date);
 		}
+		
+		userChapter.setDate(date);
+		
+		
 		if(status.equalsIgnoreCase("false")) {
 			userChapter.setPassOrNot(false);
 		}

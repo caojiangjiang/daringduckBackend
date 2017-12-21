@@ -19,7 +19,6 @@ import javax.ws.rs.core.Response;
 import org.springframework.data.domain.Page;
 
 import java.rmi.AccessException;
-import java.util.List;
 
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Moment;
@@ -63,6 +62,7 @@ public class UserController extends GenericController {
 		Page<User> users = userService.getPage(page);
 		return Response.status(Response.Status.OK).entity(users).build();
 	}
+ 
 
 	/**
 	 * Create a new user
@@ -323,40 +323,22 @@ public class UserController extends GenericController {
 	///////////
 	
 	/**
-	 * Get the friends of the logged in user
+	 *add user course
 	 * 
 	 * @throws RequestException
 	 */
 	@POST
 	@Path("/addUserCourse")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response addUserCourse(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,@FormParam("courseId") int courseId,@FormParam("teacherId")long teacherId,@FormParam("passOrNot") boolean passOrNot) throws RequestException {
+	public Response addUserCourse(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,@FormParam("courseId") int courseId,
+			@FormParam("teacherId")long teacherId,@FormParam("passOrNot") boolean passOrNot,@FormParam("date") long date) throws RequestException {
 		// Get the user data using the entity manager
 		secure(token, "*");
 
-		boolean userCourse = userService.addUserCourse(userId,courseId,teacherId,passOrNot);
+		boolean userCourse = userService.addUserCourse(userId,courseId,teacherId,passOrNot,date);
 
 		// Return the user data to the RESTful service
 		return Response.status(Response.Status.OK).entity(userCourse).build();
-	}
-	
-	
-	/**
-	 * Get the friends of the logged in user
-	 * 
-	 * @throws RequestException
-	 */
-	@POST
-	@Path("/addUserChapter")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response addUserChapter(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,@FormParam("chapterId") long chapterId,@FormParam("teacherId")long teacherId,@FormParam("score") int score ,@FormParam("passOrNot") boolean passOrNot) throws RequestException {
-		// Get the user data using the entity manager
-		secure(token, "*");
-
-		boolean userChapter = userService.addUserChapter(userId,chapterId,teacherId,score,passOrNot);
-
-		// Return the user data to the RESTful service
-		return Response.status(Response.Status.OK).entity(userChapter).build();
 	}
 	
 	
@@ -370,30 +352,17 @@ public class UserController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response changeUserCourse(@HeaderParam("Auth-Token") String token, @FormParam("userId") long userId,
-			@FormParam("courseId") int courseId, @FormParam("teacherId") long teacherId ,@FormParam("status") String status) throws RequestException {
+			@FormParam("courseId") int courseId, @FormParam("teacherId") long teacherId ,@FormParam("status") String status,
+			@FormParam("date") long date) throws RequestException {
 		secure(token, "admin");
-		boolean userCourse = userService.changeUserCourse(userId, courseId,teacherId,status);
+		boolean userCourse = userService.changeUserCourse(userId, courseId,teacherId,status,date);
 		return Response.status(Response.Status.OK).entity(userCourse).build();
 	}
 	
-	/**
-	 * change the status of a user in a chapter
-	 * 
-	 * @throws RequestException
-	 */
-	@PUT
-	@Path("/changeUserChapter")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response changeUserChapter(@HeaderParam("Auth-Token") String token, @FormParam("userId") long userId,
-			@FormParam("chapterId") long chapterId, @FormParam("teacherId") long teacherId,@FormParam("score") int score ,@FormParam("status") String status) throws RequestException {
-		secure(token, "admin");
-		boolean userChapter = userService.changeUserChapter(userId, chapterId,teacherId,score,status);
-		return Response.status(Response.Status.OK).entity(userChapter).build();
-	}
+
 	
 	/**
-	 * get the course of a user
+	 * get the courses of a user
 	 * 
 	 * @throws RequestException
 	 */
@@ -430,9 +399,27 @@ public class UserController extends GenericController {
 	  // chapter //
 	 
 	  ///////////
+	
+	/**
+	 * Get the friends of the logged in user
+	 * 
+	 * @throws RequestException
+	 */
+	@POST
+	@Path("/addUserChapter")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response addUserChapter(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,@FormParam("chapterId") long chapterId,@FormParam("teacherId")long teacherId,@FormParam("score") int score ,@FormParam("passOrNot") boolean passOrNot) throws RequestException {
+		// Get the user data using the entity manager
+		secure(token, "*");
+
+		boolean userChapter = userService.addUserChapter(userId,chapterId,teacherId,score,passOrNot);
+
+		// Return the user data to the RESTful service
+		return Response.status(Response.Status.OK).entity(userChapter).build();
+	}
 	 
 	  /**
-	   * get the course of a user
+	   * get the chapters of a user
 	   *
 	   * @throws RequestException
 	   */
@@ -445,4 +432,21 @@ public class UserController extends GenericController {
 	    String userChapter = userService.getUserChapter(userId,courseId);
 	    return Response.status(Response.Status.OK).entity(userChapter).build();
 	  }
+	  
+		/**
+		 * change the status of a user in a chapter
+		 * 
+		 * @throws RequestException
+		 */
+		@PUT
+		@Path("/changeUserChapter")
+		@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+		@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+		public Response changeUserChapter(@HeaderParam("Auth-Token") String token, @FormParam("userId") long userId,
+				@FormParam("chapterId") long chapterId, @FormParam("teacherId") long teacherId,@FormParam("score") int score ,
+				@FormParam("status") String status,@FormParam("date") long date) throws RequestException {
+			secure(token, "admin");
+			boolean userChapter = userService.changeUserChapter(userId, chapterId,teacherId,score,status,date);
+			return Response.status(Response.Status.OK).entity(userChapter).build();
+		}
 }

@@ -277,7 +277,7 @@ public class CourseController extends GenericController {
 			@FormParam("lists") String lists) throws RequestException {
 		secure(token, "admin");
 
-		Boolean result = courseService.addChapterPartStep2(chapterId, lists);
+		boolean result = courseService.addChapterPartStep2(chapterId, lists);
 		return Response.status(Response.Status.OK).entity(result).build();
 	}
 	

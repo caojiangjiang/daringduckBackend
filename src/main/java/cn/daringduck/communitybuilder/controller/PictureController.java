@@ -55,7 +55,7 @@ public class PictureController extends GenericController{
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataBodyPart body,
 		      @FormDataParam("id") long id, 
-		      @FormDataParam("type") String type) throws RequestException { 
+		      @FormDataParam("universalField") String universalField) throws RequestException { 
 
 		secure(token, "*");
 		
@@ -73,7 +73,7 @@ public class PictureController extends GenericController{
 		
 		String imageName = UUID.randomUUID().toString() + "." + subtype;
 		//String uploadedFileLocation = context.getRealPath("/images/"+imageName);
-	    String pathName = "/root/img/"+id+"/"+type; 
+	    String pathName = "/root/img/users/"+id+"/"+universalField; 
 		//String pathName = "D:\\dms\\img\\"+id;
 		
 		File file = new File(pathName);
