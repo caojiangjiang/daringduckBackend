@@ -161,7 +161,7 @@ items = {
 		name : "chapters",
 		nameSingular : "chapter",
 		editable: true,
-		addable:false,
+		//addable:false,
 		fields : [ { 
 			name : 'title',
 			type : 'text'
@@ -171,10 +171,22 @@ items = {
 			//list : 'RequiredOrNot',
 			//optionText : '%name% (%location%)',
 			options : [ {
-				name : 'true',
+				name : 'yes',
 				value : 'true'
 			},{
-				name : 'false',
+				name : 'no',
+				value :'false'
+			}  ]
+		},{
+			name : 'test',
+			type : 'radio',
+			//list : 'RequiredOrNot',
+			//optionText : '%name% (%location%)',
+			options : [ {
+				name : 'yes',
+				value : 'true'
+			},{
+				name : 'no',
 				value :'false'
 			}  ]
 		}],
@@ -225,7 +237,7 @@ items = {
 			},
 			{
 				color : 'success',
-				action : "showEditMoment(%id%)",
+				action : "showEditMoment(%id%,%userId%)",
 				icon : "check",
 				text : "Show"
 			}
@@ -237,12 +249,12 @@ items = {
 		name : "userCourses",
 		nameSingular : "courses",
 		editable : true,
-		fields : [ {
+		fields : [ /*{
 			name : 'userId',
 			type : 'text',
 			disabled:'disabled',
-			value:'%id%'
-			},{
+			value:'%userId%'
+			},*/{
 			name : 'courseId',
 			type : 'select',
 			options : [ {
@@ -272,35 +284,55 @@ items = {
 		buttons : [  
 			{
 				color : 'success',
-				action : "loadPage(items.userChapters, 0, {'userId': %userId%,'courseId':%id%})",
+				action : "loadPage(items.userChapters, 0, {'userId': %userId%,'courseId':%courseId%})",
 				icon : "check",
 				text : "Chapter"
 			}
 		]
 	},
 	userChapters : {
-		path : "users/getUserCourse/%userId%/",
-		name : "userCourses",
-		nameSingular : "courses",
+		path : "users/getUserChapter/%userId%/%courseId%",
+		name : "userChapters",
+		nameSingular : "chapters",
 		editable : true,
+		addable:false,
 		fields : [ {
-				name : 'date',
+			name:'date',
+			type:'date'
+		},{
+			name:'score',
+			type:'text'
+		},{
+			name : 'courseId',
+			type : 'select',
+			options : [ {
+				name : 'course1',
+				value : '1'
+			}, {
+				name : 'course2',
+				value : '2'
+			}, {
+				name : 'course3',
+				value : '3'
+			}, {
+				name : 'course4',
+				value : '4'
+			}]},
+			{
+				name : 'teacherId',
 				type : 'text'
 			},{
-				name : 'teacher',
+				name : 'passOrNot',
 				type : 'text'
-			},{
-				name : 'status',
-				type : 'text'
-			} ],
-		buttons : [  
+			} ]
+		/*buttons : [  
 			{
 				color : 'success',
 				action : "loadPage(items.userChapters, 0, {'userId': %userId%,'courseId':%id%})",
 				icon : "check",
 				text : "Chapter"
 			}
-		]
+		]*/
 	},
 	classMembers : {
 		path : "classes/%classId%/members",

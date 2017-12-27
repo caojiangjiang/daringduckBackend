@@ -120,7 +120,7 @@ function generateTable(pageInfo, page, props) {
 		var keys = [];
 		for ( var j in data[0]) {
 			var sub_key = j;
-			if ($.inArray(sub_key, [ "email", "members","password","picturePosition","chapters","courseId"]) == -1) {
+			if ($.inArray(sub_key, [ "email", "members","password","picturePosition","chapters"]) == -1) {
 				keys.push(sub_key);
 			}
 		}
@@ -152,6 +152,9 @@ function generateTable(pageInfo, page, props) {
 			var val = row[column];
 			if (column == 'gender')
 				val = val ? 'Female' : 'Male';
+			if(column=='requiredOrNot'){
+				val=(val==true)?'yes':'no';
+			}
 			if(column=='picture'){
 				console.log(val);
 				//val='picture';
@@ -159,6 +162,17 @@ function generateTable(pageInfo, page, props) {
 				{
 					/*val='<img src="http://localhost:8080/daringduckBackend/api/pictures/'+val.id+'" />'*/
 					val='<img src="http://localhost:8080/daringduckBackend/api/pictures/'+val.id+'" style="width:40px;height:40px;border-radius:50%;"/>'
+				}
+				else
+					val='no picture';
+			}
+			if(column=='pictureId'){
+				console.log(val);
+				//val='picture';
+				if(val!='')
+				{
+					//val='<img src="http://localhost:8080/daringduckBackend/api/pictures/'+val.id+'" />'
+					val='<img src="http://localhost:8080/daringduckBackend/api/pictures/'+val+'" style="width:40px;height:40px;border-radius:50%;"/>'
 				}
 				else
 					val='no picture';
@@ -392,6 +406,8 @@ function loadPage(pageInfo, page, props) {
 
 function showAdd(pageInfo, objectId, props) {
 	// Generates an input element
+	var tempUserId;//to be a para of uploadImage
+	var userFlag=false;
 	var generateInput = function(field, type, val){
 		var input = $('<input class="form-control">');
 		if(type=="file"){
@@ -408,10 +424,23 @@ function showAdd(pageInfo, objectId, props) {
 			input.val(val);
 			/*if(field.disabled=="disabled"){
 				input.attr('disabled','disabled');
-				input.val(1);
+				console.log(field.value.replaceWildcards(props));
 			}*/
 			return input;
 		}
+	}
+	
+	var generateDate = function(field, type, val){
+		var input = $('<div class="control-group">'
+						+'<div class="controls date form_datetime" data-date="2010-01-01T00:00:00Z"  data-link-field="date_val">'
+							+'<input class="form-control" size="16" type="text" value="" style="border-radius: 0 5px 5px 0;" readonly>'
+							+'<span style="position:absolute;left: 50px;top: 20px;" class="add-on"><i class="icon-remove"></i></span>'
+							+'<span style="position:absolute;left: 50px;top: 20px;" class="add-on"><i class="icon-th"></i></span>'
+						+'</div>'
+						+'<input name="date" type="hidden" id="date_val" value="" />'
+					+'</div>');
+		return input;
+
 	}
 	
 	// Generates a select element
@@ -444,6 +473,12 @@ function showAdd(pageInfo, objectId, props) {
 	
 	// Generates the page
 	var addFields = function(object) {
+		console.log(object);
+		if(pageInfo.name=="users"){
+			console.log(object.id);
+			tempUserId=object.id;
+			userFlag=true;
+		}
 		var fields = pageInfo.fields;
 		$(".objectname").html(pageInfo.nameSingular.capitalizeFirstLetter());
 
@@ -479,6 +514,9 @@ function showAdd(pageInfo, objectId, props) {
 			case 'select':
 				inputGroup.append(generateSelect(field, object != undefined ? object[field.name] : -1));
 				break;
+			case 'date':
+				inputGroup.append(generateDate(field, 'date', ''));
+				break;
 			}
 
 			$("#add .fields").append(inputGroup);
@@ -486,6 +524,19 @@ function showAdd(pageInfo, objectId, props) {
 			
 			if (field.list)
 				fillSelect(field.list, field.optionText, object != undefined && object[field.name] != undefined ? object[field.name].id : 0);
+			
+			/*call the datepicker*/
+			$('.form_datetime').datetimepicker({
+		        //language:  'fr',
+		        format: 'yyyy-mm-dd hh:ii',
+		        weekStart: 1,
+		        todayBtn:  1,
+				autoclose: 1,
+				todayHighlight: 1,
+				startView: 2,
+				forceParse: 0,
+		        showMeridian: 1
+		    });
 		}
 	}
 
@@ -499,7 +550,10 @@ function showAdd(pageInfo, objectId, props) {
 		addFields();
 	}
 	$(document).on("click","input[type='file']",function(e){
-		$(this).after('<input type="button" onclick="uploadUserImage()" value="UploadFile" class="btn btn-primary upload-btn"/>');
+		if(userFlag==true)
+			$(this).after('<input type="button" onclick="uploadUserImage('+tempUserId+')" value="UploadFile" class="btn btn-primary upload-btn"/>');
+		else
+			$(this).after('<input type="button" onclick="uploadCourseImage()" value="UploadFile" class="btn btn-primary upload-btn"/>');
 	})
 	
 	
@@ -518,9 +572,12 @@ function add(pageInfo, props) {
 	var path;
 	console.log(pageInfo.path.replaceWildcards(props));
 	/*if add user course, need gengerate a new path*/
-	if(pageInfo.path.replaceWildcards(props)=="users/getUserCourse/1/"){
+	if(pageInfo.path.replaceWildcards(props).indexOf("users/getUserCourse")>=0){
 		console.log("change path");
 		path="users/addUserCourse";
+		/*add userId to data*/
+		var userId=pageInfo.path.replaceWildcards(props).substring(20,pageInfo.path.replaceWildcards(props).length-1);
+		data=data+"&userId="+userId;
 	}
 	else{
 		path=pageInfo.path.replaceWildcards(props);
@@ -645,7 +702,7 @@ function removeMember(classId, memberId) {
 // Other functions -- UNUSED / TODO
 //
 
-function showEditMoment(momentId) {
+function showEditMoment(momentId,userId) {
 	$(".main")
 			.load(
 					"pages/editmoment.html",
@@ -683,6 +740,7 @@ function showEditMoment(momentId) {
 													+'</div>'
 													+'<div class="input-group btn-bar">'
 														+'<input type="button" onclick="editStyle('
+														+userId+','
 														+momentId+','
 														+momentPart.id+','
 														+(index+1)+','
@@ -712,7 +770,7 @@ function showEditMoment(momentId) {
 								+'<div class="input-group">'
 									+'<span class="input-group-addon">Picture</span>'
 									+'<input type="file" class="form-control post-file" name="file" />'
-									+'<input type="button" onclick="uploadImage('+(total)+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
+									+'<input type="button" onclick="uploadImage('+(total)+','+(userId)+',\'moment\''+(momentId)+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
 									+'<span id="picId'+(total)+'" style="display:none;"><span>'
 								+'</div>'
 								+'<div class="input-group btn-bar">'
@@ -732,8 +790,8 @@ function showEditMoment(momentId) {
 }
 
 /*used to add moment part*/
-function addMomentPart(momentId,total){
-	var text = $("#text_content").val();
+//function addMomentPart(momentId,total){
+/*	var text = $("#text_content").val();
 	var part=total;
 	var pictureId=$("#picId"+total).val();
 	console.log(pictureId);
@@ -743,7 +801,7 @@ function addMomentPart(momentId,total){
 		console.log("jiazaiyemian");
 				showEditMoment(momentId);
 			}, fail);
-}
+}*/
 /*used to change moment part*/
 function changeMomentPart(momentId,momentPartId,index){
 	console.log("index="+index);
@@ -760,32 +818,56 @@ function changeMomentPart(momentId,momentPartId,index){
 			}, fail);
 }
 
-function uploadImage(index) {
+function uploadImage(index,userId,type,typeId) {
 	console.log("Add Picture");
 
 	var form = new FormData();
 	form.append('file',$('#paragraph'+index+' .post-file')[0].files[0]);
+	form.append('id',userId);
+	form.append('universalField',type+'_'+typeId);
 	
 	var done = function(data) {
 		console.log(data);
+		alert("upload successfully");
 		$("#picId"+index).val(data.id);	}
+	
 
 	communityBuilder.uploadImage(form, done, fail);
-
 }
-function uploadUserImage($this) {
+
+function uploadUserImage(userId) {
 	console.log("Add User Picture");
 
 	var form = new FormData();
 	form.append('file',$('input[type="file"]')[0].files[0]);
+	form.append('id',userId);
+	form.append('universalField','');
 	
 	var done = function(data) {
 		console.log(data);
-		$('input[type="file"]').after('<input type="text" name="pictureId" style="visibility:hidden;position: absolute;" value="'+data.id+'">')
-		}
+		alert("upload successfully");
+		$('input[type="file"]').after('<input type="text" name="pictureId" style="visibility:hidden;position: absolute;" value="'+data.id+'">');
+	}
 
 	communityBuilder.uploadImage(form, done, fail);
 
+}
+function uploadCourseImage()
+{
+	console.log("Add Course Picture");
+
+	var form = new FormData();
+	form.append('file',$('input[type="file"]')[0].files[0]);
+	form.append('id','');
+	form.append('universalField','course');
+	
+	var done = function(data) {
+		alert("upload successfully");
+		console.log(data);
+		$('input[type="file"]').after('<input type="text" name="pictureId" style="visibility:hidden;position: absolute;" value="'+data.id+'">');
+	}
+
+	communityBuilder.uploadImage(form, done, fail);
 }
 /*function uploadImage(position) {
 	console.log(position);
@@ -803,15 +885,16 @@ function uploadUserImage($this) {
 
 }*/
 
-function editStyle(momentId,momentPartId,index,text,picture){
+function editStyle(userId,momentId,momentPartId,index,text,picture){
 	$('#paragraph'+index+' .text_content').removeAttr("readonly");
 	$('#paragraph'+index+' .picBar').html(
 			'<span class="input-group-addon">Picture</span>'
 			+'<input type="file" class="form-control post-file" name="file" />'
-			+'<input type="button" onclick="uploadImage('+(index)+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
+			+'<input type="button" onclick="uploadImage('+(index)+','+(userId)+',\'moment\''+(momentId)+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
 			+'<span id="picId'+(index)+'" style="display:none;"><span>');
 	$('#paragraph'+index+' .btn-bar').html(
 			'<input type="button" onclick="noEditStyle('
+			+userId+','
 			+momentId+','
 			+momentPartId+','
 			+index+','
@@ -826,7 +909,7 @@ function editStyle(momentId,momentPartId,index,text,picture){
 			+')" value="submit" class="btn btn-primary"/>');
 	
 }
-function noEditStyle(momentId,momentPartId,index,text,picture){
+function noEditStyle(userId,momentId,momentPartId,index,text,picture){
 	$('#paragraph'+index+' .text_content').attr("readonly","readonly");
 	$('#paragraph'+index+' .picBar').html(
 			'<span class="input-group-addon">Picture</span>'
@@ -835,6 +918,7 @@ function noEditStyle(momentId,momentPartId,index,text,picture){
 			+'" width="500px;"/>');
 	$('#paragraph'+index+' .btn-bar').html(
 			'<input type="button" onclick="editStyle('
+			+userId+','
 			+momentId+','
 			+momentPartId+','
 			+(index)+','
@@ -931,7 +1015,7 @@ function showEditChapterPart(courseId,chapterId) {
 									+'<div class="input-group">'
 										+'<span class="input-group-addon">Picture</span>'
 										+'<input type="file" class="form-control post-file" name="file" />'
-										+'<input type="button" onclick="uploadImage(1)" value="UploadFile" class="btn btn-primary upload-btn"/>'	
+										+'<input type="button" onclick="uploadImage(1,\'\',\'course\','+courseId+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
 										+'<span id="picId1" style="display:none;"><span>'
 									+'</div>'
 									+'<div class="input-group btn-bar">'
@@ -964,7 +1048,7 @@ function addNewChapter(courseId,chapterId,index){
 			+'<div class="input-group">'
 				+'<span class="input-group-addon">Picture</span>'
 				+'<input type="file" class="form-control post-file" name="file" />'
-				+'<input type="button" onclick="uploadImage('+(index+1)+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
+				+'<input type="button" onclick="uploadImage('+(index+1)+',\'\',\'course\','+courseId+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
 				+'<span id="picId'+(index+1)+'" style="display:none;"><span>'
 			+'</div>'
 			+'<div class="input-group btn-bar">'
@@ -991,10 +1075,11 @@ function editChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){
 	$('#paragraph'+index+' .picBar').html(
 			'<span class="input-group-addon">Picture</span>'
 			+'<input type="file" class="form-control post-file" name="file" />'
-			+'<input type="button" onclick="uploadImage('+(index)+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
+			+'<input type="button" onclick="uploadImage('+(index)+',\'\',\'course\','+courseId+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
 			+'<span id="picId'+(index)+'" style="display:none;"><span>');
 	$('#paragraph'+index+' .btn-bar').html(
 			'<input type="button" onclick="noEditChapterStyle('
+			+courseId+','
 			+chapterId+','
 			+chapterPartId+','
 			+index+','
@@ -1009,7 +1094,7 @@ function editChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){
 			+')" value="submit" class="btn btn-primary"/>');
 	
 }
-function noEditChapterStyle(chapterId,chapterPartId,index,text,picture){
+function noEditChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){
 	$('#paragraph'+index+' .text_content').attr("readonly","readonly");
 	$('#paragraph'+index+' .picBar').html(
 			'<span class="input-group-addon">Picture</span>'
@@ -1017,7 +1102,8 @@ function noEditChapterStyle(chapterId,chapterPartId,index,text,picture){
 			+picture
 			+'" width="500px;"/>');
 	$('#paragraph'+index+' .btn-bar').html(
-			'<input type="button" onclick="editStyle('
+			'<input type="button" onclick="editChapterStyle('
+			+courseId+','
 			+chapterId+','
 			+chapterPartId+','
 			+(index)+','
@@ -1042,7 +1128,7 @@ function changeChapterPart(courseId,chapterId,chapterPartId,index){
 }
 
 /*used to add moment part*/
-function addMomentPart(chapterId,total){
+function addMomentPart(momentId,total){
 	var text = $("#text_content").val();
 	var part=total;
 	var pictureId=$("#picId"+total).val();
@@ -1084,7 +1170,7 @@ function addChapter(courseId,chapterId){
 				}, fail)
 			}, fail);		
 		})
-	}
+	};
 	$(".main").load("pages/addChapter.html",callback);
 }
 
@@ -1099,7 +1185,9 @@ function addChapterPart(courseId,chapterId,flag){
 	})
 	var text = $('#paragraph'+flag+' .text_content').val();
 	//var pictureId=$("#picId"+(flag)).val();
-	var pictureId='49';
+	var pictureId=$("#picId"+(flag)).val();
+	//var pictureId='49';
+	 
 	console.log(text);
 	var data="text="+text+"&pictureId="+pictureId;
 	communityBuilder.addChapterPartStep1(chapterId, data, "courses", function(data){		

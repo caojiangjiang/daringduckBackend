@@ -144,7 +144,7 @@ CommunityBuilder.prototype.del = function(id, resource, done, fail) {
 CommunityBuilder.prototype.uploadImage = function(data, done, fail) {
 	$.ajax({
 		type : "POST",
-		url : "api/pictures/",
+		url : "api/pictures",
 		contentType : 'multipart/form-data',
 		processData : false,
 		headers : {
