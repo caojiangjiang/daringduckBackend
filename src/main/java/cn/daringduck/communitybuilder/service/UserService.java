@@ -420,6 +420,7 @@ public class UserService extends GenericService<User, Long> {
 	 * @param courseId
 	 * @param teacherId
 	 * @param status
+	 * @author 曹将将
 	 * 
 	 * @return UserCourse
 	 * @throws RequestException 
@@ -490,6 +491,7 @@ public class UserService extends GenericService<User, Long> {
 	 * @param courseId
 	 * @param teacherId
 	 * @param status
+	 * @author 曹将将
 	 * 
 	 * @return UserCourse
 	 * */
@@ -519,7 +521,7 @@ public class UserService extends GenericService<User, Long> {
 			userChapter.setScore(score);
 		}
 		
-		if(comment.equalsIgnoreCase(""))
+		if(!comment.equalsIgnoreCase(""))
 			userChapter.setComment(comment);
 		
 		if(userChapterRepository.save(userChapter)!=null)
@@ -546,12 +548,14 @@ public class UserService extends GenericService<User, Long> {
 			jsonObject2.put("passOrNot", userCourse.isPassedOrNot());
 			
 		      if(userCourse.getTeacher()==null) {
+		    	 
 			      jsonObject2.put("teacherName", ""); 
 			      jsonObject2.put("teacherId", ""); 
 		      }
 		      else {
+		    	   
 			      jsonObject2.put("teacherName", userCourse.getTeacher().getNickname()); 
-			      jsonObject2.put("teacherId", userCourse.getTeacher().getId()); 
+			      jsonObject2.put("teacherId", userCourse.getTeacher().getId());
 		      }
 
 			
@@ -602,7 +606,7 @@ public class UserService extends GenericService<User, Long> {
 		} 
 	    
 	    JSONObject jsonObject1 = new JSONObject(); 
-	     
+	    
 	    for(int k=0;k<chapters.size();k++) { 
 	      UserChapter userChapter = userChapterRepository.findByUserIdAndChapterId(userId,chapters.get(k).getId()); 
 	       

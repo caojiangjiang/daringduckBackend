@@ -164,7 +164,7 @@ public class MomentController extends GenericController {
 	
 	
 	/**
-	 * add paragraph about a moment with id
+	 * get a momentPart about a moment with id
 	 * @throws RequestException 
 	 */
 	@GET

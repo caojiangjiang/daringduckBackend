@@ -266,7 +266,7 @@ public class UserController extends GenericController {
 	@GET
 	@Path("/me/friends")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response meFriends(@HeaderParam("Auth-Token") String token) throws RequestException {
+	public Response meFriends(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
 		// Get the user data using the entity manager
 		secure(token, "*");
 
@@ -283,10 +283,11 @@ public class UserController extends GenericController {
 	 * @throws RequestException
 	 */
 	@GET
-	@Path("/me/getUserCourse")
+	@Path("/getMyCourse")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getMyCourse(@HeaderParam("Auth-Token") String token) throws RequestException
+	public Response getMyCourse(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException
 	{
+		secure(token, "*");
 		//judge whether the user have the permission to get the UserCourses
 		User user = userService.findUserByAuthToken(token);
 		
@@ -305,10 +306,11 @@ public class UserController extends GenericController {
 	   * @throws RequestException
 	   */
 	  @GET
-	  @Path("/me/getMyChapter/{courseId: [0-9]*}")
+	  @Path("/getMyChapter")
 	  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	  public Response getUserChapter(@HeaderParam("Auth-Token") String token,@PathParam("courseId") int courseId) throws RequestException
+	  public Response getMyChapter(@HeaderParam("Auth-Token") String token,@QueryParam("courseId") int courseId,@QueryParam("page") int page) throws RequestException
 	  {	
+		  	secure(token, "*");
 			//judge whether the user have the permission to get the UserCourses
 			User user = userService.findUserByAuthToken(token);
 			
@@ -451,7 +453,7 @@ public class UserController extends GenericController {
 		secure(token, members);
 		
 		//add userChapter
-		boolean userChapter = userService.addUserChapter(userId,chapterId,teacherId,score,passOrNot);
+		boolean userChapter = userService.addUserChapter(userId,chapterId,teacherId,score,passOrNot,comment);
 
 		// Return the user data to the RESTful service
 		return Response.status(Response.Status.OK).entity(userChapter).build();
@@ -490,8 +492,10 @@ public class UserController extends GenericController {
 		@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 		@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 		public Response changeUserChapter(@HeaderParam("Auth-Token") String token, @FormParam("userId") long userId,
-				@FormParam("chapterId") long chapterId, @FormParam("teacherId") long teacherId,@FormParam("score") int score ,
-				@FormParam("status") String status,@FormParam("date") long date,@FormParam("comment") String comment) throws RequestException {
+				@FormParam("chapterId") long chapterId, @FormParam("teacherId") long teacherId,
+				@FormParam("score") int score ,@FormParam("status") String status,
+				@FormParam("date") long date,@FormParam("comment") String comment) throws RequestException {
+			
 			//set who have the authority to do use this api
 			String members[] = {"teacher","admin"};
 			
