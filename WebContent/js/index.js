@@ -443,6 +443,28 @@ function showAdd(pageInfo, objectId, props) {
 
 	}
 	
+	// Generates a radio element
+	var generateRadio = function(field, val){
+		var radio = $('<div></div>');
+		
+		if (field.options != undefined) {
+			$.each(field.options, function(i, option){
+				var label=$('<label class="radio-inline"></label>')
+				var x = $('<input type="radio">');
+				x.attr('name', field.name);
+				
+				if (val == option.value){
+					x.attr('checked', true);
+				}
+				x.val(option.value);
+				
+				radio.append(label.append(x).append(option.name));
+			});
+		}
+		
+		return radio;
+	}
+	
 	// Generates a select element
 	var generateSelect = function(field, val){
 		var select = $('<select class="form-control">');
@@ -516,6 +538,9 @@ function showAdd(pageInfo, objectId, props) {
 				break;
 			case 'date':
 				inputGroup.append(generateDate(field, 'date', ''));
+				break;
+			case 'radio':
+				inputGroup.append(generateRadio(field, object != undefined ? object[field.name] : -1));
 				break;
 			}
 
