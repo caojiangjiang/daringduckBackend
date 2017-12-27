@@ -27,7 +27,8 @@ public enum Error {
 	USERNAME_NOT_UNIQUE(17, "Username is already used", Status.BAD_REQUEST),
 	USERCOURSE_NOT_UNIQUE(18,"User has choosed this course",Status.BAD_REQUEST),
 	USERCHAPTER_NOT_UNIQUE(19,"User has choosed this chapter",Status.BAD_REQUEST),
-	USERCOURSE_DOES_NOT_EXIS(20,"User does not have this course",Status.BAD_REQUEST);
+	USERCOURSE_DOES_NOT_EXIS(20,"User does not have this course",Status.BAD_REQUEST),
+	USER_DOES_NOT_PASS_CHAPTERS(21,"User does not pass all chapters",Status.BAD_REQUEST);
 	
 	public final int errorCode;
 	public final String errorMessage;

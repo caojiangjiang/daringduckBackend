@@ -6,8 +6,6 @@ import cn.daringduck.communitybuilder.model.ChapterPart;
 import cn.daringduck.communitybuilder.model.Course;
 import cn.daringduck.communitybuilder.model.CourseChapter;
 import cn.daringduck.communitybuilder.model.Picture;
-import cn.daringduck.communitybuilder.model.UserChapter;
-import cn.daringduck.communitybuilder.model.UserCourse;
 import cn.daringduck.communitybuilder.repository.ChapterChapterPartRepository;
 import cn.daringduck.communitybuilder.repository.ChapterPartRepository;
 import cn.daringduck.communitybuilder.repository.ChapterRepository;
@@ -110,7 +108,7 @@ public class CourseService extends GenericService<Course, Integer> {
 				Course course = courses.get(i);
 				
 				JSONObject jsonObject2 = new JSONObject();
-				jsonObject2.put("id", course.getId());
+				
 				jsonObject2.put("name", course.getName());
 				
 				if(course.getPicture()!=null) {
@@ -122,6 +120,8 @@ public class CourseService extends GenericService<Course, Integer> {
 					jsonObject2.put("picturePosition","");
 				}
 
+				jsonObject2.put("id", course.getId());
+				
 				jsonObject1.put(i+"", jsonObject2);
 			}
 			//change json into String
@@ -334,10 +334,24 @@ public class CourseService extends GenericService<Course, Integer> {
 		String []item = lists.split(",");
 		
 		for(int i=0;i<item.length;i++) {
+			//get chapterId and chapter
 			long chapterId =Integer.parseInt(item[i]);
 			Chapter chapter = chapterRepository.getOne(chapterId);
+			
+			//set the courseId of chapter
+			if(chapter==null) {
+				throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
+			}
+			
+			chapter.setCourseId(courseId);
+			
+			chapterRepository.save(chapter);
+			
+			//create a courseChapter
 			CourseChapter courseChapter = new CourseChapter(course,chapter,j);
+			
 			courseChapterRepository.save(courseChapter);
+			
 			j++;
 		}
 

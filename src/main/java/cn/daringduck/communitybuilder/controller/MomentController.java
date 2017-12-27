@@ -1,7 +1,5 @@
 package cn.daringduck.communitybuilder.controller;
-
 import java.util.List;
-
 import javax.servlet.ServletContext;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -21,7 +19,9 @@ import org.springframework.data.domain.Page;
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.MomentPart;
+import cn.daringduck.communitybuilder.model.User;
 import cn.daringduck.communitybuilder.service.MomentService;
+import cn.daringduck.communitybuilder.service.UserService;
 
 /**
  * This class contains all the RESTful calls that have anything
@@ -34,21 +34,25 @@ import cn.daringduck.communitybuilder.service.MomentService;
 public class MomentController extends GenericController {
 
 	private final MomentService momentService;
+	private final UserService userService;
 
 	
 	public MomentController(@Context ServletContext context) {
 		super(context);
 		this.momentService = (MomentService) context.getAttribute("momentService");
+		this.userService = (UserService) context.getAttribute("userService");
 	}
 	
 	/**
 	 * Send back a list with the most recent moments to the Restful service
 	 * @return List of moments
+	 * @throws RequestException 
 	 */
 	@GET
 	@Path("/pageMoments")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response moments(@QueryParam("page") int page) {
+	public Response moments(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
+		secure(token, "*");
 	
 		Page<Moment> moments = momentService.getPage(page);
 		
@@ -71,17 +75,93 @@ public class MomentController extends GenericController {
 		
 	}
 	
+	////////////////////////////////////////////////////////////////////
+	// Me
+	////////////////////////////////////////////////////////////////////	
+	
+	/**
+	 * Get the user's own moments
+	 * @throws RequestException 
+	 */
+	@GET
+	@Path("/getMyMoments")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getMyMoments(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
+		secure(token, "*");
+		User user = userService.findUserByAuthToken(token);
+		List<Moment> moments = momentService.getMyMoment(user,page);
+		return Response.status(Response.Status.OK).entity(moments).build();
+		
+	}
+	
+//	/**
+//	 * Get the user's friends' moments
+//	 * @throws RequestException 
+//	 */
+//	@GET
+//	@Path("/getMyFriendsMoments")
+//	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+//	public Response getMyFriendsMoments(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
+//		secure(token, "*");
+//		User user = userService.findUserByAuthToken(token);
+//		List<Moment> moments = userService.getMyFriendsMoments(user);
+//		return Response.status(Response.Status.OK).entity(moments).build();
+//		
+//	}
+//	
+	/**
+	 * Get a specific friend's moments
+	 * @throws RequestException 
+	 */
+	@GET
+	@Path("/getSpecificFriendMoments")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getSpecificFriendMoments(@HeaderParam("Auth-Token") String token,@QueryParam("friendId") long friendId,@QueryParam("page") int page) throws RequestException {
+		secure(token, "*");
+		User user = userService.get(friendId);
+		List<Moment> moments = momentService.getMyMoment(user,page);
+		return Response.status(Response.Status.OK).entity(moments).build();
+		
+	}
+	
+	/**
+	 *user add a moment for himself
+	 */
+	@POST
+	@Path("/me/addMoment")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response addMoment(@HeaderParam("Auth-Token") String token,
+			@FormParam("title") String title, @FormParam("privacy") String privacy,
+			@FormParam("eventDate") String eventDate) throws RequestException {
+		
+		secure(token, "*");
+		
+		User user = userService.findUserByAuthToken(token);
+		
+		Moment moment = userService.addUserMoment(user.getId(), title, privacy,eventDate);
+		
+		return Response.status(Response.Status.OK).entity(moment).build();
+	}
+	
 	
 	/**
 	 * get DD01 newest moment
+	 * @throws RequestException 
 	 */
 	@GET
 	@Path("/getDD01NewestMoment")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getDD01NewestMoment() {
+	public Response getDD01NewestMoment(@HeaderParam("Auth-Token") String token) throws RequestException {
+		secure(token, "*");
 		Moment moment = momentService.getDD01NewestMoment();
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}
+	
+	
+	////////////////////////////////////////////////////////////////////
+	// Moment Part
+	////////////////////////////////////////////////////////////////////	
+	
 	
 	/**
 	 * add paragraph about a moment with id

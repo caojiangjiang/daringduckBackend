@@ -8,8 +8,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 @Entity
 @Table(name = "user_chapter")
 public class UserChapter {
@@ -30,15 +28,18 @@ public class UserChapter {
 	
 	@NotNull private boolean passOrNot;
 	
+	private String comment;
+	
 	public UserChapter() {}
 	
-	public UserChapter(User user,Chapter chapter,User teacher,long date,boolean passOrNot,int score) {
+	public UserChapter(User user,Chapter chapter,User teacher,long date,boolean passOrNot,int score,String comment) {
 		this.user = user;
 		this.chapter = chapter;
 		this.teacher = teacher;
 		this.date = date;
 		this.passOrNot = passOrNot;
 		this.score = score;
+		this.comment = comment;
 	}
 	
 	public long getId() {
@@ -99,6 +100,14 @@ public class UserChapter {
 		   
 	public void setChapter(Chapter chapter) { 
 		this.chapter = chapter; 
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	} 
 
 }

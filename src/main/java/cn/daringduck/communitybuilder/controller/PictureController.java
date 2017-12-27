@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Picture;
 import cn.daringduck.communitybuilder.service.PictureService;
@@ -54,14 +55,26 @@ public class PictureController extends GenericController{
 	public Response uploadFile(@HeaderParam("Auth-Token") String token,
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataBodyPart body,
-		      @FormDataParam("id") long id, 
-		      @FormDataParam("universalField") String universalField) throws RequestException { 
+			
+			  //type can be course¡¢user
+			  @FormDataParam("type") String type,
+			  
+			  //id can be user_id¡¢course_id
+			  //if you just want to upload a picture for avatar, you don't need to fill in this param
+		      @FormDataParam("id") String id, 
+		      
+		      //for user the subDirectory is moment_id, for course the subDirectory is chapter_id
+		      //so when you want to use this api, you need give me subDirectory like moment_1¡¢chapter_1
+		      //if do not have subDirectory, the api will consider the picture is user picture
+		      @FormDataParam("subDirectory") String subDirectory
+		      ) throws RequestException { 
 
 		secure(token, "*");
 		
 		// Get the user data using the entity manager
 		String subtype = body.getMediaType().getSubtype();
-
+		
+		// limit the type of the picture
 		switch(subtype) {
 		case "jpeg":
 		case "jpg":
@@ -71,21 +84,44 @@ public class PictureController extends GenericController{
 			return Response.status(Response.Status.BAD_REQUEST).build();
 		}
 		
-		String imageName = UUID.randomUUID().toString() + "." + subtype;
-		//String uploadedFileLocation = context.getRealPath("/images/"+imageName);
-	    String pathName = "/root/img/users/"+id+"/"+universalField; 
-		//String pathName = "D:\\dms\\img\\"+id;
+		//inital the imageName and pathName
+		String imageName = "";
+		String pathName ="/root/img";
 		
+		//if the directory don't exist we need established the directory
+		pathName = pathName+"/"+type;
 		File file = new File(pathName);
-		
 		if(!file.isDirectory()) {
 			file.mkdir();
 		}
 		
-		//String uploadedFileLocation = pathName+"\\"+imageName;
-		String uploadedFileLocation = pathName+"/"+imageName;
+		//if the directory don't exist we need established the directory
+		pathName = pathName +"/"+id;
+		File file1 = new File(pathName);
+		if(!file1.isDirectory()) {
+			file1.mkdir();
+		}
 		
-		//String uploadedFileLocation = pathName+"\\"+imageName;
+		//when the subDirectory is null it means the picture is for user's avatar or for course's picture
+		if(subDirectory.equalsIgnoreCase("")) {
+			//image name
+			imageName = "1."+subtype;
+		}
+		//when the subDirectory is not null it means the picture is for user's moment or for course's chapter
+		else {
+			//image name
+			imageName = UUID.randomUUID().toString() + "." + subtype;
+	
+			//path name
+			pathName = pathName + "/" + subDirectory;
+			File file3 = new File(pathName);
+			if(!file3.isDirectory()) {
+				file3.mkdir();
+			}
+		}
+		//String uploadedFileLocation = context.getRealPath("/images/"+imageName);		
+		//String uploadedFileLocation = pathName3+"\\"+imageName;
+		String uploadedFileLocation = pathName+"/"+imageName;
 		
 		Picture picture = pictureService.createPictureReference(uploadedFileLocation);
 		

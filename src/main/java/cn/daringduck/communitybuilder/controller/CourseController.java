@@ -54,7 +54,8 @@ public class CourseController extends GenericController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response courses(@QueryParam("page") int page) throws RequestException {
+	public Response courses(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
+		secure(token, "*");
 		String courses = courseService.getPageOfCourse(page);
 		return Response.status(Response.Status.OK).entity(courses).build();
 	}
@@ -66,7 +67,8 @@ public class CourseController extends GenericController {
 	@GET
 	@Path("/{id: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response course(@PathParam("id") int id) throws RequestException {
+	public Response course(@HeaderParam("Auth-Token") String token,@PathParam("id") int id) throws RequestException {
+		secure(token, "*");
 		String course = courseService.getCourse(id);
 		return Response.status(Response.Status.OK).entity(course).build();
 	}
@@ -82,8 +84,11 @@ public class CourseController extends GenericController {
 	public Response addCourse(@HeaderParam("Auth-Token") String token, @FormParam("name") String name,@FormParam("pictureId")long pictureId)
 			throws RequestException {
 		secure(token, "admin");
-
+		
+		//add course
 		Course course = courseService.addCourse(name,pictureId);
+		
+		//Return the result course to the RESTful service
 		return Response.status(Response.Status.OK).entity(course).build();
 	}
 
@@ -126,18 +131,20 @@ public class CourseController extends GenericController {
 	@GET
 	@Path("/{courseId: [0-9]*}/chapters/")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response chapters(@PathParam("courseId") int id) throws RequestException {
-		
+	public Response chapters(@HeaderParam("Auth-Token") String token,@PathParam("courseId") int id) throws RequestException {
+		secure(token, "*");
 		return Response.status(Response.Status.OK).entity(courseService.getChapters(id)).build();
 	}
 	
 	/**
 	 * Get a chapter
+	 * @throws RequestException 
 	 */
 	@GET
 	@Path("/{courseId: [0-9]*}/chapters/{chapterId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response chapter(@PathParam("chapterId") long id) {
+	public Response chapter(@HeaderParam("Auth-Token") String token,@PathParam("chapterId") long id) throws RequestException {
+		secure(token, "*");
 		Chapter chapter = courseService.getChapter(id);
 		return Response.status(Response.Status.OK).entity(chapter).build();
 	}
@@ -221,13 +228,20 @@ public class CourseController extends GenericController {
 	
 	/**
 	 * Get  chapterPart list
+	 * @throws RequestException 
 	 */
 	@GET
 	@Path("/getChapterPartList/{chapterId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getChapterPartList(@PathParam("chapterId") long chapterId) {
+	public Response getChapterPartList(@HeaderParam("Auth-Token") String token,@PathParam("chapterId") long chapterId) throws RequestException {
+		//set who have the authority to do use this api
+		String members[] = {"teacher","admin","member","parent"};
+		
+		//judge whether the user have the permission to get the UserCourses
+		secure(token, members);
 		
 		List<ChapterPart> chapterParts = courseService.getChapterPartList(chapterId);
+		
 		return Response.status(Response.Status.OK).entity(chapterParts).build();
 	}
 	
@@ -241,8 +255,14 @@ public class CourseController extends GenericController {
 	@Path("/getChapterPart/{chapterPartId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getChapterPart(@HeaderParam("Auth-Token") String token,@PathParam("chapterPartId") long chapterPartId) throws RequestException {
-		secure(token, "member");
+		//set who have the authority to do use this api
+		String members[] = {"teacher","admin","member","parent"};
+		
+		//judge whether the user have the permission to get the UserCourses
+		secure(token, members);
+		
 		ChapterPart chapterPart = courseService.getChapterPart(chapterPartId);
+		
 		return Response.status(Response.Status.OK).entity(chapterPart).build();
 	}
 	

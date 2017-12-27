@@ -15,16 +15,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.springframework.data.domain.Page;
-
 import java.rmi.AccessException;
-
 import cn.daringduck.communitybuilder.RequestException;
-import cn.daringduck.communitybuilder.model.Moment;
-import cn.daringduck.communitybuilder.model.StudentsStudyStatus;
 import cn.daringduck.communitybuilder.model.User;
-import cn.daringduck.communitybuilder.service.StatusService;
 import cn.daringduck.communitybuilder.service.UserService;
 
 /**
@@ -38,14 +32,10 @@ public class UserController extends GenericController {
 
 	ServletContext context;
 	private UserService userService;
-	private StatusService statusService;
-	
-
 	
 	public UserController(@Context ServletContext context) {
 		super(context);
 		this.userService = (UserService) context.getAttribute("userService");
-		this.statusService = (StatusService)context.getAttribute("statusService");
 	}
 
 	/**
@@ -66,6 +56,8 @@ public class UserController extends GenericController {
 
 	/**
 	 * Create a new user
+	 * 
+	 * @return
 	 * @throws RequestException 
 	 */
 	@POST
@@ -92,36 +84,44 @@ public class UserController extends GenericController {
 		return Response.status(Response.Status.OK).entity(user).build();
 	}
 
+//	/**
+//	 * Get information about the user with id
+//	 * 
+//	 * @return
+//	 * @throws AccessException
+//	 */
+//	@GET
+//	@Path("/{id: [0-9]*}")
+//	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+//	public Response user(@HeaderParam("Auth-Token") String token, @PathParam("id") long id) throws RequestException {
+//		secure(token, "admin");
+//
+//		User user = userService.get(id);
+//		return Response.status(Response.Status.OK).entity(user).build();
+//	}
+
 	/**
-	 * Get information about the user with id
+	 * get users by role Id
 	 * 
-	 * @throws AccessException
-	 */
+	 * @return
+	 * @throws RequestException 
+	 **/
 	@GET
-	@Path("/{id: [0-9]*}")
+	@Path("/getUserByRoleId/{roleId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response user(@HeaderParam("Auth-Token") String token, @PathParam("id") long id) throws RequestException {
-		secure(token, "admin");
-
-		User user = userService.get(id);
-		return Response.status(Response.Status.OK).entity(user).build();
+	public Response getUserByRoleId(@HeaderParam("Auth-Token") String token, @PathParam("roleId") int roleId) throws RequestException {
+	 
+	  secure(token, "admin");
+	 
+	  return Response.status(Response.Status.OK).entity(userService.getUserByRoleId(roleId)).build();
+	 
 	}
-
-	  @GET
-	  @Path("/getUserByRoleId/{roleId: [0-9]*}")
-	  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	  public Response getUserByRoleId(@HeaderParam("Auth-Token") String token, @PathParam("roleId") int roleId) throws RequestException {
-	 
-	    secure(token, "admin");
-	 
-	    return Response.status(Response.Status.OK).entity(userService.getUserByRoleId(roleId)).build();
-	 
-	  }
 	 
 	
 	/**
 	 * Update the information for the user with id
 	 * 
+	 * @return
 	 * @throws RequestException
 	 */
 	@PUT
@@ -180,7 +180,7 @@ public class UserController extends GenericController {
 	/////////////
 
 	/**
-	 * Get moments of user with id
+	 * Get moments of user with userId
 	 * 
 	 * @throws RequestException
 	 */
@@ -196,7 +196,7 @@ public class UserController extends GenericController {
 	
 
 	/**
-	 * Get moment of user with id
+	 * Get moment of user with momentId
 	 * 
 	 * @throws RequestException
 	 */
@@ -205,24 +205,10 @@ public class UserController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response userMoment(@HeaderParam("Auth-Token") String token, @PathParam("userId") long userId, @PathParam("id") long id,
 			@QueryParam("page") int page) throws RequestException {
+		
 		secure(token, "admin");
-
-		return Response.status(Response.Status.OK).entity(userService.getUserMoment(userId, id)).build();
-	}
-
-	/**
-	 * Add a moment for user with id
-	 */
-	@POST
-	@Path("/{id: [0-9]*}/moments")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response userAddMoment(@HeaderParam("Auth-Token") String token, @PathParam("id") long userId,
-			@FormParam("title") String title, @FormParam("privacy") String privacy,@FormParam("eventDate") String eventDate) throws RequestException {
-		secure(token, "*");
 		
-		Moment moment = userService.addUserMoment(userId, title, privacy,eventDate);
-		
-		return Response.status(Response.Status.OK).entity(moment).build();
+		return Response.status(Response.Status.OK).entity(userService.getUserMoment(userId,id)).build();
 	}
 
 	////////
@@ -289,34 +275,49 @@ public class UserController extends GenericController {
 		// Return the user data to the RESTful service
 		return Response.status(Response.Status.OK).entity(user.getFriends()).build();
 	}
-
-	/**
-	 * get the result of students' class chapter
-	 * 
-	 */
-	@GET
-	@Path("/chapter/getStudentsStudyStatus")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getStudentsStudyStatus(@HeaderParam("Auth-Token")String token,@QueryParam("userId")long userId,@QueryParam("classId")long classId,@QueryParam("chapterId")long chapterId) {
-		StudentsStudyStatus studentsStudyStatus =  statusService.getstudentsChapterStatus(userId, classId, chapterId);
-		return Response.status(Response.Status.OK).entity(studentsStudyStatus).build();
-	}
+	
 	
 	/**
-	 * set the result of students' class chapter
-	 * @throws RequestException 
+	 * get the courses of a user
 	 * 
+	 * @throws RequestException
 	 */
-	@POST
-	@Path("/chapter/setStudentsStudyStatus")
+	@GET
+	@Path("/me/getUserCourse")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response setStudentsStudyStatus(@HeaderParam("Auth-Token")String token,@FormParam("userId")long userId,@FormParam("classId")long classId,@FormParam("chapterId")long chapterId,@FormParam("status")int status) throws RequestException {
-		secure(token, "teacher");
+	public Response getMyCourse(@HeaderParam("Auth-Token") String token) throws RequestException
+	{
+		//judge whether the user have the permission to get the UserCourses
+		User user = userService.findUserByAuthToken(token);
 		
-		StudentsStudyStatus studentsStudyStatus = new StudentsStudyStatus();
-		studentsStudyStatus =  statusService.setstudentsChapterStatus(userId, classId, chapterId,status);
-		return Response.status(Response.Status.OK).entity(studentsStudyStatus).build();
+		//get userCourse
+		String userCourse = userService.getUserCourse(user.getId());
+		
+		//return the result to the RESTful service
+		return Response.status(Response.Status.OK).entity(userCourse).build();
+		
 	}
+	
+	
+	  /**
+	   * get my chapters 
+	   *
+	   * @throws RequestException
+	   */
+	  @GET
+	  @Path("/me/getMyChapter/{courseId: [0-9]*}")
+	  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	  public Response getUserChapter(@HeaderParam("Auth-Token") String token,@PathParam("courseId") int courseId) throws RequestException
+	  {	
+			//judge whether the user have the permission to get the UserCourses
+			User user = userService.findUserByAuthToken(token);
+			
+			//get userChapter
+			String userChapter = userService.getUserChapter(user.getId(),courseId);
+			
+			//Return the user data to the RESTful service
+			return Response.status(Response.Status.OK).entity(userChapter).build();
+	  }
 	
 	///////////
 	// course //
@@ -330,14 +331,19 @@ public class UserController extends GenericController {
 	@POST
 	@Path("/addUserCourse")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response addUserCourse(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,@FormParam("courseId") int courseId,
 			@FormParam("teacherId")long teacherId,@FormParam("passOrNot") boolean passOrNot,@FormParam("date") long date) throws RequestException {
-		// Get the user data using the entity manager
-		secure(token, "*");
+		// set who have the authority to do use this api
+		String members[] = {"teacher","admin"}; 
+		
+		//Verify user identity
+		secure(token, members);
 
+		//add userCourse according to the given data 
 		boolean userCourse = userService.addUserCourse(userId,courseId,teacherId,passOrNot,date);
 
-		// Return the user data to the RESTful service
+		// Return the result to the RESTful service
 		return Response.status(Response.Status.OK).entity(userCourse).build();
 	}
 	
@@ -354,8 +360,16 @@ public class UserController extends GenericController {
 	public Response changeUserCourse(@HeaderParam("Auth-Token") String token, @FormParam("userId") long userId,
 			@FormParam("courseId") int courseId, @FormParam("teacherId") long teacherId ,@FormParam("status") String status,
 			@FormParam("date") long date) throws RequestException {
-		secure(token, "admin");
+		// set who have the authority to do use this api
+		String members[] = {"teacher","admin"}; 
+		
+		//Verify user identity
+		secure(token, members);
+		
+		//change userCourse according to the given data 
 		boolean userCourse = userService.changeUserCourse(userId, courseId,teacherId,status,date);
+		
+		//return the result to the RESTful service
 		return Response.status(Response.Status.OK).entity(userCourse).build();
 	}
 	
@@ -367,12 +381,20 @@ public class UserController extends GenericController {
 	 * @throws RequestException
 	 */
 	@GET
-	@Path("/getUserCourse/{userId: [0-9]*}")
+	@Path("/getUserCourse/{userId:[0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response getUserCourse(@PathParam("userId") long userId)
+	public Response getUserCourse(@HeaderParam("Auth-Token") String token,@PathParam("userId") long userId) throws RequestException
 	{
+		//set who have the authority to do use this api
+		String members[] = {"teacher","admin"};
+		
+		//judge whether the user have the permission to get the UserCourses
+		secure(token, members);
+		
+		//get userCourse
 		String userCourse = userService.getUserCourse(userId);
+		
+		//return the result to the RESTful service
 		return Response.status(Response.Status.OK).entity(userCourse).build();
 		
 	}
@@ -386,9 +408,19 @@ public class UserController extends GenericController {
 	@Path("/deleteUserCourse/{userId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response deleteUserCourse(@PathParam("userId") long userId,@FormParam("courseId") int courseId)
+	public Response deleteUserCourse(@HeaderParam("Auth-Token") String token,
+			@PathParam("userId") long userId,@FormParam("courseId") int courseId) throws RequestException
 	{
+		//set who have the authority to do use this api
+		String members[] = {"teacher","admin"};
+		
+		//judge whether the user have the permission to get the UserCourses
+		secure(token, members);
+		
+		//delete userCourse
 		boolean userCourse = userService.deleteUserCourse(userId,courseId);
+		
+		//return the result to the RESTful service
 		return Response.status(Response.Status.OK).entity(userCourse).build();
 		
 	}
@@ -408,10 +440,17 @@ public class UserController extends GenericController {
 	@POST
 	@Path("/addUserChapter")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response addUserChapter(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,@FormParam("chapterId") long chapterId,@FormParam("teacherId")long teacherId,@FormParam("score") int score ,@FormParam("passOrNot") boolean passOrNot) throws RequestException {
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response addUserChapter(@HeaderParam("Auth-Token") String token,@FormParam("userId")long userId,
+			@FormParam("chapterId") long chapterId,@FormParam("teacherId")long teacherId,
+			@FormParam("score") int score ,@FormParam("passOrNot") boolean passOrNot,@FormParam("comment")String comment) throws RequestException {
 		// Get the user data using the entity manager
-		secure(token, "*");
-
+		String members[] = {"teacher","admin"};
+		
+		//judge whether the user have the permission to get the UserCourses
+		secure(token, members);
+		
+		//add userChapter
 		boolean userChapter = userService.addUserChapter(userId,chapterId,teacherId,score,passOrNot);
 
 		// Return the user data to the RESTful service
@@ -426,11 +465,19 @@ public class UserController extends GenericController {
 	  @GET
 	  @Path("/getUserChapter/{userId: [0-9]*}/{courseId: [0-9]*}")
 	  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	  public Response getUserChapter(@PathParam("userId") long userId,@PathParam("courseId") int courseId) throws RequestException
-	  {
-	    String userChapter = userService.getUserChapter(userId,courseId);
-	    return Response.status(Response.Status.OK).entity(userChapter).build();
+	  public Response getUserChapter(@HeaderParam("Auth-Token") String token,@PathParam("userId") long userId,@PathParam("courseId") int courseId) throws RequestException
+	  {	
+			//set who have the authority to do use this api
+			String members[] = {"teacher","admin"};
+			
+			//judge whether the user have the permission to get the UserCourses
+			secure(token, members);
+			
+			//get userChapter
+			String userChapter = userService.getUserChapter(userId,courseId);
+			
+			//Return the user data to the RESTful service
+			return Response.status(Response.Status.OK).entity(userChapter).build();
 	  }
 	  
 		/**
@@ -444,9 +491,17 @@ public class UserController extends GenericController {
 		@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 		public Response changeUserChapter(@HeaderParam("Auth-Token") String token, @FormParam("userId") long userId,
 				@FormParam("chapterId") long chapterId, @FormParam("teacherId") long teacherId,@FormParam("score") int score ,
-				@FormParam("status") String status,@FormParam("date") long date) throws RequestException {
-			secure(token, "admin");
-			boolean userChapter = userService.changeUserChapter(userId, chapterId,teacherId,score,status,date);
+				@FormParam("status") String status,@FormParam("date") long date,@FormParam("comment") String comment) throws RequestException {
+			//set who have the authority to do use this api
+			String members[] = {"teacher","admin"};
+			
+			//judge whether the user have the permission to get the UserCourses
+			secure(token, members);
+			
+			//change userChapter
+			boolean userChapter = userService.changeUserChapter(userId, chapterId,teacherId,score,status,date,comment);
+			
+			//Return the user data to the RESTful service
 			return Response.status(Response.Status.OK).entity(userChapter).build();
 		}
 }

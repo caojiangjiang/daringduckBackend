@@ -1,13 +1,14 @@
 package cn.daringduck.communitybuilder.service;
 
 import java.util.List;
-
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter.FixedSpaceIndenter;
+
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.MomentPart;
@@ -34,31 +35,6 @@ public class MomentService extends GenericService<Moment, Long>{
     	this.pictureRepository = pictureRepository;
     }
 	
-//	/**
-//	 * get page of moments
-//	 * @param page
-//	 * @return String
-//	 * 
-//	 * */
-//	public String getPageOfMoments(int page) {
-//		Page<Moment> moments = momentRepository.findAll(new PageRequest(page, PAGE_SIZE));
-//		
-//		List<Moment> momentList = moments.getContent();
-//		
-//		JSONObject jsonObject = new JSONObject();
-//		
-//		for(int i =0;i<momentList.size();i++){
-//			
-//			Moment moment = momentList.get(i);
-//			
-//			JSONObject jsonObject = new JSONObject();
-//			
-//			jsonObject.put("id", moment.getId());
-//			
-//			jsonObject.put("", value)
-//		}
-//	}
-	
 	/**
 	 * Add a moment
 	 * @param title
@@ -76,10 +52,8 @@ public class MomentService extends GenericService<Moment, Long>{
 	
 	
 	/**
-	 * 
 	 * get the newest Moment that published by DD01
-	 * @return 
-	 * 
+	 * @return SS
 	 */
 	public Moment getDD01NewestMoment() {
 		return momentRepository.getDD01NewestMoment();
@@ -102,6 +76,30 @@ public class MomentService extends GenericService<Moment, Long>{
 		MomentPart momentPart = new MomentPart(part, text, picture, moment_id);
 		momentPartRepository.save(momentPart);
 		return momentPart;
+	}
+	
+	/**
+	 * get one's moments
+	 * @param userId
+	 * @param page
+	 * 
+	 * @return
+	 * **/
+	public List<Moment> getMyMoment(User user,int page) {
+		
+		Pageable pageable =(Pageable) new PageRequest(page, 25);
+		
+		return momentRepository.findByUser(user, pageable).getContent();
+	}
+	
+	/**
+	 * get my friends' moments
+	 * @param user
+	 * 
+	 * @return
+	 * **/
+	public List<Moment> getMyFriendsMoments(User user){
+		return null;
 	}
 	
 	/**

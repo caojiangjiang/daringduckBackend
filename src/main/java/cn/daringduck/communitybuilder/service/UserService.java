@@ -1,7 +1,6 @@
 package cn.daringduck.communitybuilder.service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -318,7 +317,7 @@ public class UserService extends GenericService<User, Long> {
 	 * @throws RequestException 
 	 * 
 	 * */
-	public boolean addUserChapter(long userId,long chapterId,long teacherId,int score,boolean passedOrNot) throws RequestException {
+	public boolean addUserChapter(long userId,long chapterId,long teacherId,int score,boolean passedOrNot,String comment) throws RequestException {
 		UserChapter userChapter1 = userChapterRepository.findByUserIdAndChapterId(userId,chapterId);
 		
 		if(userChapter1!=null) {
@@ -345,9 +344,10 @@ public class UserService extends GenericService<User, Long> {
 //				throw new RequestException(Error.USER_DOES_NOT_EXIST);
 //			}
 			
+			
 			long date = 0;
 			
-			UserChapter userChapter = new UserChapter(user,chapter,teacher,date,passedOrNot,score);
+			UserChapter userChapter = new UserChapter(user,chapter,teacher,date,passedOrNot,score,comment);
 			
 			if(userChapterRepository.save(userChapter)!=null)
 				result = true;
@@ -393,6 +393,10 @@ public class UserService extends GenericService<User, Long> {
 			
 			User teacher = userRepository.findOne(teacherId);
 			
+			if(teacher==null) {
+				throw new RequestException(Error.USER_DOES_NOT_EXIST);
+			}
+			
 			UserCourse userCourse = new UserCourse(user,course,teacher,date,passedOrNot);
 			
 			if(userCourseRepository.save(userCourse)!=null)
@@ -401,7 +405,7 @@ public class UserService extends GenericService<User, Long> {
 		    List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId); 
 		       
 		    for(int i=0;i<courseChapters.size();i++) { 
-		      addUserChapter(userId,courseChapters.get(i).getChapter().getId(),0,0,false); 
+		      addUserChapter(userId,courseChapters.get(i).getChapter().getId(),0,0,false,null); 
 		    } 
 			
 			return result;
@@ -421,25 +425,53 @@ public class UserService extends GenericService<User, Long> {
 	 * @throws RequestException 
 	 * */
 	public boolean changeUserCourse(long userId,int courseId,long teacherId,String status,long date) throws RequestException {
+		//use it to show the result of changeUserCourse
 		boolean result = false;
 		
+		//use it to show the user's chapter whether passed or not
+		boolean chapterPassOrNot = true;
+		
+		//get userCourse
 		UserCourse userCourse = userCourseRepository.findByUserIdAndCourseId(userId,courseId);
 		
 		if(userCourse == null) {
 			throw new RequestException(Error.USERCOURSE_DOES_NOT_EXIS);
 		}
 		
+		//get course chapter
+		List<CourseChapter> courseChapters = new ArrayList<>();
+		courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId);
+		
+		//get userChapter and if the chapter is required but the user does not pass it so course can not be passed
+		for(int i=0;i<courseChapters.size();i++) {
+			//get userChapter by userId and chapterId
+			UserChapter userChapter = userChapterRepository.findByUserIdAndChapterId(userId, courseChapters.get(i).getChapter().getId());
+			
+			if(courseChapters.get(i).getChapter().isRequiredOrNot()==true&&userChapter.getPassOrNot()==false)
+				chapterPassOrNot = false;
+			
+		}
+		
+		//get the teacher
 		User teacher = userRepository.findOne(teacherId);
-	
 		if(teacher!=null) {
 			userCourse.setTeacher(teacher);
 		}
 		
-		if(status.equalsIgnoreCase("true")) {
+		//when the teacher or the admin want to let the user pass and the user pass the chapter he needed, he pass the course
+		if(status.equalsIgnoreCase("true")&&chapterPassOrNot) {
 			userCourse.setPassedOrNot(true);
 		}
+		
+		//when teacher want to let a user passed but the user dose not pass the chapters, system will give the teacher a prompt
+		if(status.equalsIgnoreCase("true")&&chapterPassOrNot==false) {
+			throw new RequestException(Error.USER_DOES_NOT_PASS_CHAPTERS);
+		}
+		
+		//if the user does not pass the course, the date is 0
 		if(status.equalsIgnoreCase("false")) {
 			userCourse.setPassedOrNot(false);
+			date = 0;
 		}
 		
 		userCourse.setDate(date);
@@ -461,7 +493,7 @@ public class UserService extends GenericService<User, Long> {
 	 * 
 	 * @return UserCourse
 	 * */
-	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String status,long date) {
+	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String status,long date,String comment) {
 		boolean result = false;
 		
 		UserChapter userChapter = userChapterRepository.findByUserIdAndChapterId(userId,chapterId);
@@ -487,6 +519,9 @@ public class UserService extends GenericService<User, Long> {
 			userChapter.setScore(score);
 		}
 		
+		if(comment.equalsIgnoreCase(""))
+			userChapter.setComment(comment);
+		
 		if(userChapterRepository.save(userChapter)!=null)
 			result = true;
 		
@@ -507,19 +542,16 @@ public class UserService extends GenericService<User, Long> {
 	        Course course = userCourses.get(i).getCourse(); 
 			
 			JSONObject jsonObject2 = new JSONObject();
+		    
+			jsonObject2.put("passOrNot", userCourse.isPassedOrNot());
 			
-		      jsonObject2.put("courseId", course.getId()); 
-		      jsonObject2.put("name", course.getName()); 
-		      jsonObject2.put("date", userCourse.getDate()); 
-		      jsonObject2.put("passOrNot", userCourse.isPassedOrNot()); 
-		      
 		      if(userCourse.getTeacher()==null) {
-			      jsonObject2.put("teacherId", ""); 
 			      jsonObject2.put("teacherName", ""); 
+			      jsonObject2.put("teacherId", ""); 
 		      }
 		      else {
-			      jsonObject2.put("teacherId", userCourse.getTeacher().getId()); 
 			      jsonObject2.put("teacherName", userCourse.getTeacher().getNickname()); 
+			      jsonObject2.put("teacherId", userCourse.getTeacher().getId()); 
 		      }
 
 			
@@ -531,6 +563,9 @@ public class UserService extends GenericService<User, Long> {
 				jsonObject2.put("pictureId","");
 				jsonObject2.put("picturePosition","");
 			}
+		    jsonObject2.put("date", userCourse.getDate()); 
+			jsonObject2.put("name", course.getName()); 
+			jsonObject2.put("courseId", course.getId());
 
 			jsonObject1.put(i+"", jsonObject2);
 		}
@@ -555,36 +590,40 @@ public class UserService extends GenericService<User, Long> {
 	    if(courseChapters == null) { 
 	      throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST); 
 	    } 
+	    
 	    List<Chapter> chapters = new ArrayList<>(); 
 	     
 	    for(int i=0;i<courseChapters.size();i++) { 
 	      chapters.add(courseChapters.get(i).getChapter()); 
 	    } 
 	     
+	    if(chapters == null) { 
+		     throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST); 
+		} 
+	    
 	    JSONObject jsonObject1 = new JSONObject(); 
 	     
 	    for(int k=0;k<chapters.size();k++) { 
 	      UserChapter userChapter = userChapterRepository.findByUserIdAndChapterId(userId,chapters.get(k).getId()); 
 	       
 	      JSONObject jsonObject = new JSONObject(); 
-	      jsonObject.put("date", userChapter.getDate()); 
-	      jsonObject.put("passOrNot", userChapter.getPassOrNot()); 
-	      jsonObject.put("score", userChapter.getScore());
+	       
 	      if(userChapter.getTeacher() ==null) { 
-	          jsonObject.put("teacherId", ""); 
 	          jsonObject.put("teacherName", ""); 
+	          jsonObject.put("teacherId", ""); 
 	        } 
 	      else { 
-	          jsonObject.put("teacherId", userChapter.getTeacher().getId()); 
 	          jsonObject.put("teacherName", userChapter.getTeacher().getNickname()); 
+	          jsonObject.put("teacherId", userChapter.getTeacher().getId()); 
 	        } 
 	         
-	   
-	        jsonObject.put("chapterId", userChapter.getChapter().getId()); 
+	        jsonObject.put("requiredOrNot", userChapter.getChapter().isRequiredOrNot());
+	        jsonObject.put("score", userChapter.getScore());
+	        jsonObject.put("passOrNot", userChapter.getPassOrNot()); 
+	        jsonObject.put("date", userChapter.getDate());
+	        
 	        jsonObject.put("chapterTitle", userChapter.getChapter().getTitle()); 
-	        jsonObject.put("requiredOrNot", userChapter.getChapter().isRequiredOrNot()); 
-	        jsonObject.put("courseId", userChapter.getChapter().getCourseId()); 
-	         
+	        jsonObject.put("chapterId", userChapter.getChapter().getId()); 
 	        jsonObject1.put(k+"", jsonObject); 
 	      } 
 	       
