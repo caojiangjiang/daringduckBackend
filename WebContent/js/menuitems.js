@@ -167,27 +167,15 @@ items = {
 			type : 'text'
 		} ,{
 			name : 'requiredOrNot',
-			type : 'select',
-			//list : 'RequiredOrNot',
-			//optionText : '%name% (%location%)',
-			options : [ {
-				name : 'yes',
-				value : 'true'
-			},{
-				name : 'no',
-				value :'false'
-			}  ]
-		},{
-			name : 'test',
 			type : 'radio',
 			//list : 'RequiredOrNot',
 			//optionText : '%name% (%location%)',
 			options : [ {
 				name : 'yes',
-				value : 'true'
+				value : true
 			},{
 				name : 'no',
-				value :'false'
+				value :false
 			}  ]
 		}],
 		buttons : [  
