@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import org.springframework.data.domain.Page;
 import java.rmi.AccessException;
 import cn.daringduck.communitybuilder.RequestException;
+import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.User;
 import cn.daringduck.communitybuilder.service.UserService;
 
@@ -211,6 +212,32 @@ public class UserController extends GenericController {
 		return Response.status(Response.Status.OK).entity(userService.getUserMoment(userId,id)).build();
 	}
 
+	
+	
+	/**
+	 *user add a moment for himself
+	 */
+	@POST
+	@Path("/{userId: [0-9]*}/moments")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response addUserMoment(@HeaderParam("Auth-Token") String token,
+			@PathParam("userId") long userId,
+			@FormParam("title") String title, @FormParam("privacy") String privacy,
+			@FormParam("eventDate") String eventDate) throws RequestException {
+		
+		// set who have the authority to do use this api
+		String members[] = {"teacher","admin"}; 
+		
+		//Verify user identity
+		secure(token, members);
+		
+		User user = userService.get(userId);
+		
+		Moment moment = userService.addUserMoment(user.getId(), title, privacy,eventDate);
+		
+		return Response.status(Response.Status.OK).entity(moment).build();
+	}
 	////////
 	// ME //
 	////////

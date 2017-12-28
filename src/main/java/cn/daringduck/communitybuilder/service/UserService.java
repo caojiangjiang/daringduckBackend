@@ -545,19 +545,17 @@ public class UserService extends GenericService<User, Long> {
 			
 			JSONObject jsonObject2 = new JSONObject();
 		    
-			jsonObject2.put("passOrNot", userCourse.isPassedOrNot());
-			
-		      if(userCourse.getTeacher()==null) {
-		    	 
-			      jsonObject2.put("teacherName", ""); 
-			      jsonObject2.put("teacherId", ""); 
-		      }
-		      else {
-		    	   
-			      jsonObject2.put("teacherName", userCourse.getTeacher().getNickname()); 
-			      jsonObject2.put("teacherId", userCourse.getTeacher().getId());
-		      }
 
+			
+
+
+			
+
+		     
+			
+			jsonObject2.put("courseId", course.getId());
+			jsonObject2.put("name", course.getName()); 
+			jsonObject2.put("date", userCourse.getDate());
 			
 			if(course.getPicture()!=null) {
 				jsonObject2.put("pictureId",course.getPicture().getId());
@@ -567,10 +565,19 @@ public class UserService extends GenericService<User, Long> {
 				jsonObject2.put("pictureId","");
 				jsonObject2.put("picturePosition","");
 			}
-		    jsonObject2.put("date", userCourse.getDate()); 
-			jsonObject2.put("name", course.getName()); 
-			jsonObject2.put("courseId", course.getId());
-
+			
+		      if(userCourse.getTeacher()==null) {
+			    	 
+			      jsonObject2.put("teacherName", ""); 
+			      jsonObject2.put("teacherId", ""); 
+		      }
+		      else {
+		    	   
+			      jsonObject2.put("teacherName", userCourse.getTeacher().getNickname()); 
+			      jsonObject2.put("teacherId", userCourse.getTeacher().getId());
+		      }
+		      
+				jsonObject2.put("passOrNot", userCourse.isPassedOrNot());
 			jsonObject1.put(i+"", jsonObject2);
 		}
 		

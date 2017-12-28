@@ -1,6 +1,7 @@
 package cn.daringduck.communitybuilder.controller;
 import java.util.List;
 import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -51,8 +52,7 @@ public class MomentController extends GenericController {
 	@GET
 	@Path("/pageMoments")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response moments(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
-		secure(token, "*");
+	public Response moments(@QueryParam("page") int page) throws RequestException {
 	
 		Page<Moment> moments = momentService.getPage(page);
 		
@@ -68,7 +68,7 @@ public class MomentController extends GenericController {
 	@GET
 	@Path("/{id: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getMoment(@HeaderParam("Auth-Token") String token, @PathParam("id") long id) {
+	public Response getMoment(@PathParam("id") long id) {
 
 		Moment moment = momentService.get(id);
 		return Response.status(Response.Status.OK).entity(moment).build();
@@ -152,12 +152,13 @@ public class MomentController extends GenericController {
 	@Path("/getDD01NewestMoment")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getDD01NewestMoment(@HeaderParam("Auth-Token") String token) throws RequestException {
-		secure(token, "*");
 		Moment moment = momentService.getDD01NewestMoment();
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}
 	
 	
+	
+
 	////////////////////////////////////////////////////////////////////
 	// Moment Part
 	////////////////////////////////////////////////////////////////////	
