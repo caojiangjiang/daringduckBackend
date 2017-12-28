@@ -137,7 +137,7 @@ tr.disabled {
     z-index: 2;
 }
 .btn-bar{
-	margin-top:10px;
+	margin:10px 15px 0 0;
 	float:right;
 }
 .btn-bar input[type="button"]
@@ -153,4 +153,15 @@ tr.disabled {
 {
 	position:fixed;
 	top:150px;
+}
+.row{
+	margin-right: 0px;
+    margin-left: 0px;
+}
+.picBar img{
+	height: 300px;
+    border-radius: 0 10px 10px 0;
+}
+.text_content{
+	height:300px !important;
 }

@@ -237,6 +237,7 @@ items = {
 		name : "userCourses",
 		nameSingular : "courses",
 		editable : true,
+		addFunction : 'loadPage(items.userAvailableCourses, 0, {userId: %userId%})',
 		fields : [ /*{
 			name : 'userId',
 			type : 'text',
@@ -277,6 +278,18 @@ items = {
 				text : "Chapter"
 			}
 		]
+	},
+	userAvailableCourses: {
+		path : "courses",
+		name : "availableCourses",
+		nameSingular : "availableCourses",
+		addable : false,
+		buttons : [ {
+			color : 'success',
+			action : "addUserCourse(%id%,%userId%)",
+			icon : 'Check',
+			text : 'Add'
+		} ]
 	},
 	userChapters : {
 		path : "users/getUserChapter/%userId%/%courseId%",

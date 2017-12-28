@@ -109,7 +109,7 @@ function generateMenu() {
 function generateTable(pageInfo, page, props) {
 	// Check if there is data
 	var data = page.content ? page.content : page;
-	console.log(data);
+	console.log(pageInfo.name);
 	if (data.length == 0)
 		return;
 
@@ -119,12 +119,29 @@ function generateTable(pageInfo, page, props) {
 	var getColumnNames = function() {
 		var keys = [];
 		for ( var j in data[0]) {
+			console.log();
 			var sub_key = j;
 			if ($.inArray(sub_key, [ "email", "members","password","picturePosition","chapters"]) == -1) {
 				keys.push(sub_key);
 			}
 		}
-		console.log(keys);
+		/*extra define some pages' column sequence*/
+		if(pageInfo.name=="userCourses"){                                                      
+			keys=["courseId","pictureId", "name","date", "teacherId", "teacherName"];
+		}
+		if(pageInfo.name=="userChapters"){                                                      
+			keys=["chapterId", "chapterTitle","passOrNot","date","passOrNot","score", "teacherId","teacherName",];
+		}
+		if(pageInfo.name=="courses" || pageInfo.name=="availableCourses"){
+			keys=["id","pictureId","name"];
+		}
+		if(pageInfo.name=="chapters"){
+			keys=["id", "title","requiredOrNot"];
+		}
+		if(pageInfo.name=="users"){
+			keys=["id","picture","username","role","club","gender", "nickname", "phone", "wechat", "disabled"];
+		}
+		console.log(keys)
 		return keys;
 	}
 
@@ -724,6 +741,19 @@ function removeMember(classId, memberId) {
 }
 
 //
+//Add / Remove course from a user
+//
+
+function addUserCourse(courseId, userId) {
+	var done = function() {
+		loadPage(items.userCourses, 0, {'userId': userId})
+	}
+	var data="userId="+userId+"&courseId="+courseId+"&teacherId=14&passOrNot=false&date="
+	console.log(data);
+	communityBuilder.add(data,"users/addUserCourse", done, fail);
+}
+
+//
 // Other functions -- UNUSED / TODO
 //
 
@@ -986,21 +1016,26 @@ function showEditChapterPart(courseId,chapterId) {
 									picId=chapterPart.picture.id;
 								}
 								$('#chapter-content').append(
-										'<form class="paragraph" id="paragraph'+(index+1)+'">'    
+										'<form class="paragraph" id="paragraph'+(index+1)+'">'										
 										+'<h1>Chapter part-'+(index+1)+'</h1>'
 										+'<span class="chapterPartId" style="display:none;">'+chapterPart.id+'</span>'
-										+'<div class="input-group">'
-											+'<span class="input-group-addon">Text</span>'
-											+'<textarea class="form-control text_content" style="height:100px" readonly="readonly">'
-											+chapterPart.text
-											+'</textarea>'  
+										+'<div class="row">'
+										+'<div class="col-sm-6">'
+											+'<div class="input-group">'
+												+'<span class="input-group-addon">Text</span>'
+												+'<textarea class="form-control text_content" readonly="readonly">'
+												+chapterPart.text
+												+'</textarea>'  
+											+'</div>'
 										+'</div>'
-										+'<br>'
-										+'<div class="input-group picBar">'
-											+'<span class="input-group-addon">Picture</span>'
-											+'<img src="http://localhost:8080/daringduckBackend/api/pictures/'
-											+picId
-											+'" width="500px;"/>'
+										+'<div class="col-sm-6">'
+											+'<div class="input-group picBar">'
+												//+'<span class="input-group-addon">Picture</span>'
+												+'<img src="http://localhost:8080/daringduckBackend/api/pictures/'
+												+picId
+												+'" width="100%;"/>'
+											+'</div>'
+										+'</div>'
 										+'</div>'
 										+'<div class="input-group btn-bar">'
 											+'<input type="button" onclick="editChapterStyle('
@@ -1034,7 +1069,7 @@ function showEditChapterPart(courseId,chapterId) {
 									+'<h1>Chapter part-1</h1>'
 									+'<div class="input-group">'
 										+'<span class="input-group-addon">Text</span>'
-										+'<textarea class="form-control text_content" style="height:100px"></textarea>'  
+										+'<textarea class="form-control text_content"></textarea>'  
 									+'</div>'
 									+'<br>'
 									+'<div class="input-group">'
