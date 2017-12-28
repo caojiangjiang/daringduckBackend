@@ -54,20 +54,34 @@ public class CourseController extends GenericController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response courses(@QueryParam("page") int page) throws RequestException {
-		String courses = courseService.getPageOfCourse(page);
+	public Response courses(@QueryParam("page") int page,@QueryParam("type") int type) throws RequestException {
+		String courses = courseService.getPageOfCourse(page,type);
 		return Response.status(Response.Status.OK).entity(courses).build();
 	}
 
 	/**
-	 * Get the course with id(for search)
+	 * Get the course with id
 	 * @throws RequestException 
 	 */
 	@GET
 	@Path("/{id: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response course(@PathParam("id") int id) throws RequestException {
-		String course = courseService.getCourse(id);
+	public Response course(@PathParam("id") int id,@QueryParam("type") int type) throws RequestException {
+		String course = courseService.getCourse(id,type);
+		return Response.status(Response.Status.OK).entity(course).build();
+	}
+	
+	
+	
+	/**
+	 * Get the course with id(for search)
+	 * @throws RequestException 
+	 */
+	@GET
+	@Path("/searchCourse")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response searchCourse(@QueryParam("name") String name,@QueryParam("type") int type) throws RequestException {
+		String course = courseService.searchCourse(name,type);
 		return Response.status(Response.Status.OK).entity(course).build();
 	}
 
@@ -79,12 +93,12 @@ public class CourseController extends GenericController {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response addCourse(@HeaderParam("Auth-Token") String token, @FormParam("name") String name,@FormParam("pictureId")long pictureId)
+	public Response addCourse(@HeaderParam("Auth-Token") String token, @FormParam("english_name") String english_name,@FormParam("chinese_name") String chinese_name,@FormParam("dutch_name") String dutch_name,@FormParam("pictureId")long pictureId)
 			throws RequestException {
 		secure(token, "admin");
 		
 		//add course
-		Course course = courseService.addCourse(name,pictureId);
+		Course course = courseService.addCourse(english_name,chinese_name,dutch_name,pictureId);
 		
 		//Return the result course to the RESTful service
 		return Response.status(Response.Status.OK).entity(course).build();
@@ -98,10 +112,10 @@ public class CourseController extends GenericController {
 	@PUT
 	@Path("/{id: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response editCourse(@HeaderParam("Auth-Token") String token, @PathParam("id") int id, @QueryParam("name") String name,@QueryParam("pictureId") long pictureId)
+	public Response editCourse(@HeaderParam("Auth-Token") String token, @PathParam("id") int id, @QueryParam("english_name") String english_name,@QueryParam("chinese_name") String chinese_name,@QueryParam("dutch_name") String dutch_name,@QueryParam("pictureId") long pictureId)
 			throws RequestException {
 		secure(token, "admin");
-		Course course = courseService.editCourse(id, name,pictureId);
+		Course course = courseService.editCourse(id, english_name,chinese_name,dutch_name,pictureId);
 		return Response.status(Response.Status.OK).entity(course).build();
 	}
 	
@@ -129,9 +143,9 @@ public class CourseController extends GenericController {
 	@GET
 	@Path("/{courseId: [0-9]*}/chapters/")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response chapters(@HeaderParam("Auth-Token") String token,@PathParam("courseId") int id) throws RequestException {
+	public Response chapters(@HeaderParam("Auth-Token") String token,@PathParam("courseId") int id,@QueryParam("type") int type) throws RequestException {
 //		secure(token, "*");
-		return Response.status(Response.Status.OK).entity(courseService.getChapters(id)).build();
+		return Response.status(Response.Status.OK).entity(courseService.getChapters(id,type)).build();
 	}
 	
 	/**
@@ -158,9 +172,9 @@ public class CourseController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response addChapterStep1(@HeaderParam("Auth-Token") String token, @PathParam("courseId") int courseId,
-			@FormParam("title") String title,@FormParam("requiredOrNot")  String requiredOrNot) throws RequestException {
+			@FormParam("english_title") String english_title,@FormParam("chinese_title") String chinese_title,@FormParam("dutch_title") String dutch_title,@FormParam("requiredOrNot")  String requiredOrNot) throws RequestException {
 		secure(token, "admin");
-		Chapter chapter = courseService.addChapterStep1(courseId, title,requiredOrNot);
+		Chapter chapter = courseService.addChapterStep1(courseId,english_title,chinese_title,dutch_title,requiredOrNot);
 		return Response.status(Response.Status.OK).entity(chapter).build();
 	}
 	
@@ -189,9 +203,9 @@ public class CourseController extends GenericController {
 	@Path("/{courseId: [0-9]*}/chapters/{chapterId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response editChapter(@HeaderParam("Auth-Token") String token, @PathParam("chapterId") long chapterId,
-			@QueryParam("title") String title,@QueryParam("requiredOrNot") String requiredOrNot) throws RequestException {
+			@QueryParam("english_title") String english_title,@QueryParam("chinese_title") String chinese_title,@QueryParam("dutch_title") String dutch_title,@QueryParam("requiredOrNot") String requiredOrNot) throws RequestException {
 		secure(token, "admin");
-		Chapter chapter = courseService.editChapter(chapterId, title,requiredOrNot);
+		Chapter chapter = courseService.editChapter(chapterId, english_title,chinese_title,dutch_title,requiredOrNot);
 		return Response.status(Response.Status.OK).entity(chapter).build();
 	}
 
@@ -231,14 +245,14 @@ public class CourseController extends GenericController {
 	@GET
 	@Path("/getChapterPartList/{chapterId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getChapterPartList(@HeaderParam("Auth-Token") String token,@PathParam("chapterId") long chapterId) throws RequestException {
+	public Response getChapterPartList(@HeaderParam("Auth-Token") String token,@PathParam("chapterId") long chapterId,@QueryParam("type") int type) throws RequestException {
 		//set who have the authority to do use this api
 		//String members[] = {"teacher","admin","member","parent"};
 		
 		//judge whether the user have the permission to get the UserCourses
 		secure(token, "*");
 		
-		List<ChapterPart> chapterParts = courseService.getChapterPartList(chapterId);
+		String chapterParts = courseService.getChapterPartList(chapterId,type);
 		
 		return Response.status(Response.Status.OK).entity(chapterParts).build();
 	}
@@ -275,10 +289,10 @@ public class CourseController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response addChapterPartStep1(@HeaderParam("Auth-Token") String token, @PathParam("chapterId") long chapterId,
-			@FormParam("text") String text, @FormParam("pictureId") long pictureId) throws RequestException {
+			@FormParam("english_text") String english_text,@FormParam("chinese_text") String chinese_text,@FormParam("dutch_text") String dutch_text, @FormParam("pictureId") long pictureId) throws RequestException {
 		secure(token, "admin");
 
-		ChapterPart part = courseService.addChapterPartStep1(chapterId, text, pictureId);
+		ChapterPart part = courseService.addChapterPartStep1(chapterId, english_text,chinese_text,dutch_text, pictureId);
 		return Response.status(Response.Status.OK).entity(part).build();
 	}
 	
@@ -309,10 +323,10 @@ public class CourseController extends GenericController {
 	@Path("/chapters/{chapterId: [0-9]*}/parts/{chapterPartId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response editChapterPart(@HeaderParam("Auth-Token") String token, @PathParam("chapterPartId") long chapterPartId,
-			@QueryParam("text") String text, @QueryParam("pictureId") long pictureId) throws RequestException {
+			@QueryParam("english_text") String english_text,@QueryParam("chinese_text") String chinese_text,@QueryParam("dutch_text") String dutch_text,@QueryParam("pictureId") long pictureId) throws RequestException {
 		secure(token, "admin");
 
-		ChapterPart part = courseService.editChapterPart(chapterPartId, text, pictureId);
+		ChapterPart part = courseService.editChapterPart(chapterPartId, english_text,chinese_text,dutch_text, pictureId);
 		
 		return Response.status(Response.Status.OK).entity(part).build();
 	}

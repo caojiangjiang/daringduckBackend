@@ -19,22 +19,25 @@ public class Course{
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	@NotNull private String name;
+	@NotNull private String english_name;
+	private String chinese_name;
+	private String dutch_name; 
 	
 	@OneToOne private Picture picture;
 	
 	public Course() { }
 	
-	public Course(String name,Picture picture) { 
-		this.name = name;
+	public Course(String english_name,String chinese_name,String dutch_name,Picture picture) { 
+		this.english_name = english_name;
 		this.picture = picture;
+		this.chinese_name =chinese_name;
+		this.dutch_name = dutch_name;
 	}
-	
 	
 	public int getId() { return id; }
 	
-	public String getName() { return name; }
-	public void setName(String xname) { this.name = xname; }
+	public String getEnglishName() { return english_name; }
+	public void setEnglishName(String xname) { this.english_name = xname; }
 
 	public Picture getPicture() {
 		return picture;
@@ -42,6 +45,22 @@ public class Course{
 
 	public void setPicture(Picture picture) {
 		this.picture = picture;
+	}
+
+	public String getChinese_name() {
+		return chinese_name;
+	}
+
+	public void setChinese_name(String chinese_name) {
+		this.chinese_name = chinese_name;
+	}
+
+	public String getDutch_name() {
+		return dutch_name;
+	}
+
+	public void setDutch_name(String dutch_name) {
+		this.dutch_name = dutch_name;
 	}
 
 }

@@ -20,23 +20,27 @@ public class ChapterPart {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	
-	private String text;
+	private String english_text;
+	
+	private String chinese_text;
+	
+	private String dutch_text;
+	
 	@NotNull @OneToOne private Picture picture;
 	
 	private long chapterId;
 	
 	public ChapterPart() {}
 	
-	public ChapterPart(String text, Picture picture,long chapterId) {
-		this.text = text;
+	public ChapterPart(String english_text,String chinese_text,String dutch_text, Picture picture,long chapterId) {
+		this.english_text = english_text;
+		this.chinese_text = chinese_text;
+		this.dutch_text =dutch_text;
 		this.picture = picture;
 		this.chapterId = chapterId;
 	}
 	
 	public long getId() { return id; }
-	
-	public String getText() { return text; }
-	public void setText(String text) { this.text = text; }
 	
 	public Picture getPicture() { return picture; }
 	public void setPicture(Picture picture) { this.picture = picture; }
@@ -49,6 +53,30 @@ public class ChapterPart {
 
 	public void setChapterId(long chapterId) {
 		this.chapterId = chapterId;
+	}
+
+	public String getEnglish_text() {
+		return english_text;
+	}
+
+	public void setEnglish_text(String english_text) {
+		this.english_text = english_text;
+	}
+
+	public String getChinese_text() {
+		return chinese_text;
+	}
+
+	public void setChinese_text(String chinese_text) {
+		this.chinese_text = chinese_text;
+	}
+
+	public String getDutch_text() {
+		return dutch_text;
+	}
+
+	public void setDutch_text(String dutch_text) {
+		this.dutch_text = dutch_text;
 	}
 	
 }

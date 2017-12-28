@@ -73,10 +73,10 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @param pictureId
 	 * @return
 	 */
-	public Course addCourse(String name,long pictureId) {
+	public Course addCourse(String english_name,String chinese_name,String dutch_name,long pictureId) {
 		//find the picture by pictureId
 		Picture picture = pictureRepository.findOne(pictureId);
-		Course course = new Course(name,picture);
+		Course course = new Course(english_name,chinese_name,dutch_name,picture);
 		courseRepository.save(course);
 		return course;
 		
@@ -89,7 +89,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return String
 	 * */
 	
-	public String getPageOfCourse(int page){
+	public String getPageOfCourse(int page,int type){
 		
 		//pageNumber and pageSize
 		Page<Course> coursesPage = courseRepository.findAll(new PageRequest(page, PAGE_SIZE));
@@ -109,7 +109,13 @@ public class CourseService extends GenericService<Course, Integer> {
 				
 				JSONObject jsonObject2 = new JSONObject();
 				
-				jsonObject2.put("name", course.getName());
+				//choose the language accroding to the type
+				if(type == 2)
+					jsonObject2.put("name", course.getChinese_name());
+				else if(type == 3)
+					jsonObject2.put("name", course.getDutch_name());
+				else
+					jsonObject2.put("name", course.getEnglishName());
 				
 				if(course.getPicture()!=null) {
 					jsonObject2.put("pictureId",course.getPicture().getId());
@@ -129,6 +135,69 @@ public class CourseService extends GenericService<Course, Integer> {
 		}
 	}
 	
+	
+	/**
+	 * Get courses By courseName
+	 * 
+	 * @param courseId
+	 * @return String
+	 * @throws RequestException 
+	 * 
+	 * */
+	
+	public String searchCourse(String name, int type) throws RequestException {
+		
+		JSONObject jsonObject = new JSONObject();
+		
+		List<Course> courses = new ArrayList<>();
+		
+		switch (type) {
+		case 2:
+			courses = courseRepository.findByChineseNameLike(name);
+			break;
+		case 3:
+			courses = courseRepository.findByDutchNameLike(name);
+			break;
+
+		default:courses = courseRepository.findByEnglishNameLike(name);
+			break;
+		}
+		
+		System.out.println(courses.size());
+		
+		for(int i =0;i<courses.size();i++) {
+			JSONObject jsonObject2 = new JSONObject();
+			
+			jsonObject2.put("id", courses.get(i).getId());
+			
+			if(courses.get(i).getPicture()!=null) {
+				jsonObject2.put("pictureId", courses.get(i).getPicture().getId());
+				jsonObject2.put("pictureLocation", courses.get(i).getPicture().getFileLocation());
+			}
+			else {
+				jsonObject2.put("pictureId", "");
+				jsonObject2.put("pictureLocation", "");
+			}
+			
+			switch (type) {
+			case 2:
+				jsonObject2.put("name", courses.get(i).getChinese_name());
+				break;
+			case 3:
+				jsonObject2.put("name", courses.get(i).getDutch_name());
+				break;
+
+			default:jsonObject2.put("name", courses.get(i).getEnglishName());
+				break;
+			}
+			
+			jsonObject.put(i+"", jsonObject2);
+		}
+		
+		return jsonObject.toString();
+		
+	}
+	
 	/**
 	 * Get a course By courseId
 	 * 
@@ -138,7 +207,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * 
 	 * */
 	
-	public String getCourse(int courseId) throws RequestException {
+	public String getCourse(int courseId, int type) throws RequestException {
 		
 		Course course = courseRepository.findOne(courseId);
 		
@@ -149,7 +218,20 @@ public class CourseService extends GenericService<Course, Integer> {
 		//add courses
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("id", courseId);
-		jsonObject.put("name", course.getName());
+		//choose the language accroding to the type
+		switch (type) {
+			
+		case 2:
+			jsonObject.put("name", course.getChinese_name());
+			break;
+			
+		case 3:
+			jsonObject.put("name", course.getDutch_name());
+			break;
+
+		default:jsonObject.put("name", course.getEnglishName());
+			break;
+		}
 		
 		//add picture
 		Picture picture = course.getPicture();
@@ -183,7 +265,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return
 	 * @throws RequestException
 	 */
-	public Course editCourse(int id, String name,long pictureId) throws RequestException {
+	public Course editCourse(int id, String english_name,String chinese_name,String dutch_name,long pictureId) throws RequestException {
 		//find a course by id
 		Course course = courseRepository.findOne(id);
 		
@@ -198,8 +280,16 @@ public class CourseService extends GenericService<Course, Integer> {
 		}
 		
 		//reset the course name
-		if (name != null) {
-			course.setName(name);
+		if (english_name != null) {
+			course.setEnglishName(english_name);
+		}
+		
+		if(chinese_name!=null) {
+			course.setChinese_name(chinese_name);
+		}
+		
+		if(dutch_name!=null) {
+			course.setDutch_name(dutch_name);
 		}
 		
 		courseRepository.save(course);
@@ -260,7 +350,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return
 	 * @throws RequestException
 	 */
-	public List<Chapter> getChapters(int courseId) throws RequestException {
+	public String getChapters(int courseId,int type) throws RequestException {
 		
 		Course course = courseRepository.findOne(courseId);
 
@@ -270,15 +360,29 @@ public class CourseService extends GenericService<Course, Integer> {
 		
 		List <CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId);
 		
-		List <Chapter> chapters = new ArrayList<>();
+		JSONObject jsonObject = new JSONObject();
 		
 		for(int i=0;i<courseChapters.size();i++) {
-			Chapter chapter = courseChapters.get(i).getChapter();
+			JSONObject jsonObject2 = new JSONObject();
+			jsonObject2.put("id",courseChapters.get(i).getChapter().getId());
+			jsonObject2.put("courseId", courseChapters.get(i).getChapter().getCourseId());
+			jsonObject2.put("requiredOrNot", courseChapters.get(i).getChapter().isRequiredOrNot());
+			switch (type) {
+			case 2:
+				jsonObject2.put("title",  courseChapters.get(i).getChapter().getChinese_title());
+				break;
+
+			case 3:
+				jsonObject2.put("title",  courseChapters.get(i).getChapter().getDutch_title());
+				break;
+			default:jsonObject2.put("title", courseChapters.get(i).getChapter().getEnglishTitle());
+				break;
+			}
 			
-			chapters.add(chapter);
+			jsonObject.put(i+"",jsonObject2);
 		}
 		
-		return chapters;
+		return jsonObject.toString();
 	}
 	
 	/**
@@ -296,15 +400,15 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @param title
 	 * 
 	 * */
-	public Chapter addChapterStep1(int courseId, String title,String requiredOrNot) throws RequestException {
+	public Chapter addChapterStep1(int courseId, String english_name,String chinese_name,String dutch_name,String requiredOrNot) throws RequestException {
 		
 		Chapter chapter;
 		
 		if(requiredOrNot.equalsIgnoreCase("true")) {
-			chapter = new Chapter(title,courseId,true);
+			chapter = new Chapter(english_name,chinese_name,dutch_name,courseId,true);
 		}
 		else {
-			chapter = new Chapter(title,courseId,false);
+			chapter = new Chapter(english_name,chinese_name,dutch_name,courseId,false);
 		}
 
 		chapterRepository.save(chapter);
@@ -365,7 +469,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return
 	 * @throws RequestException
 	 */
-	public Chapter editChapter(long chapterId, String title,String requiredOrNot) throws RequestException {
+	public Chapter editChapter(long chapterId, String english_title,String chinese_title,String dutch_title,String requiredOrNot) throws RequestException {
 		
 		Chapter chapter = chapterRepository.findOne(chapterId);
 		
@@ -380,10 +484,18 @@ public class CourseService extends GenericService<Course, Integer> {
 			chapter.setRequiredOrNot(false);
 		}
 		
-		if (title != null) {
-			chapter.setTitle(title);
+		if (english_title != null) {
+			chapter.setEnglishTitle(english_title);
 		}
 
+		if(chinese_title!=null) {
+			chapter.setChinese_title(chinese_title);
+		}
+		
+		if(dutch_title!=null) {
+			chapter.setDutch_title(dutch_title);
+		}
+		
 		chapterRepository.save(chapter);
 		
 		return chapter;
@@ -452,7 +564,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return
 	 * @throws RequestException
 	 */
-	public ChapterPart addChapterPartStep1(long chapterId, String text, long pictureId) throws RequestException {
+	public ChapterPart addChapterPartStep1(long chapterId, String english_text,String chinese_text,String dutch_text, long pictureId) throws RequestException {
 
 		//get the picture By pictureId
 		Picture picture = pictureRepository.findOne(pictureId);
@@ -467,7 +579,7 @@ public class CourseService extends GenericService<Course, Integer> {
 			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
 		}
 		
-		ChapterPart part = new ChapterPart(text, picture,chapterId);
+		ChapterPart part = new ChapterPart(english_text,chinese_text,dutch_text,picture,chapterId);
 
 		partRepository.save(part);
 		
@@ -528,15 +640,23 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return
 	 * @throws RequestException
 	 */
-	public ChapterPart editChapterPart(long chapterPartId, String text, long pictureId) throws RequestException {
+	public ChapterPart editChapterPart(long chapterPartId, String english_text,String chinese_text, String dutch_text, long pictureId) throws RequestException {
 		ChapterPart part = partRepository.findOne(chapterPartId);
 		
 		if (part == null) {
 			throw new RequestException(Error.CHAPTER_PART_DOES_NOT_EXIST);
 		}
 		
-		if (text != null) {
-			part.setText(text);
+		if (english_text != null) {
+			part.setEnglish_text(english_text);
+		}
+		
+		if(chinese_text!=null) {
+			part.setChinese_text(chinese_text);
+		}
+		
+		if(dutch_text!=null) {
+			part.setDutch_text(dutch_text);
 		}
 		
 		if (pictureId != 0) {
@@ -592,19 +712,36 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return
 	 * 
 	 * */
-	public List<ChapterPart> getChapterPartList(long chapterId){
+	public String getChapterPartList(long chapterId,int type){
 		
 		List<ChapterChapterPart> chapterChapterParts = chapterChapterPartRepository.getByChapterId(chapterId);
 		
 		if(chapterChapterParts!=null) {
 			
-			List<ChapterPart> chapterParts = new ArrayList<>();
+			JSONObject jsonObject = new JSONObject();
 			
 			for(int i =0;i<chapterChapterParts.size();i++) {
-				chapterParts.add(chapterChapterParts.get(i).getChapterPart());
+				JSONObject jsonObject2 = new JSONObject();
+				
+				jsonObject2.put("id", chapterChapterParts.get(i).getChapterPart().getId());
+				jsonObject2.put("pictureId",  chapterChapterParts.get(i).getChapterPart().getPicture());
+				
+				switch (type) {
+				case 2:
+					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getChinese_text());
+					break;
+
+				case 3:
+					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getDutch_text());
+					break;
+				default:jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
+					break;
+				}
+				
+				jsonObject.put(i+"", jsonObject2);
 			}
 			
-			return chapterParts;
+			return jsonObject.toString();
 			
 		}
 		else

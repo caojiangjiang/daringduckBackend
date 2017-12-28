@@ -85,54 +85,18 @@ public class PictureController extends GenericController{
 		}
 		
 		//inital the imageName and pathName
-//		String imageName = "";
-//		String pathName ="/root/img";
-//		
-//		//if the directory don't exist we need established the directory
-//		pathName = pathName+"/"+type;
-//		File file = new File(pathName);
-//		if(!file.isDirectory()) {
-//			file.mkdir();
-//		}
-//		
-//		//if the directory don't exist we need established the directory
-//		pathName = pathName +"/"+id;
-//		File file1 = new File(pathName);
-//		if(!file1.isDirectory()) {
-//			file1.mkdir();
-//		}
-//		
-//		//when the subDirectory is null it means the picture is for user's avatar or for course's picture
-//		if(subDirectory.equalsIgnoreCase("")) {
-//			//image name
-//			imageName = "1."+subtype;
-//		}
-//		//when the subDirectory is not null it means the picture is for user's moment or for course's chapter
-//		else {
-//			//image name
-//			imageName = UUID.randomUUID().toString() + "." + subtype;
-//	
-//			//path name
-//			pathName = pathName + "/" + subDirectory;
-//			File file3 = new File(pathName);
-//			if(!file3.isDirectory()) {
-//				file3.mkdir();
-//			}
-//		}
-		
-		
 		String imageName = "";
-		String pathName ="D:\\img";
+		String pathName ="/root/img";
 		
 		//if the directory don't exist we need established the directory
-		pathName = pathName+"\\"+type;
+		pathName = pathName+"/"+type;
 		File file = new File(pathName);
 		if(!file.isDirectory()) {
 			file.mkdir();
 		}
 		
 		//if the directory don't exist we need established the directory
-		pathName = pathName +"\\"+id;
+		pathName = pathName +"/"+id;
 		File file1 = new File(pathName);
 		if(!file1.isDirectory()) {
 			file1.mkdir();
@@ -149,16 +113,52 @@ public class PictureController extends GenericController{
 			imageName = UUID.randomUUID().toString() + "." + subtype;
 	
 			//path name
-			pathName = pathName + "\\" + subDirectory;
+			pathName = pathName + "/" + subDirectory;
 			File file3 = new File(pathName);
 			if(!file3.isDirectory()) {
 				file3.mkdir();
 			}
 		}
 		
-		//String uploadedFileLocation = context.getRealPath("/images/"+imageName);		
-		String uploadedFileLocation = pathName+"\\"+imageName;
-		//String uploadedFileLocation = pathName+"/"+imageName;
+		
+//		String imageName = "";
+//		String pathName ="D:\\img";
+//		
+//		//if the directory don't exist we need established the directory
+//		pathName = pathName+"\\"+type;
+//		File file = new File(pathName);
+//		if(!file.isDirectory()) {
+//			file.mkdir();
+//		}
+//		
+//		//if the directory don't exist we need established the directory
+//		pathName = pathName +"\\"+id;
+//		File file1 = new File(pathName);
+//		if(!file1.isDirectory()) {
+//			file1.mkdir();
+//		}
+//		
+//		//when the subDirectory is null it means the picture is for user's avatar or for course's picture
+//		if(subDirectory.equalsIgnoreCase("")) {
+//			//image name
+//			imageName = "1."+subtype;
+//		}
+//		//when the subDirectory is not null it means the picture is for user's moment or for course's chapter
+//		else {
+//			//image name
+//			imageName = UUID.randomUUID().toString() + "." + subtype;
+//	
+//			//path name
+//			pathName = pathName + "\\" + subDirectory;
+//			File file3 = new File(pathName);
+//			if(!file3.isDirectory()) {
+//				file3.mkdir();
+//			}
+//		}
+//		
+//		//String uploadedFileLocation = context.getRealPath("/images/"+imageName);		
+//		String uploadedFileLocation = pathName+"\\"+imageName;
+		String uploadedFileLocation = pathName+"/"+imageName;
 		
 		Picture picture = pictureService.createPictureReference(uploadedFileLocation);
 		

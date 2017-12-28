@@ -393,10 +393,6 @@ public class UserService extends GenericService<User, Long> {
 			
 			User teacher = userRepository.findOne(teacherId);
 			
-			if(teacher==null) {
-				throw new RequestException(Error.USER_DOES_NOT_EXIST);
-			}
-			
 			UserCourse userCourse = new UserCourse(user,course,teacher,date,passedOrNot);
 			
 			if(userCourseRepository.save(userCourse)!=null)
@@ -533,7 +529,7 @@ public class UserService extends GenericService<User, Long> {
 	/**
 	 * get a user's courses 
 	 * */
-	public String getUserCourse(long userId) {
+	public String getUserCourse(long userId,int type) {
 		
 		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
 		
@@ -545,16 +541,23 @@ public class UserService extends GenericService<User, Long> {
 			
 			JSONObject jsonObject2 = new JSONObject();
 		    
-
-			
-
-
-			
-
-		     
-			
 			jsonObject2.put("courseId", course.getId());
-			jsonObject2.put("name", course.getName()); 
+			
+			//choose the language accroding to the type
+			switch (type) {
+				
+			case 2:
+				jsonObject2.put("name", course.getChinese_name());
+				break;
+				
+			case 3:
+				jsonObject2.put("name", course.getDutch_name());
+				break;
+
+			default:jsonObject2.put("name", course.getEnglishName());
+				break;
+			}
+			
 			jsonObject2.put("date", userCourse.getDate());
 			
 			if(course.getPicture()!=null) {
@@ -594,7 +597,7 @@ public class UserService extends GenericService<User, Long> {
 	   * get a user's chapters  
 	   * @throws RequestException  
 	   * */ 
-	  public String getUserChapter(long userId,int courseId) throws RequestException {   
+	  public String getUserChapter(long userId,int courseId,int type) throws RequestException {   
 	     
 	    List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId); 
 	     
@@ -632,8 +635,23 @@ public class UserService extends GenericService<User, Long> {
 	        jsonObject.put("score", userChapter.getScore());
 	        jsonObject.put("passOrNot", userChapter.getPassOrNot()); 
 	        jsonObject.put("date", userChapter.getDate());
+	
+	        //choose language accroding to the type
+			switch (type) {
+				
+			case 2:
+				jsonObject.put("chapterTitle", userChapter.getChapter().getChinese_title());
+				break;
+				
+			case 3:
+				jsonObject.put("chapterTitle", userChapter.getChapter().getDutch_title());
+				break;
+
+			default:jsonObject.put("chapterTitle", userChapter.getChapter().getDutch_title());
+				break;
+			}
 	        
-	        jsonObject.put("chapterTitle", userChapter.getChapter().getTitle()); 
+	        
 	        jsonObject.put("chapterId", userChapter.getChapter().getId()); 
 	        jsonObject1.put(k+"", jsonObject); 
 	      } 
