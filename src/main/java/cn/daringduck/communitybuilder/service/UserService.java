@@ -415,12 +415,12 @@ public class UserService extends GenericService<User, Long> {
 	
 	/**
 	 * change a user's course status
+	 * @author 曹将将
 	 * 
 	 * @param userId
 	 * @param courseId
 	 * @param teacherId
 	 * @param status
-	 * @author 曹将将
 	 * 
 	 * @return UserCourse
 	 * @throws RequestException 
@@ -486,16 +486,17 @@ public class UserService extends GenericService<User, Long> {
 	
 	/**
 	 * change a user's chapter status
+	 * @author 曹将将
 	 * 
 	 * @param userId
 	 * @param courseId
 	 * @param teacherId
 	 * @param status
-	 * @author 曹将将
 	 * 
 	 * @return UserCourse
 	 * */
-	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String status,long date,String comment) {
+	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String status,long date,String comment) 
+	{
 		boolean result = false;
 		
 		UserChapter userChapter = userChapterRepository.findByUserIdAndChapterId(userId,chapterId);
@@ -533,7 +534,8 @@ public class UserService extends GenericService<User, Long> {
 	/**
 	 * get a user's courses 
 	 * */
-	public String getUserCourse(long userId,int type) {
+	public String getUserCourse(long userId,int type) 
+	{
 		
 		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
 		
@@ -589,6 +591,171 @@ public class UserService extends GenericService<User, Long> {
 		}
 		
 		return jsonObject1.toString();
+	}
+	
+	
+	/**
+	 * get a user's one course
+	 * @param userId
+	 * @param courseId
+	 * @param type
+	 * @return
+	 * 
+	 * @author 曹将将
+	 * @throws RequestException 
+	 * */
+	public String getOneUserCourse(long userId,int courseId, int type) throws RequestException {
+		
+		//get userCourse
+		UserCourse userCourse = userCourseRepository.findByUserIdAndCourseId(userId,courseId);
+		
+		//judge whether user have this course
+		if(userCourse==null) {
+			throw new RequestException(Error.USERCOURSE_DOES_NOT_EXIS);
+		}
+	        
+		//According to the userCourse get course
+	    Course course = userCourse.getCourse(); 
+			
+		JSONObject jsonObject2 = new JSONObject();
+		    
+		jsonObject2.put("courseId", course.getId());
+			
+		//choose the language accroding to the type
+		switch (type) {
+				
+		case 2:
+			jsonObject2.put("name", course.getChinese_name());
+			break;
+				
+		case 3:
+			jsonObject2.put("name", course.getDutch_name());
+			break;
+
+		default:jsonObject2.put("name", course.getEnglishName());
+			break;
+			}
+			
+		//put date into json
+		jsonObject2.put("date", userCourse.getDate());
+			
+		//judge whether course have a picture,if have put the id and location, if does not,put null
+		if(course.getPicture()!=null) {
+			jsonObject2.put("pictureId",course.getPicture().getId());
+			jsonObject2.put("picturePosition",course.getPicture().getFileLocation());
+		}
+		else {
+			jsonObject2.put("pictureId","");
+			jsonObject2.put("picturePosition","");
+		}
+			
+		//judge whether user have a teacher,if have put the id and name, if does not,put null
+		if(userCourse.getTeacher()==null) {	 
+			jsonObject2.put("teacherName", ""); 
+			jsonObject2.put("teacherId", ""); 
+		}
+		else { 
+			jsonObject2.put("teacherName", userCourse.getTeacher().getNickname()); 
+			jsonObject2.put("teacherId", userCourse.getTeacher().getId());
+		}
+		
+		//put whether the user passOrNot
+		jsonObject2.put("passOrNot", userCourse.isPassedOrNot());
+		
+		return jsonObject2.toString();
+	}
+	
+	/**
+	 * get the courses that a user does not have
+	 * @author 曹将将
+	 * 
+	 * @param userId
+	 * @param type
+	 * 
+	 * @return
+	 * @throws RequestException 
+	 **/
+	public String getCourseAvaliable(long userId,int page, int type) throws RequestException {
+		
+		//the courses that user has choosed
+		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
+		
+		if(userCourses ==null) {
+			throw new RequestException(Error.USERCOURSE_DOES_NOT_EXIS);
+		}
+		
+		//all courses
+		List<Course> courses = courseRepository.findAll();
+		
+		if(courses==null) {
+			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
+		}
+		
+		//the beginning of a course
+		page = page*25;
+		
+		//the end of a course
+		int end = page + 25;
+		
+		System.out.println(page);
+		
+		JSONObject jsonObject1 = new JSONObject();
+		
+		int howMany = 0;
+		for(int j=0;j<courses.size();j++) {
+			
+			JSONObject jsonObject = new JSONObject();
+			
+		    for(int i =0;i<userCourses.size();i++) { 
+		    	
+			   UserCourse userCourse = userCourses.get(i); 
+			   Course course = courses.get(j); 
+			   //if the course has the same id with userCourse's, jump to next course
+			   if(userCourse.getCourse().getId() == course.getId())
+			   {
+			       j++;
+			       continue;
+			   }	
+		    }
+		    
+		    //if the course does have the same id with userCourse's, put to next course
+		    jsonObject.put("id",courses.get(j).getId());
+		    
+			switch (type) {
+			case 2:
+				jsonObject.put("name", courses.get(j).getChinese_name());
+				break;
+			case 3:
+				jsonObject.put("name", courses.get(j).getDutch_name());
+				break;
+
+			default:jsonObject.put("name", courses.get(j).getEnglishName());
+				break;
+			}
+		    
+			if(courses.get(j).getPicture()!=null) {
+				jsonObject.put("pictureId", courses.get(j).getPicture().getId());
+				jsonObject.put("pictureLocation", courses.get(j).getPicture().getFileLocation());
+			}
+			else {
+				jsonObject.put("pictureId", "");
+				jsonObject.put("pictureLocation", "");
+			}
+		    
+			jsonObject1.put(howMany+"", jsonObject);
+			howMany ++;
+		}
+		
+		
+		JSONObject jsonObject2 = new JSONObject();
+		
+		for(;page<end;page++) {
+			String pageS = page+"";
+			
+			jsonObject2.put(page+"", jsonObject1.get(pageS));
+		}
+		
+		return jsonObject2.toString();
 	}
 	
 	public boolean deleteUserCourse(long userId,int courseId) {
@@ -651,7 +818,7 @@ public class UserService extends GenericService<User, Long> {
 				jsonObject.put("chapterTitle", userChapter.getChapter().getDutch_title());
 				break;
 
-			default:jsonObject.put("chapterTitle", userChapter.getChapter().getDutch_title());
+			default:jsonObject.put("chapterTitle", userChapter.getChapter().getEnglishTitle());
 				break;
 			}
 	        
@@ -662,6 +829,58 @@ public class UserService extends GenericService<User, Long> {
 	       
 	      return jsonObject1.toString(); 
 	  }
+	  
+	  
+	  
+	  /** 
+	   * get a user's chapters  
+	   * @throws RequestException  
+	   * */ 
+	  public String getOneUserChapter(long userId,long chapterId,int type) throws RequestException {   
+	     
+		  //find userChapter by userId and chapterId
+        UserChapter userChapter = userChapterRepository.findByUserIdAndChapterId(userId, chapterId);
+        
+      //judge whether user have this chapter
+        if(userChapter ==null) {
+        	throw new RequestException(Error.USERCHAPTER_DOES_NOT_EXIS);
+        }
+	     
+	    JSONObject jsonObject = new JSONObject(); 
+	       
+	    if(userChapter.getTeacher() ==null) { 
+	        jsonObject.put("teacherName", ""); 
+	        jsonObject.put("teacherId", ""); 
+	    } 
+	    else { 
+	        jsonObject.put("teacherName", userChapter.getTeacher().getNickname()); 
+	        jsonObject.put("teacherId", userChapter.getTeacher().getId()); 
+	    } 
+	         
+	    jsonObject.put("requiredOrNot", userChapter.getChapter().isRequiredOrNot());
+	    jsonObject.put("score", userChapter.getScore());
+	    jsonObject.put("passOrNot", userChapter.getPassOrNot()); 
+	    jsonObject.put("date", userChapter.getDate());
+	
+	    //choose language accroding to the type
+	    switch (type) {
+				
+	    case 2:
+	    	jsonObject.put("chapterTitle", userChapter.getChapter().getChinese_title());
+			break;
+				
+		case 3:
+			jsonObject.put("chapterTitle", userChapter.getChapter().getDutch_title());
+			break;
+
+		default:jsonObject.put("chapterTitle", userChapter.getChapter().getEnglishTitle());
+			break;
+		}
+	        
+	    jsonObject.put("chapterId", userChapter.getChapter().getId()); 
+	       
+	    return jsonObject.toString(); 
+}
 	// Helper methods
 	
 	/**
