@@ -85,21 +85,20 @@ public class UserController extends GenericController {
 		return Response.status(Response.Status.OK).entity(user).build();
 	}
 
-//	/**
-//	 * Get information about the user with id
-//	 * 
-//	 * @return
-//	 * @throws AccessException
-//	 */
-//	@GET
-//	@Path("/{id: [0-9]*}")
-//	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-//	public Response user(@HeaderParam("Auth-Token") String token, @PathParam("id") long id) throws RequestException {
-//		secure(token, "admin");
-//
-//		User user = userService.get(id);
-//		return Response.status(Response.Status.OK).entity(user).build();
-//	}
+	/**
+	 * Get information about the user with id
+	 * 
+	 * @return
+	 * @throws AccessException
+	 */
+	@GET
+	@Path("/{id: [0-9]*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response user(@HeaderParam("Auth-Token") String token, @PathParam("id") long id) throws RequestException {
+		secure(token, "admin");
+		User user = userService.get(id);
+		return Response.status(Response.Status.OK).entity(user).build();
+	}
 
 	/**
 	 * get users by role Id
@@ -534,5 +533,87 @@ public class UserController extends GenericController {
 			
 			//Return the user data to the RESTful service
 			return Response.status(Response.Status.OK).entity(userChapter).build();
+		}
+		
+		
+		/////////////
+		// Friends //
+		/////////////
+		
+		/**
+		 * get user's friends
+		 * **/
+		@GET
+		@Path("/getMyFriends")
+		@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+		  public Response getMyFriends(@HeaderParam("Auth-Token") String token) throws RequestException
+		  {	
+	
+				//judge whether the user have the permission to get the UserCourses
+				secure(token, "*");
+				
+				//accroding the token to get a user
+				User user = userService.findUserByAuthToken(token);
+				
+				//find friends by user
+				String friends = userService.getMyFriends(user);
+				
+				//Return the user data to the RESTful service
+				return Response.status(Response.Status.OK).entity(friends).build();
+		  }
+		
+		/**
+		 * get user's friends
+		 * **/
+		@POST
+		@Path("/addMyFriends")
+		@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+		@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+		  public Response addMyFriends(@HeaderParam("Auth-Token") String token,@FormParam("friendsId")long friendsId) throws RequestException
+		  {	
+	
+				//judge whether the user have the permission to get the UserCourses
+				secure(token, "*");
+				
+				//accroding the token to get a user
+				User user = userService.findUserByAuthToken(token);
+				
+				User friends = userService.get(friendsId);
+				
+				//find friends by user
+				boolean result = userService.addMyFriends(user, friends);
+				
+				//Return the user data to the RESTful service
+				return Response.status(Response.Status.OK).entity(result).build();
+		  }
+		
+		
+		/**
+		 * delete a friend from my friend list
+		 * 
+		 * @throws RequestException
+		 */
+		@DELETE
+		@Path("/deleteMyFriends")
+		@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+		@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+		public Response deleteMyFriends(@HeaderParam("Auth-Token") String token,
+				@PathParam("friendsId") long friendsId) throws RequestException
+		{
+			//judge whether the user have the permission to get the UserCourses
+			secure(token, "*");
+			
+			//get user
+			User user = userService.findUserByAuthToken(token);
+			
+			//get friend
+			User friend = userService.get(friendsId);
+			
+			//delete userCourse
+			boolean result = userService.deleteMyFriends(user,friend);
+			
+			//return the result to the RESTful service
+			return Response.status(Response.Status.OK).entity(result).build();
+			
 		}
 }

@@ -710,42 +710,45 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @param chapterId
 	 * 
 	 * @return
+	 * @throws RequestException 
 	 * 
 	 * */
-	public String getChapterPartList(long chapterId,int type){
+	public String getChapterPartList(long chapterId,int type) throws RequestException{
 		
 		List<ChapterChapterPart> chapterChapterParts = chapterChapterPartRepository.getByChapterId(chapterId);
 		
-		if(chapterChapterParts!=null) {
-			
-			JSONObject jsonObject = new JSONObject();
-			
-			for(int i =0;i<chapterChapterParts.size();i++) {
-				JSONObject jsonObject2 = new JSONObject();
-				
-				jsonObject2.put("id", chapterChapterParts.get(i).getChapterPart().getId());
-				jsonObject2.put("pictureId",  chapterChapterParts.get(i).getChapterPart().getPicture());
-				
-				switch (type) {
-				case 2:
-					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getChinese_text());
-					break;
-
-				case 3:
-					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getDutch_text());
-					break;
-				default:jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
-					break;
-				}
-				
-				jsonObject.put(i+"", jsonObject2);
-			}
-			
-			return jsonObject.toString();
-			
+		if(chapterChapterParts==null) {
+			throw new RequestException(Error.CHAPTER_PART_DOES_NOT_EXIST);
 		}
-		else
-			return null;
+		
+		JSONObject jsonObject = new JSONObject();
+			
+		for(int i =0;i<chapterChapterParts.size();i++) {
+			JSONObject jsonObject2 = new JSONObject();
+				
+			jsonObject2.put("id", chapterChapterParts.get(i).getChapterPart().getId());
+			
+			if(chapterChapterParts.get(i).getChapterPart().getPicture()!=null) {
+				jsonObject2.put("pictureId",  chapterChapterParts.get(i).getChapterPart().getPicture().getId());
+				jsonObject2.put("pictureLocation",  chapterChapterParts.get(i).getChapterPart().getPicture().getFileLocation());
+			}
+				
+			switch (type) {
+			case 2:
+				jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getChinese_text());
+				break;
+			case 3:
+				jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getDutch_text());
+				break;
+			default:jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
+				break;
+			}
+				
+			jsonObject.put(i+"", jsonObject2);
+		}
+			
+		return jsonObject.toString();
+			
 	}
 	
 	/**

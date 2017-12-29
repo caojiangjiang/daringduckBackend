@@ -20,6 +20,7 @@ import cn.daringduck.communitybuilder.model.Chapter;
 import cn.daringduck.communitybuilder.model.Club;
 import cn.daringduck.communitybuilder.model.Course;
 import cn.daringduck.communitybuilder.model.CourseChapter;
+import cn.daringduck.communitybuilder.model.Friends;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.Picture;
 import cn.daringduck.communitybuilder.model.Privacy;
@@ -32,6 +33,7 @@ import cn.daringduck.communitybuilder.repository.ChapterRepository;
 import cn.daringduck.communitybuilder.repository.ClubRepository;
 import cn.daringduck.communitybuilder.repository.CourseChapterRepository;
 import cn.daringduck.communitybuilder.repository.CourseRepository;
+import cn.daringduck.communitybuilder.repository.FriendsRepository;
 import cn.daringduck.communitybuilder.repository.MomentRepository;
 import cn.daringduck.communitybuilder.repository.PictureRepository;
 import cn.daringduck.communitybuilder.repository.RoleRepository;
@@ -55,12 +57,13 @@ public class UserService extends GenericService<User, Long> {
     private UserChapterRepository userChapterRepository;
     private UserCourseRepository userCourseRepository;
     private CourseChapterRepository courseChapterRepository;
+    private FriendsRepository friendsRepository;
 	
 	@Autowired
 	public UserService(UserRepository userRepository, RoleRepository roleRepository, AuthTokenRepository authRepository,
 			MomentRepository momentRepository, ClubRepository clubRepository,PictureRepository pictureRepository,
 			ChapterRepository chapterRepository,CourseRepository courseRepository,UserChapterRepository userChapterRepository,
-			UserCourseRepository userCourseRepository,CourseChapterRepository courseChapterRepository) {
+			UserCourseRepository userCourseRepository,CourseChapterRepository courseChapterRepository,FriendsRepository friendsRepository) {
 		super(userRepository);
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
@@ -73,6 +76,7 @@ public class UserService extends GenericService<User, Long> {
 		this.userChapterRepository = userChapterRepository;
 		this.userCourseRepository = userCourseRepository;
 		this.courseChapterRepository = courseChapterRepository;
+		this.friendsRepository = friendsRepository;
 		this.passwordSecurity = new PasswordSecurity();
 	}
 
@@ -747,7 +751,123 @@ public class UserService extends GenericService<User, Long> {
 		}
 	}
 	
+	/////////////
+	// Friends //
+	/////////////
 	
+	
+	/**
+	 *get one's friends
+	 *
+	 *@param user
+	 *@return
+	 * 
+	 *@author 曹将将
+	 **/
+	public String getMyFriends(User user) throws RequestException {
+		
+		//judge whether the user is null
+		if(user == null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		}
+		
+		//to see whether the user have Friends
+		List<Friends> friends = friendsRepository.findByUser(user);
+		if(friends ==null ) {
+			throw new RequestException(Error.USER_DOES_NOT_HAVE_FRIENDS);
+		}
+		
+		//put users' information into json 
+		JSONObject jsonObject = new JSONObject();
+		
+		for(int i=0;i<friends.size();i++) {
+			JSONObject jsonObject2 = new JSONObject();
+			
+			//put user message into json
+			jsonObject2.put("userId", friends.get(i).getFriends().getId());
+			jsonObject2.put("userName", friends.get(i).getFriends().getUsername());
+			jsonObject2.put("nickName", friends.get(i).getFriends().getNickname());
+			
+			if(friends.get(i).getFriends().getPicture() !=null) {
+				jsonObject2.put("pictureId", friends.get(i).getFriends().getPicture().getId());
+				jsonObject2.put("pictureLocation", friends.get(i).getFriends().getPicture().getFileLocation());
+			}
+			else {
+				jsonObject2.put("pictureId", "");
+				jsonObject2.put("pictureLocation", "");
+			}
 
+
+			jsonObject2.put("email", friends.get(i).getFriends().getEmail());
+			jsonObject2.put("phone",friends.get(i).getFriends().getPhone());
+			jsonObject2.put("weChat", friends.get(i).getFriends().getWechat());
+			
+			//put jsonObject together
+			jsonObject.put(i+"",jsonObject2);
+		}
+		
+		//change json into String and return
+		return jsonObject.toString();
+	}
+	
+	
+	/**
+	 * add a friend into my friends list
+	 * @param user
+	 * @param friends
+	 * @return
+	 * 
+	 * @author 曹将将
+	 * **/
+	public boolean addMyFriends(User user, User friends) throws RequestException {
+		
+		// judge whether the user and friends is null
+		if(user==null||friends==null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		}
+		
+		//judge whether they are friends, if they are friends throw error
+		Friends  friends1 = friendsRepository.findByUserAndFriends(user, friends);
+		
+		if(friends1!=null) {
+			throw new RequestException(Error.USER_ALREADY_HAVE_THIS_FRIEND);
+		}
+		
+		//create a new friends relation
+		Friends friends2 = new Friends(user,friends,true);
+		
+		//save friends
+		if(friendsRepository.save(friends2) != null)
+			return true;
+		
+		return false;
+		
+	}
+
+	/**
+	 *delete one's friend
+	 *
+	 * @param user
+	 * @param friends
+	 * @return
+	 * 
+	 * @author 曹将将
+	 **/
+	public boolean deleteMyFriends(User user, User friends) throws RequestException {
+		if(user==null||friends==null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		}
+		
+		Friends  friends1 = friendsRepository.findByUserAndFriends(user, friends);
+		
+		if(friends1!=null) {
+			throw new RequestException(Error.USER_ALREADY_HAVE_THIS_FRIEND);
+		}
+		
+		friendsRepository.deleteByUserAndFriends(user, friends);
+		
+		return true;
+		
+	}
 	
 }
