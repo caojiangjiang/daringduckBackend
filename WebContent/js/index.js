@@ -423,10 +423,7 @@ function loadPage(pageInfo, page, props) {
 
 function showAdd(pageInfo, objectId, props) {
 	// Generates an input element
-	var tempUserId;//to be a para of uploadImage
-	var userFlag=false;
-	var tempCourseId;//to be a para of uploadImage
-	var courseFlag=false;
+
 	var generateInput = function(field, type, val){
 		var input = $('<input class="form-control">');
 		if(type=="file"){
@@ -515,9 +512,13 @@ function showAdd(pageInfo, objectId, props) {
 	// Generates the page
 	var addFields = function(object) {
 		console.log(object);
+		var tempUserId;//to be a para of uploadImage
+		var userFlag=false;
+		var tempCourseId;//to be a para of uploadImage
+		var courseFlag=false;
 		if(pageInfo.name=="users"){
-			console.log(object.id);
 			tempUserId=object.id;
+			console.log("wobuzhid"+tempUserId);
 			userFlag=true;
 		}
 		if(pageInfo.name=="courses"){
@@ -587,23 +588,39 @@ function showAdd(pageInfo, objectId, props) {
 		        showMeridian: 1
 		    });
 		}
+		$(document).on("click","input[type='file']",function(e){
+			if(userFlag==true){
+				$(this).after('<input type="button" onclick="uploadUserImage('+tempUserId+')" value="UploadFile" class="btn btn-primary upload-btn"/>');
+				console.log(tempUserId+"wbuzhid222223");
+				userFlag=false;
+			}
+			if(courseFlag==true){
+				$(this).after('<input type="button" onclick="uploadCourseImage('+tempCourseId+')" value="UploadFile" class="btn btn-primary upload-btn"/>');
+				courseFlag=false;
+			}
+		})
 	}
 
 	var loadObject = function() {
 		communityBuilder.get(objectId, pageInfo.path.replaceWildcards(props),
 				addFields, fail);
+		console.log("afteredit"+tempUserId);
 		
 	}
 
 	var callback = objectId != undefined ? loadObject : function() {
 		addFields();
+		console.log("afteradd"+tempUserId);
 	}
-	$(document).on("click","input[type='file']",function(e){
-		if(userFlag==true)
+	
+	/*$(document).on("click","input[type='file']",function(e){
+		if(userFlag==true){
 			$(this).after('<input type="button" onclick="uploadUserImage('+tempUserId+')" value="UploadFile" class="btn btn-primary upload-btn"/>');
+			console.log(tempUserId+"wbuzhid222223");
+		}
 		else
 			$(this).after('<input type="button" onclick="uploadCourseImage('+tempCourseId+')" value="UploadFile" class="btn btn-primary upload-btn"/>');
-	})
+	})*/
 	
 	
 
