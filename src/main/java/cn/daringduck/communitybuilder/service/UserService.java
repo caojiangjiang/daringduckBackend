@@ -551,7 +551,7 @@ public class UserService extends GenericService<User, Long> {
 		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
 		
 		if(userCourses == null) {
-			throw new RequestException(Error.USERCHAPTER_DOES_NOT_EXIS);
+			throw new RequestException(Error.USERCOURSE_DOES_NOT_EXIS);
 		}
 		
 		JSONObject jsonObject1 = new JSONObject();

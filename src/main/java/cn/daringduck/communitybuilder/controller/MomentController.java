@@ -53,7 +53,7 @@ public class MomentController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response moments(@QueryParam("page") int page) throws RequestException {
 	
-		Page<Moment> moments = momentService.getPage(page);
+		Page<Moment> moments = momentService.findAllOrderByDesc(page);
 		
 		List<Moment> momentList = moments.getContent();
 		
@@ -93,21 +93,35 @@ public class MomentController extends GenericController {
 		
 	}
 	
-//	/**
-//	 * Get the user's friends' moments
-//	 * @throws RequestException 
-//	 */
-//	@GET
-//	@Path("/getMyFriendsMoments")
-//	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-//	public Response getMyFriendsMoments(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
-//		secure(token, "*");
-//		User user = userService.findUserByAuthToken(token);
-//		List<Moment> moments = userService.getMyFriendsMoments(user);
-//		return Response.status(Response.Status.OK).entity(moments).build();
-//		
-//	}
-//	
+	/**
+	 * Get the user's friends' moments
+	 * @throws RequestException 
+	 */
+	@GET
+	@Path("/getMyFriendsMoments")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getMyFriendsMoments(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
+		secure(token, "*");
+		User user = userService.findUserByAuthToken(token);
+		List<Moment> moments = momentService.getMyFriendsMoments(user,page);
+		return Response.status(Response.Status.OK).entity(moments).build();
+	}
+	
+	
+	/**
+	 * Get the user's friends' moments
+	 * @throws RequestException 
+	 */
+	@GET
+	@Path("/getClubMoments")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getClubMoments(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
+		secure(token, "*");
+		User user = userService.findUserByAuthToken(token);
+		List<Moment> moments = momentService.getClubMoments(user,page);
+		return Response.status(Response.Status.OK).entity(moments).build();
+	}
+	
 	/**
 	 * Get a specific friend's moments
 	 * @throws RequestException 

@@ -89,51 +89,51 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return String
 	 * */
 	
-	public String getPageOfCourse(int page,int type){
-		
-		//pageNumber and pageSize
-		Page<Course> coursesPage = courseRepository.findAll(new PageRequest(page, PAGE_SIZE));
-		
-		//get the Courses
-		List<Course> courses = coursesPage.getContent();
-		
-		if(courses == null) {
-			return null;
-		}
-		else {
-			//add chapters into course
-			JSONObject jsonObject1 = new JSONObject();
-			for(int i =0;i<courses.size();i++) {
-				
-				Course course = courses.get(i);
-				
-				JSONObject jsonObject2 = new JSONObject();
-				
-				//choose the language accroding to the type
-				if(type == 2)
-					jsonObject2.put("name", course.getChinese_name());
-				else if(type == 3)
-					jsonObject2.put("name", course.getDutch_name());
-				else
-					jsonObject2.put("name", course.getEnglishName());
-				
-				if(course.getPicture()!=null) {
-					jsonObject2.put("pictureId",course.getPicture().getId());
-					jsonObject2.put("picturePosition",course.getPicture().getFileLocation());
-				}
-				else {
-					jsonObject2.put("pictureId","");
-					jsonObject2.put("picturePosition","");
-				}
-
-				jsonObject2.put("id", course.getId());
-				
-				jsonObject1.put(i+"", jsonObject2);
-			}
-			//change json into String
-			return jsonObject1.toString();
-		}
-	}
+//	public String getPageOfCourse(int page,int type){
+//		
+//		//pageNumber and pageSize
+//		Page<Course> coursesPage = courseRepository.findAll(new PageRequest(page, PAGE_SIZE));
+//		
+//		//get the Courses
+//		List<Course> courses = coursesPage.getContent();
+//		
+//		if(courses == null) {
+//			return null;
+//		}
+//		else {
+//			//add chapters into course
+//			JSONObject jsonObject1 = new JSONObject();
+//			for(int i =0;i<courses.size();i++) {
+//				
+//				Course course = courses.get(i);
+//				
+//				JSONObject jsonObject2 = new JSONObject();
+//				
+//				//choose the language accroding to the type
+//				if(type == 2)
+//					jsonObject2.put("name", course.getChinese_name());
+//				else if(type == 3)
+//					jsonObject2.put("name", course.getDutch_name());
+//				else
+//					jsonObject2.put("name", course.getEnglishName());
+//				
+//				if(course.getPicture()!=null) {
+//					jsonObject2.put("pictureId",course.getPicture().getId());
+//					jsonObject2.put("picturePosition",course.getPicture().getFileLocation());
+//				}
+//				else {
+//					jsonObject2.put("pictureId","");
+//					jsonObject2.put("picturePosition","");
+//				}
+//
+//				jsonObject2.put("id", course.getId());
+//				
+//				jsonObject1.put(i+"", jsonObject2);
+//			}
+//			//change json into String
+//			return jsonObject1.toString();
+//		}
+//	}
 	
 	
 	/**

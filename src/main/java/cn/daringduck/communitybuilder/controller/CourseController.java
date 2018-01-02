@@ -15,6 +15,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.data.domain.Page;
+
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Chapter;
 import cn.daringduck.communitybuilder.model.ChapterPart;
@@ -52,7 +54,8 @@ public class CourseController extends GenericController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response courses(@QueryParam("page") int page,@QueryParam("type") int type) throws RequestException {
-		String courses = courseService.getPageOfCourse(page,type);
+		
+		Page<Course> courses = courseService.getPage(page);
 		return Response.status(Response.Status.OK).entity(courses).build();
 	}
 
