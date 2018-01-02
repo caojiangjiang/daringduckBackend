@@ -143,7 +143,13 @@ items = {
 		menu : true,
 		editable : true,
 		fields : [ {
-			name : 'name',
+			name : 'english_name',
+			type : 'text'
+		} ,{
+			name : 'chinese_name',
+			type : 'text'
+		} ,{
+			name : 'dutch_name',
 			type : 'text'
 		} ,{
 			name : 'picture',
@@ -163,7 +169,13 @@ items = {
 		editable: true,
 		//addable:false,
 		fields : [ { 
-			name : 'title',
+			name : 'english_title',
+			type : 'text'
+		} ,{ 
+			name : 'chinese_title',
+			type : 'text'
+		} ,{ 
+			name : 'dutch_title',
 			type : 'text'
 		} ,{
 			name : 'requiredOrNot',
@@ -232,43 +244,28 @@ items = {
 		]
 	},
 	userCourses : {
-		//path : "users/%userId%/courses",
-		path : "users/getUserCourse/%userId%/",
+		path : "users/getUserCourse/%userId%",
 		name : "userCourses",
 		nameSingular : "courses",
 		editable : true,
 		addFunction : 'loadPage(items.userAvailableCourses, 0, {userId: %userId%})',
-		fields : [ /*{
-			name : 'userId',
-			type : 'text',
-			disabled:'disabled',
-			value:'%userId%'
-			},*/{
-			name : 'courseId',
-			type : 'select',
-			options : [ {
-				name : 'course1',
-				value : '1'
-			}, {
-				name : 'course2',
-				value : '2'
-			}, {
-				name : 'course3',
-				value : '3'
-			}, {
-				name : 'course4',
-				value : '4'
-			}]},
+		fields : [ {
+				name:'date',
+				type:'date'
+			},
 			{
 				name : 'teacherId',
 				type : 'text'
-			},
-			/*{
-				name : 'date',
-				type : 'text'
-			},*/{
+			},{
 				name : 'passOrNot',
-				type : 'text'
+				type : 'radio',
+				options : [ {
+					name : 'yes',
+					value : true
+				},{
+					name : 'no',
+					value :false
+				}  ]
 			}],
 		buttons : [  
 			{
@@ -300,32 +297,42 @@ items = {
 		fields : [ {
 			name:'date',
 			type:'date'
-		},{
-			name:'score',
-			type:'text'
-		},{
-			name : 'courseId',
-			type : 'select',
+		},
+		{
+			name : 'teacherId',
+			type : 'text'
+		},
+		{
+			name : 'score',
+			type : 'radio',
 			options : [ {
-				name : 'course1',
-				value : '1'
-			}, {
-				name : 'course2',
-				value : '2'
-			}, {
-				name : 'course3',
-				value : '3'
-			}, {
-				name : 'course4',
-				value : '4'
-			}]},
-			{
-				name : 'teacherId',
-				type : 'text'
+				name : '1',
+				value :1
 			},{
-				name : 'passOrNot',
-				type : 'text'
-			} ]
+				name : '2',
+				value :2
+			} ,{
+				name : '3',
+				value :3
+			} ,{
+				name : '4',
+				value :4
+			} ,{
+				name : '5',
+				value :5
+			}  ]
+		},
+		{
+			name : 'passOrNot',
+			type : 'radio',
+			options : [ {
+				name : 'yes',
+				value : true
+			},{
+				name : 'no',
+				value :false
+			}  ]
+		}]
 		/*buttons : [  
 			{
 				color : 'success',

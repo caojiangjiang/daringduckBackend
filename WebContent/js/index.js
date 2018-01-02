@@ -48,6 +48,12 @@ String.prototype.replaceWildcards = function(wildcards) {
 	}
 	return str;
 }
+function isEmptyObject(obj){
+	for(var key in obj){
+		return false;
+	}
+	return true;
+}
 
 //
 // Page Load
@@ -110,9 +116,13 @@ function generateTable(pageInfo, page, props) {
 	// Check if there is data
 	var data = page.content ? page.content : page;
 	console.log(pageInfo.name);
+	console.log(data);
 	if (data.length == 0)
 		return;
-
+	if(!isEmptyObject(data) && pageInfo.name=='chapters'){
+	 	console.log(data.length+"yeshide");
+		$('.add-button').hide();
+	}
 	// Generate the table
 
 	// Function that returns all the column names
@@ -133,7 +143,7 @@ function generateTable(pageInfo, page, props) {
 			keys=["chapterId", "chapterTitle","passOrNot","date","passOrNot","score", "teacherId","teacherName",];
 		}
 		if(pageInfo.name=="courses" || pageInfo.name=="availableCourses"){
-			keys=["id","pictureId","name"];
+			keys=["id","pictureId","englishName"];
 		}
 		if(pageInfo.name=="chapters"){
 			keys=["id", "title","requiredOrNot"];
@@ -264,7 +274,15 @@ function generateButtons(pageInfo, row, props) {
 	if (pageInfo.editable) {
 		buttonGroup.append(generateButton("primary", "edit", "Edit",
 				function() {
-					showAdd(pageInfo, row.id, props);
+					if(pageInfo.name=='userCourses'){
+						showAdd(pageInfo, row.courseId, props);
+					}
+					else if(pageInfo.name=='userChapters'){
+						showAdd(pageInfo, row.chapterId, props);
+					}
+					else{
+						showAdd(pageInfo, row.id, props);
+					}
 				}));
 	}
 
@@ -302,8 +320,13 @@ function generateButtons(pageInfo, row, props) {
  */
 function generatePagination(pageInfo, page, props) {
 	// Deal with the pagination
+	if (page.first == undefined){
+		console.log("warning!!!!!!!!!!!it is hide because of undefine")
+	}
+	console.log(page);
 	if (page.first == undefined || page.totalPages == 1) {
 		$('nav.pagination').hide();
+		console.log("warning!!!!!!!!!!!it is hide");
 		return;
 	}
 
@@ -423,7 +446,7 @@ function loadPage(pageInfo, page, props) {
 
 function showAdd(pageInfo, objectId, props) {
 	// Generates an input element
-
+	console.log(objectId);
 	var generateInput = function(field, type, val){
 		var input = $('<input class="form-control">');
 		if(type=="file"){
@@ -517,13 +540,16 @@ function showAdd(pageInfo, objectId, props) {
 		var tempCourseId;//to be a para of uploadImage
 		var courseFlag=false;
 		if(pageInfo.name=="users"){
-			tempUserId=object.id;
-			console.log("wobuzhid"+tempUserId);
+			if(objectId != undefined){
+				tempUserId=object.id;
+			}
 			userFlag=true;
 		}
 		if(pageInfo.name=="courses"){
-			console.log(object.id);
-			tempCourseId=object.id;
+			if(objectId != undefined){
+				console.log(object.id);
+				tempCourseId=object.id;
+			}
 			courseFlag=true;
 		}
 		var fields = pageInfo.fields;
@@ -602,15 +628,13 @@ function showAdd(pageInfo, objectId, props) {
 	}
 
 	var loadObject = function() {
+		//console.log(pageInfo.path.replaceWildcards(props));
 		communityBuilder.get(objectId, pageInfo.path.replaceWildcards(props),
 				addFields, fail);
-		console.log("afteredit"+tempUserId);
-		
 	}
 
 	var callback = objectId != undefined ? loadObject : function() {
 		addFields();
-		console.log("afteradd"+tempUserId);
 	}
 	
 	/*$(document).on("click","input[type='file']",function(e){
@@ -645,6 +669,20 @@ function add(pageInfo, props) {
 		var userId=pageInfo.path.replaceWildcards(props).substring(20,pageInfo.path.replaceWildcards(props).length-1);
 		data=data+"&userId="+userId;
 	}
+	else if(pageInfo.path.replaceWildcards(props).indexOf("courses/")>=0 && pageInfo.path.replaceWildcards(props).indexOf("/chapters")>=0){
+		var courseId=pageInfo.path.replaceWildcards(props).substring(8,pageInfo.path.replaceWildcards(props).length-9);
+		console.log(courseId);
+		communityBuilder.addChapterStep1(courseId, data, "courses", function(data){		
+			/*insert new chapter id to the chapterid array(at "flag" position)*/
+			var data2="lists="+data.id;
+			communityBuilder.addChapterStep2(courseId, data2, "courses", function(data){
+				loadPage(items.chapters,0,{
+					'courseId' : courseId
+				})
+				console.log(data);
+			}, fail)
+		}, fail);	
+	}
 	else{
 		path=pageInfo.path.replaceWildcards(props);
 	}
@@ -662,13 +700,20 @@ function add(pageInfo, props) {
  * @param props
  */
 function edit(pageInfo, id, props) {
-	/*var form = new FormData();
-	form.append('file',$('input[type="file"]')[0].files[0]);*/
 	var data = $("form#add").serialize();
-	/*var data=new FormData($("form#add")[0]);
-	data.append('pictureId',50);*/
-	console.log(data);
-	communityBuilder.edit(id, data, pageInfo.path.replaceWildcards(props),
+	var path;
+	console.log(pageInfo.path.replaceWildcards(props)+'/'+id);
+	if(pageInfo.path.replaceWildcards(props).indexOf("users/getUserCourse/")>=0){
+		path="users/changeUserCourse";
+		/*add userId to data*/
+		var userId=pageInfo.path.replaceWildcards(props).substring(20,pageInfo.path.replaceWildcards(props).length-1);
+		var courseId=id;
+		data=data+"&userId="+userId+"&courseId="+courseId;
+	}
+	else{
+		path=pageInfo.path.replaceWildcards(props);
+	}
+	communityBuilder.edit(id, data, path,
 			function() {
 				loadPage(pageInfo, currentPage, props)
 			}, fail);
