@@ -322,42 +322,40 @@ public class UserService extends GenericService<User, Long> {
 	 * 
 	 * */
 	public boolean addUserChapter(long userId,long chapterId,long teacherId,int score,boolean passedOrNot,String comment) throws RequestException {
+		
 		UserChapter userChapter1 = userChapterRepository.findByUserIdAndChapterId(userId,chapterId);
 		
 		if(userChapter1!=null) {
 			throw new RequestException(Error.USERCHAPTER_NOT_UNIQUE);
 		}
-		else {
-			boolean result = false;
+		
+		boolean result = false;
 			
-			User user = userRepository.findOne(userId);
+		User user = userRepository.findOne(userId);
 			
-			if(user == null) {
-				throw new RequestException(Error.USER_DOES_NOT_EXIST);
-			}
-			
-			Chapter chapter = chapterRepository.findOne(chapterId);
-			
-			if(chapter == null) {
-				throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
-			}
-			
-			User teacher = userRepository.findOne(teacherId);
-			
-//			if(teacher == null) {
-//				throw new RequestException(Error.USER_DOES_NOT_EXIST);
-//			}
-			
-			
-			long date = 0;
-			
-			UserChapter userChapter = new UserChapter(user,chapter,teacher,date,passedOrNot,score,comment);
-			
-			if(userChapterRepository.save(userChapter)!=null)
-				result = true;
-			
-			return result;
+		if(user == null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
 		}
+			
+		Chapter chapter = chapterRepository.findOne(chapterId);
+			
+		if(chapter == null) {
+			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
+		}
+			
+		//teacher can be null
+		User teacher = userRepository.findOne(teacherId);
+			
+		//when user choose one course and chapters of this course, the date should be 0
+		//when he finish this chapter, we can set the value of the date
+		long date = 0;
+			
+		UserChapter userChapter = new UserChapter(user,chapter,teacher,date,passedOrNot,score,comment);
+			
+		if(userChapterRepository.save(userChapter)!=null)
+			result = true;
+			
+		return result;
 	}
 	
 	/**
@@ -380,36 +378,37 @@ public class UserService extends GenericService<User, Long> {
 		if(userCourse1!=null) {
 			throw new RequestException(Error.USERCOURSE_NOT_UNIQUE);
 		}
-		else {
-			boolean result = false;
+
+		boolean result = false;
 			
-			User user = userRepository.findOne(userId);
+		User user = userRepository.findOne(userId);
 			
-			if(user == null) {
-				throw new RequestException(Error.USER_DOES_NOT_EXIST);
-			}
-			
-			Course course = courseRepository.findOne(courseId);
-			
-			if(course == null) {
-				throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
-			}
-			
-			User teacher = userRepository.findOne(teacherId);
-			
-			UserCourse userCourse = new UserCourse(user,course,teacher,date,passedOrNot);
-			
-			if(userCourseRepository.save(userCourse)!=null)
-				result = true;
-			
-		    List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId); 
-		       
-		    for(int i=0;i<courseChapters.size();i++) { 
-		      addUserChapter(userId,courseChapters.get(i).getChapter().getId(),0,0,false,null); 
-		    } 
-			
-			return result;
+		if(user == null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
 		}
+			
+		Course course = courseRepository.findOne(courseId);
+			
+		if(course == null) {
+			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
+		}
+			
+		User teacher = userRepository.findOne(teacherId);
+			
+		UserCourse userCourse = new UserCourse(user,course,teacher,date,passedOrNot);
+			
+		//add Course to user
+		if(userCourseRepository.save(userCourse)!=null)
+			result = true;
+			
+		List<CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId); 
+		       
+		//add chapters to user 
+		for(int i=0;i<courseChapters.size();i++) { 
+			result = addUserChapter(userId,courseChapters.get(i).getChapter().getId(),0,0,false,null); 
+		} 
+			
+		return result;
 	}
 	
 	
@@ -494,12 +493,18 @@ public class UserService extends GenericService<User, Long> {
 	 * @param status
 	 * 
 	 * @return UserCourse
+	 * @throws RequestException 
 	 * */
-	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String status,long date,String comment) 
+	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String status,long date,String comment) throws RequestException 
 	{
+		//easy to understand so there is no need to write
 		boolean result = false;
 		
 		UserChapter userChapter = userChapterRepository.findByUserIdAndChapterId(userId,chapterId);
+		
+		if(userChapter ==null) {
+			throw new RequestException(Error.USERCHAPTER_DOES_NOT_EXIS);
+		}
 		
 		User teacher = userRepository.findOne(teacherId);
 		
@@ -533,11 +538,21 @@ public class UserService extends GenericService<User, Long> {
 	
 	/**
 	 * get a user's courses 
+	 * @author ²Ü½«½«
+	 * 
+	 * @param userId
+	 * @param type
+	 * @return
+	 * @throws RequestException 
 	 * */
-	public String getUserCourse(long userId,int type) 
+	public String getUserCourse(long userId,int type) throws RequestException 
 	{
 		
 		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
+		
+		if(userCourses == null) {
+			throw new RequestException(Error.USERCHAPTER_DOES_NOT_EXIS);
+		}
 		
 		JSONObject jsonObject1 = new JSONObject();
 	    for(int i =0;i<userCourses.size();i++) { 
@@ -587,6 +602,7 @@ public class UserService extends GenericService<User, Long> {
 		      }
 		      
 				jsonObject2.put("passOrNot", userCourse.isPassedOrNot());
+				
 			jsonObject1.put(i+"", jsonObject2);
 		}
 		
@@ -691,13 +707,11 @@ public class UserService extends GenericService<User, Long> {
 			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
 		}
 		
-		//the beginning of a course
+		//the beginning number of the course
 		page = page*25;
 		
-		//the end of a course
+		//the end number of the course
 		int end = page + 25;
-		
-		System.out.println(page);
 		
 		JSONObject jsonObject1 = new JSONObject();
 		
@@ -718,7 +732,7 @@ public class UserService extends GenericService<User, Long> {
 			   }	
 		    }
 		    
-		    //if the course does have the same id with userCourse's, put to next course
+		    //if the course does have the same id with userCourse's, put the course into json
 		    jsonObject.put("id",courses.get(j).getId());
 		    
 			switch (type) {
@@ -749,6 +763,7 @@ public class UserService extends GenericService<User, Long> {
 		
 		JSONObject jsonObject2 = new JSONObject();
 		
+		//decide 
 		for(;page<end;page++) {
 			String pageS = page+"";
 			

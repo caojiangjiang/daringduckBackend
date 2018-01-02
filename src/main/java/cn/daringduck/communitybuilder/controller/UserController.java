@@ -17,10 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.data.domain.Page;
 import java.rmi.AccessException;
-import java.util.List;
-
 import cn.daringduck.communitybuilder.RequestException;
-import cn.daringduck.communitybuilder.model.Course;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.User;
 import cn.daringduck.communitybuilder.service.UserService;
@@ -74,6 +71,7 @@ public class UserController extends GenericController {
 			@FormParam("email") String email, @FormParam("role") int roleId,@FormParam("pictureId") long pictureId, @QueryParam("club") int clubId) throws RequestException {
 
 		secure(token, "admin");
+		
 		// Get the user who is doing the request
 		User callingUser = getUser(token);
 
@@ -211,6 +209,7 @@ public class UserController extends GenericController {
 		
 		secure(token, "admin");
 		
+		//get userMoment
 		return Response.status(Response.Status.OK).entity(userService.getUserMoment(userId,id)).build();
 	}
 
@@ -240,6 +239,7 @@ public class UserController extends GenericController {
 		
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}
+	
 	////////
 	// ME //
 	////////
