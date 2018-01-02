@@ -121,7 +121,7 @@ public class MomentService extends GenericService<Moment, Long>{
 		//find user's friends
 		List<Friends> friends = friendsRepository.findByUser(user);
 		
-		if(friends==null) {
+		if(friends.size() == 0) {
 			throw new RequestException(Error.USER_DOES_NOT_HAVE_FRIENDS);
 		}
 		
@@ -129,21 +129,24 @@ public class MomentService extends GenericService<Moment, Long>{
 		int begin = page * 25;
 		
 		//be used to selected right users' moments
-		String friensValue = "'";
+		String friensValue = "('";
 		
 		//combine all friends
 		for(int i=0;i<friends.size();i++) {
+			
 			friensValue = friensValue+friends.get(i).getFriends().getId()+"','";
 		}
-		friensValue = friensValue.substring(0, friends.size()-1);
+		friensValue = friensValue.substring(0, friensValue.length()-3);
 		
 		//add the end;
-		friensValue = friensValue+"'";
+		friensValue = friensValue+"')";
+		
+		System.out.println(friensValue);
 		
 		//get top N moments from all friends' moments sort by time 
-//		List<Moment> moments = momentRepository.getMyFriendsMoments(begin,friensValue);
+		List<Moment> moments = momentRepository.getMyFriendsMoments(begin,friensValue);
 		
-		return null;
+		return moments;
 	}
 	
 	

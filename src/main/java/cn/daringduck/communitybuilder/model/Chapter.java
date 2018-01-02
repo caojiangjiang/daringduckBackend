@@ -47,8 +47,8 @@ public class Chapter{
 	
 	public long getId() { return id;}
 	
-	public String getEnglishTitle() { return english_title; }
-	public void setEnglishTitle(String english_title) { this.english_title = english_title; }
+	public String getEnglish_title() { return english_title; }
+	public void setEnglish_title(String english_title) { this.english_title = english_title; }
 
 
 	public boolean isRequiredOrNot() {

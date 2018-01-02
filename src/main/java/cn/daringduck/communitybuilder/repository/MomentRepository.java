@@ -18,8 +18,8 @@ public interface MomentRepository extends JpaRepository<Moment, Long> {
 	Moment getDD01NewestMoment();
 	
 
-//	@Query(value = "select moment from Moment moment where ")
-//	List<Moment> getMyFriendsMoments(int begin, String friendsValue);
+	@Query(value = "select moment from Moment moment where moment.user.id in ?2 ORDER BY moment.posted DESC LIMIT ?1,25",nativeQuery=true)
+	List<Moment> getMyFriendsMoments(int begin, String friendsValue);
 
 	
 }

@@ -36,8 +36,8 @@ public class Course{
 	
 	public int getId() { return id; }
 	
-	public String getEnglishName() { return english_name; }
-	public void setEnglishName(String xname) { this.english_name = xname; }
+	public String getEnglish_name() { return english_name; }
+	public void setEnglish_name(String xname) { this.english_name = xname; }
 
 	public Picture getPicture() {
 		return picture;

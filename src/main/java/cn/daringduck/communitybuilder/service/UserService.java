@@ -575,7 +575,7 @@ public class UserService extends GenericService<User, Long> {
 				jsonObject2.put("name", course.getDutch_name());
 				break;
 
-			default:jsonObject2.put("name", course.getEnglishName());
+			default:jsonObject2.put("name", course.getEnglish_name());
 				break;
 			}
 			
@@ -648,7 +648,7 @@ public class UserService extends GenericService<User, Long> {
 			jsonObject2.put("name", course.getDutch_name());
 			break;
 
-		default:jsonObject2.put("name", course.getEnglishName());
+		default:jsonObject2.put("name", course.getEnglish_name());
 			break;
 			}
 			
@@ -743,7 +743,7 @@ public class UserService extends GenericService<User, Long> {
 				jsonObject.put("name", courses.get(j).getDutch_name());
 				break;
 
-			default:jsonObject.put("name", courses.get(j).getEnglishName());
+			default:jsonObject.put("name", courses.get(j).getEnglish_name());
 				break;
 			}
 		    
@@ -833,7 +833,7 @@ public class UserService extends GenericService<User, Long> {
 				jsonObject.put("chapterTitle", userChapter.getChapter().getDutch_title());
 				break;
 
-			default:jsonObject.put("chapterTitle", userChapter.getChapter().getEnglishTitle());
+			default:jsonObject.put("chapterTitle", userChapter.getChapter().getEnglish_title());
 				break;
 			}
 	        
@@ -888,7 +888,7 @@ public class UserService extends GenericService<User, Long> {
 			jsonObject.put("chapterTitle", userChapter.getChapter().getDutch_title());
 			break;
 
-		default:jsonObject.put("chapterTitle", userChapter.getChapter().getEnglishTitle());
+		default:jsonObject.put("chapterTitle", userChapter.getChapter().getEnglish_title());
 			break;
 		}
 	        

@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "friends")
@@ -15,9 +16,9 @@ public class Friends {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	
-	@OneToOne private User user;
+	@NotNull @OneToOne private User user;
 	
-	@OneToOne private User friends;
+	@NotNull @OneToOne private User friends;
 	
 	//whether the friends is allowed to see my moments
 	private boolean allowToSeeMyMoments;
@@ -38,26 +39,13 @@ public class Friends {
 		return this.id;
 	}
 	
-	
 	public User getUser() {
 		return user;
 	}
 
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-
 	public User getFriends() {
 		return friends;
 	}
-
-
-	public void setFriends(User friends) {
-		this.friends = friends;
-	}
-
 
 	public boolean isAllowToSeeMyMoments() {
 		return allowToSeeMyMoments;

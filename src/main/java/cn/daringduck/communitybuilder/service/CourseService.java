@@ -89,51 +89,51 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return String
 	 * */
 	
-//	public String getPageOfCourse(int page,int type){
-//		
-//		//pageNumber and pageSize
-//		Page<Course> coursesPage = courseRepository.findAll(new PageRequest(page, PAGE_SIZE));
-//		
-//		//get the Courses
-//		List<Course> courses = coursesPage.getContent();
-//		
-//		if(courses == null) {
-//			return null;
-//		}
-//		else {
-//			//add chapters into course
-//			JSONObject jsonObject1 = new JSONObject();
-//			for(int i =0;i<courses.size();i++) {
-//				
-//				Course course = courses.get(i);
-//				
-//				JSONObject jsonObject2 = new JSONObject();
-//				
-//				//choose the language accroding to the type
-//				if(type == 2)
-//					jsonObject2.put("name", course.getChinese_name());
-//				else if(type == 3)
-//					jsonObject2.put("name", course.getDutch_name());
-//				else
-//					jsonObject2.put("name", course.getEnglishName());
-//				
-//				if(course.getPicture()!=null) {
-//					jsonObject2.put("pictureId",course.getPicture().getId());
-//					jsonObject2.put("picturePosition",course.getPicture().getFileLocation());
-//				}
-//				else {
-//					jsonObject2.put("pictureId","");
-//					jsonObject2.put("picturePosition","");
-//				}
-//
-//				jsonObject2.put("id", course.getId());
-//				
-//				jsonObject1.put(i+"", jsonObject2);
-//			}
-//			//change json into String
-//			return jsonObject1.toString();
-//		}
-//	}
+	public String getPageOfCourse(int page,int type){
+		
+		//pageNumber and pageSize
+		Page<Course> coursesPage = courseRepository.findAll(new PageRequest(page, PAGE_SIZE));
+		
+		//get the Courses
+		List<Course> courses = coursesPage.getContent();
+		
+		if(courses == null) {
+			return null;
+		}
+		else {
+			//add chapters into course
+			JSONObject jsonObject1 = new JSONObject();
+			for(int i =0;i<courses.size();i++) {
+				
+				Course course = courses.get(i);
+				
+				JSONObject jsonObject2 = new JSONObject();
+				
+				//choose the language accroding to the type
+				if(type == 2)
+					jsonObject2.put("name", course.getChinese_name());
+				else if(type == 3)
+					jsonObject2.put("name", course.getDutch_name());
+				else
+					jsonObject2.put("name", course.getEnglish_name());
+				
+				if(course.getPicture()!=null) {
+					jsonObject2.put("pictureId",course.getPicture().getId());
+					jsonObject2.put("picturePosition",course.getPicture().getFileLocation());
+				}
+				else {
+					jsonObject2.put("pictureId","");
+					jsonObject2.put("picturePosition","");
+				}
+
+				jsonObject2.put("id", course.getId());
+				
+				jsonObject1.put(i+"", jsonObject2);
+			}
+			//change json into String
+			return jsonObject1.toString();
+		}
+	}
 	
 	
 	/**
@@ -187,7 +187,7 @@ public class CourseService extends GenericService<Course, Integer> {
 				jsonObject2.put("name", courses.get(i).getDutch_name());
 				break;
 
-			default:jsonObject2.put("name", courses.get(i).getEnglishName());
+			default:jsonObject2.put("name", courses.get(i).getEnglish_name());
 				break;
 			}
 			
@@ -229,7 +229,7 @@ public class CourseService extends GenericService<Course, Integer> {
 			jsonObject.put("name", course.getDutch_name());
 			break;
 
-		default:jsonObject.put("name", course.getEnglishName());
+		default:jsonObject.put("name", course.getEnglish_name());
 			break;
 		}
 		
@@ -281,7 +281,7 @@ public class CourseService extends GenericService<Course, Integer> {
 		
 		//reset the course name
 		if (english_name != null) {
-			course.setEnglishName(english_name);
+			course.setEnglish_name(english_name);
 		}
 		
 		if(chinese_name!=null) {
@@ -375,7 +375,7 @@ public class CourseService extends GenericService<Course, Integer> {
 			case 3:
 				jsonObject2.put("title",  courseChapters.get(i).getChapter().getDutch_title());
 				break;
-			default:jsonObject2.put("title", courseChapters.get(i).getChapter().getEnglishTitle());
+			default:jsonObject2.put("title", courseChapters.get(i).getChapter().getEnglish_title());
 				break;
 			}
 			
@@ -384,6 +384,37 @@ public class CourseService extends GenericService<Course, Integer> {
 		
 		return jsonObject.toString();
 	}
+	
+	
+	/**
+	 * Get chapters in a course
+	 * @param courseId
+	 * @return
+	 * @throws RequestException
+	 */
+	public List<Chapter>  getAllLanguageChapters(int courseId) throws RequestException {
+		
+		Course course = courseRepository.findOne(courseId);
+
+		if (course == null) {
+			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
+		}
+		
+		List <CourseChapter> courseChapters = courseChapterRepository.getChapterFromCourseChapterByCourseId(courseId);
+		
+		if(courseChapters == null) {
+			throw new RequestException(Error.USERCOURSE_DOES_NOT_EXIS);
+		}
+		
+		List<Chapter> chapters = new ArrayList<>();
+		
+		for(int i=0;i<courseChapters.size();i++) {
+			chapters.add(courseChapters.get(i).getChapter());
+		}
+		
+		return chapters;
+	}
+	
 	
 	/**
 	 * Get a specific chapter
@@ -485,7 +516,7 @@ public class CourseService extends GenericService<Course, Integer> {
 		}
 		
 		if (english_title != null) {
-			chapter.setEnglishTitle(english_title);
+			chapter.setEnglish_title(english_title);
 		}
 
 		if(chinese_title!=null) {
