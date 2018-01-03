@@ -115,6 +115,7 @@ function generateMenu() {
 function generateTable(pageInfo, page, props) {
 	// Check if there is data
 	var data = page.content ? page.content : page;
+	var enFlag=true,chFlag=false,Neflag=false;
 	console.log(pageInfo.name);
 	console.log(data);
 	if (data.length == 0)
@@ -122,6 +123,29 @@ function generateTable(pageInfo, page, props) {
 	if(!isEmptyObject(data) && pageInfo.name=='chapters'){
 	 	console.log(data.length+"yeshide");
 		$('.add-button').hide();
+	}
+	//Generate the language bar
+	if(!pageInfo.language)
+	{
+		$('.language-button').hide();
+	}
+	else
+	{
+		$('.language-button').append(
+			'<li id="lang-en">English</li>/<li id="lang-ch">简体中文</li>/<li id="lang-ne">Nederlands</li>');
+		$('#lang-en').on('click',function(){
+			enFlag=true;chFlag=false;Neflag=false;
+			console.log("en");
+			getColumnNames();
+		});
+		$('#lang-ch').on('click',function(){
+			enFlag=false;chFlag=true;Neflag=false;
+			getColumnNames();
+		});
+		$('#lang-ne').on('click',function(){
+			enFlag=false;chFlag=false;Neflag=true;
+			getColumnNames();
+		});
 	}
 	// Generate the table
 
@@ -137,16 +161,25 @@ function generateTable(pageInfo, page, props) {
 		}
 		/*extra define some pages' column sequence*/
 		if(pageInfo.name=="userCourses"){                                                      
-			keys=["courseId","pictureId", "name","date", "teacherId", "teacherName"];
+			keys=["courseId","picture", "name","date", "teacherId", "teacherName"];
 		}
 		if(pageInfo.name=="userChapters"){                                                      
 			keys=["chapterId", "chapterTitle","passOrNot","date","passOrNot","score", "teacherId","teacherName",];
 		}
 		if(pageInfo.name=="courses" || pageInfo.name=="availableCourses"){
-			keys=["id","pictureId","englishName"];
+			keys=["id","picture","english_name"];		
+			if(chFlag==true){
+				keys=["id","picture","chinese_name"];
+				console.log("test2");
+			}
+			if(Neflag==true){
+				keys=["id","picture","dutch_name"];
+				console.log("test3");
+				
+			}
 		}
 		if(pageInfo.name=="chapters"){
-			keys=["id", "title","requiredOrNot"];
+			keys=["id", "english_title","requiredOrNot"];
 		}
 		if(pageInfo.name=="users"){
 			keys=["id","picture","username","role","club","gender", "nickname", "phone", "wechat", "disabled"];
@@ -178,7 +211,8 @@ function generateTable(pageInfo, page, props) {
 		$.each(columns, function(i, column) {
 			var val = row[column];
 			if (column == 'gender')
-				val = val ? 'Female' : 'Male';
+				//val = val ? 'Female' : 'Male';
+				val = val ? 'Male':'Female';
 			if(column=='requiredOrNot'){
 				val=(val==true)?'yes':'no';
 			}
@@ -515,9 +549,9 @@ function showAdd(pageInfo, objectId, props) {
 				var x = $('<option>');
 				
 				if (field.name == 'gender'){
-					val++;
+					console.log(val++);
 				}
-				
+							
 				if (val == option.value){
 					x.attr('selected', true);
 				}
@@ -706,7 +740,7 @@ function edit(pageInfo, id, props) {
 	if(pageInfo.path.replaceWildcards(props).indexOf("users/getUserCourse/")>=0){
 		path="users/changeUserCourse";
 		/*add userId to data*/
-		var userId=pageInfo.path.replaceWildcards(props).substring(20,pageInfo.path.replaceWildcards(props).length-1);
+		var userId=pageInfo.path.replaceWildcards(props).substring(20,pageInfo.path.replaceWildcards(props).length);
 		var courseId=id;
 		data=data+"&userId="+userId+"&courseId="+courseId;
 	}

@@ -165,3 +165,9 @@ tr.disabled {
 .text_content{
 	height:300px !important;
 }
+.language-button{
+	float:right;
+}
+.language-button li{
+	display:inline-block;
+}

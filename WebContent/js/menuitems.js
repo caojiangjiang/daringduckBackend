@@ -104,10 +104,10 @@ items = {
 			type : 'select',
 			options : [ {
 				name : 'Male',
-				value : 1
+				value : 2
 			}, {
 				name : 'Female',
-				value : 2
+				value : 1
 			} ]
 		}, {
 			name : 'nickname',
@@ -140,6 +140,7 @@ items = {
 		name : "courses",
 		nameSingular : "course",
 		icon : 'graduation-cap',
+		language:true,
 		menu : true,
 		editable : true,
 		fields : [ {
@@ -332,15 +333,19 @@ items = {
 				name : 'no',
 				value :false
 			}  ]
-		}]
-		/*buttons : [  
+		},
+		{
+			name : 'comment',
+			type : 'text'
+		}],
+		buttons: [  
 			{
 				color : 'success',
-				action : "loadPage(items.userChapters, 0, {'userId': %userId%,'courseId':%id%})",
+				action : "",
 				icon : "check",
-				text : "Chapter"
+				text : "comment"
 			}
-		]*/
+		]
 	},
 	classMembers : {
 		path : "classes/%classId%/members",
