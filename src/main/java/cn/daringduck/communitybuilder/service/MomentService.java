@@ -1,5 +1,6 @@
 package cn.daringduck.communitybuilder.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
@@ -23,6 +24,7 @@ import cn.daringduck.communitybuilder.repository.FriendsRepository;
 import cn.daringduck.communitybuilder.repository.MomentPartRepository;
 import cn.daringduck.communitybuilder.repository.MomentRepository;
 import cn.daringduck.communitybuilder.repository.PictureRepository;
+import cn.daringduck.communitybuilder.repository.UserRepository;
 
 @Service
 @Transactional
@@ -32,15 +34,17 @@ public class MomentService extends GenericService<Moment, Long>{
     private final MomentPartRepository momentPartRepository;
     private final PictureRepository  pictureRepository;
     private final FriendsRepository friendsRepository;
+    private final UserRepository userRespository;
 
 	@Autowired
     public MomentService(MomentRepository momentRepository,MomentPartRepository momentPartRepository,
-    		PictureRepository  pictureRepository,FriendsRepository friendsRepository) {
+    		PictureRepository  pictureRepository,FriendsRepository friendsRepository,UserRepository userRespository) {
     	super(momentRepository);
     	this.momentRepository = momentRepository;
     	this.momentPartRepository = momentPartRepository;
     	this.pictureRepository = pictureRepository;
     	this.friendsRepository =friendsRepository;
+    	this.userRespository = userRespository;
     }
 	
 	
@@ -103,9 +107,9 @@ public class MomentService extends GenericService<Moment, Long>{
 	 * 
 	 * @return
 	 * **/
-	public List<Moment> getMyMoment(User user,int page) {
+	public List<Moment> getMyMoments(User user,int page) {
 		
-		Pageable pageable =(Pageable) new PageRequest(page, 25);
+		Pageable pageable =(Pageable) new PageRequest(page, PAGE_SIZE);
 		
 		return momentRepository.findByUser(user, pageable).getContent();
 	}
@@ -125,26 +129,24 @@ public class MomentService extends GenericService<Moment, Long>{
 			throw new RequestException(Error.USER_DOES_NOT_HAVE_FRIENDS);
 		}
 		
-		//be used in sql language to choose the top N moments
-		int begin = page * 25;
-		
 		//be used to selected right users' moments
-		String friensValue = "('";
+		List<Long> friensValue = new ArrayList<>();
 		
 		//combine all friends
 		for(int i=0;i<friends.size();i++) {
 			
-			friensValue = friensValue+friends.get(i).getFriends().getId()+"','";
+			friensValue.add(friends.get(i).getFriend().getId());
 		}
-		friensValue = friensValue.substring(0, friensValue.length()-3);
-		
-		//add the end;
-		friensValue = friensValue+"')";
+
 		
 		System.out.println(friensValue);
 		
 		//get top N moments from all friends' moments sort by time 
-		List<Moment> moments = momentRepository.getMyFriendsMoments(begin,friensValue);
+		//List<Moment> moments = momentRepository.getMyFriendsMoments();
+		
+		Pageable pageable = new PageRequest(page, PAGE_SIZE);
+		
+		List<Moment> moments = momentRepository.findByUserIdInOrderByPostedDesc(friensValue, pageable).getContent();
 		
 		return moments;
 	}
@@ -155,11 +157,33 @@ public class MomentService extends GenericService<Moment, Long>{
 	 * @param user
 	 * 
 	 * @return
+	 * @throws RequestException 
 	 * **/
-	public List<Moment> getClubMoments(User user,int page){
+	public List<Moment> getClubMoments(User user,int page) throws RequestException{
 		
+		if(user.getClub()==null) {
+			throw new RequestException(Error.USER_DOES_NOT_HAVE_CLUB);
+		}
 		
-		return null;
+		//get clubId
+		int clubId = user.getClub().getId();
+		
+		//get the user in the club
+		List<User> users = userRespository.findByClubId(clubId);
+		
+		//create a new list to store userId
+		List<Long> clubValue = new ArrayList<>();
+		
+		for(int i=0;i<users.size();i++) {
+			//add user into club
+			clubValue.add(users.get(i).getId());
+		}
+		
+		Pageable pageable = new PageRequest(0, PAGE_SIZE);
+		
+		List<Moment> moments = momentRepository.findByUserIdInOrderByPostedDesc(clubValue, pageable).getContent();
+		
+		return moments;
 	}
 	
 	/**

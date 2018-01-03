@@ -88,7 +88,7 @@ public class MomentController extends GenericController {
 	public Response getMyMoments(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
 		secure(token, "*");
 		User user = userService.findUserByAuthToken(token);
-		List<Moment> moments = momentService.getMyMoment(user,page);
+		List<Moment> moments = momentService.getMyMoments(user,page);
 		return Response.status(Response.Status.OK).entity(moments).build();
 		
 	}
@@ -132,7 +132,7 @@ public class MomentController extends GenericController {
 	public Response getSpecificFriendMoments(@HeaderParam("Auth-Token") String token,@QueryParam("friendId") long friendId,@QueryParam("page") int page) throws RequestException {
 		secure(token, "*");
 		User user = userService.get(friendId);
-		List<Moment> moments = momentService.getMyMoment(user,page);
+		List<Moment> moments = momentService.getMyMoments(user,page);
 		return Response.status(Response.Status.OK).entity(moments).build();
 		
 	}

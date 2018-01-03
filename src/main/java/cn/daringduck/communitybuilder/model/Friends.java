@@ -18,18 +18,18 @@ public class Friends {
 	
 	@NotNull @OneToOne private User user;
 	
-	@NotNull @OneToOne private User friends;
+	@NotNull @OneToOne private User friend;
 	
 	//whether the friends is allowed to see my moments
 	private boolean allowToSeeMyMoments;
 	
 	public Friends() {}
 
-	public Friends(User user, User friends,boolean allowToSeeMyMoments) {
+	public Friends(User user, User friend,boolean allowToSeeMyMoments) {
 		
 		this.user = user;
 		
-		this.friends = friends;
+		this.friend = friend;
 		
 		this.allowToSeeMyMoments = allowToSeeMyMoments;
 		
@@ -40,8 +40,8 @@ public class Friends {
 	public User getUser() {return user;}
 	public void setUser(User user) {this.user = user;}
 
-	public User getFriends() {return friends;}
-	public void setFriends(User friends) {this.friends = friends;}
+	public User getFriend() {return friend;}
+	public void setFriend(User friend) {this.friend = friend;}
 
 	public boolean isAllowToSeeMyMoments() {return allowToSeeMyMoments;}
 	public void setAllowToSeeMyMoments(boolean allowToSeeMyMoments) {

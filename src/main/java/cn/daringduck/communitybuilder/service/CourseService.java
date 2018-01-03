@@ -207,7 +207,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * 
 	 * */
 	
-	public String getCourse(int courseId, int type) throws RequestException {
+	public String getCourse(int courseId,int type) throws RequestException {
 		
 		Course course = courseRepository.findOne(courseId);
 		

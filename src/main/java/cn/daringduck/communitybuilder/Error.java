@@ -31,7 +31,8 @@ public enum Error {
 	USER_DOES_NOT_PASS_CHAPTERS(21,"User does not pass all chapters",Status.BAD_REQUEST),
 	USER_DOES_NOT_HAVE_FRIENDS(22,"User does not have friends",Status.BAD_REQUEST),
 	USER_ALREADY_HAVE_THIS_FRIEND(23,"User have already have this friends",Status.BAD_REQUEST),
-	USERCHAPTER_DOES_NOT_EXIS(24,"User does not choose this chapter",Status.BAD_REQUEST);
+	USERCHAPTER_DOES_NOT_EXIS(24,"User does not choose this chapter",Status.BAD_REQUEST),
+	USER_DOES_NOT_HAVE_CLUB(25,"User does not in any club",Status.BAD_REQUEST);
 	
 	public final int errorCode;
 	public final String errorMessage;

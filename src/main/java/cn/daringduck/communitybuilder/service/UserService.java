@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -286,6 +287,7 @@ public class UserService extends GenericService<User, Long> {
 	}
 
 	public Moment addUserMoment(long userId, String title, String privacyName,String eventDate) throws RequestException {
+		
 		User user = get(userId);
 
 		if (user == null) {
@@ -541,14 +543,16 @@ public class UserService extends GenericService<User, Long> {
 	 * @author 曹将将
 	 * 
 	 * @param userId
+	 * @param page
 	 * @param type
 	 * @return
 	 * @throws RequestException 
 	 * */
-	public String getUserCourse(long userId,int type) throws RequestException 
+	public String getUserCourse(long userId,int page, int type) throws RequestException 
 	{
+		Pageable pageable = new PageRequest(page, PAGE_SIZE);
 		
-		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
+		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId,pageable);
 		
 		if(userCourses == null) {
 			throw new RequestException(Error.USERCOURSE_DOES_NOT_EXIS);
@@ -692,9 +696,10 @@ public class UserService extends GenericService<User, Long> {
 	 * @throws RequestException 
 	 **/
 	public String getCourseAvaliable(long userId,int page, int type) throws RequestException {
+		Pageable pageable = new PageRequest(page, PAGE_SIZE);
 		
 		//the courses that user has choosed
-		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
+		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId,pageable);
 		
 		if(userCourses ==null) {
 			throw new RequestException(Error.USERCOURSE_DOES_NOT_EXIS);
@@ -998,15 +1003,17 @@ public class UserService extends GenericService<User, Long> {
 	 * 
 	 *@author 曹将将
 	 **/
-	public String getMyFriends(User user) throws RequestException {
+	public String getMyFriends(User user,int page) throws RequestException {
 		
 		//judge whether the user is null
 		if(user == null) {
 			throw new RequestException(Error.USER_DOES_NOT_EXIST);
 		}
 		
+		Pageable pageable = new PageRequest(page, PAGE_SIZE);
+		
 		//to see whether the user have Friends
-		List<Friends> friends = friendsRepository.findByUser(user);
+		List<Friends> friends = friendsRepository.findByUser(user,pageable);
 		if(friends ==null ) {
 			throw new RequestException(Error.USER_DOES_NOT_HAVE_FRIENDS);
 		}
@@ -1018,13 +1025,13 @@ public class UserService extends GenericService<User, Long> {
 			JSONObject jsonObject2 = new JSONObject();
 			
 			//put user message into json
-			jsonObject2.put("userId", friends.get(i).getFriends().getId());
-			jsonObject2.put("userName", friends.get(i).getFriends().getUsername());
-			jsonObject2.put("nickName", friends.get(i).getFriends().getNickname());
+			jsonObject2.put("userId", friends.get(i).getFriend().getId());
+			jsonObject2.put("userName", friends.get(i).getFriend().getUsername());
+			jsonObject2.put("nickName", friends.get(i).getFriend().getNickname());
 			
-			if(friends.get(i).getFriends().getPicture() !=null) {
-				jsonObject2.put("pictureId", friends.get(i).getFriends().getPicture().getId());
-				jsonObject2.put("pictureLocation", friends.get(i).getFriends().getPicture().getFileLocation());
+			if(friends.get(i).getFriend().getPicture() !=null) {
+				jsonObject2.put("pictureId", friends.get(i).getFriend().getPicture().getId());
+				jsonObject2.put("pictureLocation", friends.get(i).getFriend().getPicture().getFileLocation());
 			}
 			else {
 				jsonObject2.put("pictureId", "");
@@ -1032,9 +1039,9 @@ public class UserService extends GenericService<User, Long> {
 			}
 
 
-			jsonObject2.put("email", friends.get(i).getFriends().getEmail());
-			jsonObject2.put("phone",friends.get(i).getFriends().getPhone());
-			jsonObject2.put("weChat", friends.get(i).getFriends().getWechat());
+			jsonObject2.put("email", friends.get(i).getFriend().getEmail());
+			jsonObject2.put("phone",friends.get(i).getFriend().getPhone());
+			jsonObject2.put("weChat", friends.get(i).getFriend().getWechat());
 			
 			//put jsonObject together
 			jsonObject.put(i+"",jsonObject2);
@@ -1061,7 +1068,7 @@ public class UserService extends GenericService<User, Long> {
 		}
 		
 		//judge whether they are friends, if they are friends throw error
-		Friends  friends1 = friendsRepository.findByUserAndFriends(user, friends);
+		Friends  friends1 = friendsRepository.findByUserAndFriend(user, friends);
 		
 		if(friends1!=null) {
 			throw new RequestException(Error.USER_ALREADY_HAVE_THIS_FRIEND);
@@ -1087,18 +1094,18 @@ public class UserService extends GenericService<User, Long> {
 	 * 
 	 * @author 曹将将
 	 **/
-	public boolean deleteMyFriends(User user, User friends) throws RequestException {
-		if(user==null||friends==null) {
+	public boolean deleteMyFriends(User user, User friend) throws RequestException {
+		if(user==null||friend==null) {
 			throw new RequestException(Error.USER_DOES_NOT_EXIST);
 		}
 		
-		Friends  friends1 = friendsRepository.findByUserAndFriends(user, friends);
+		Friends  friends1 = friendsRepository.findByUserAndFriend(user, friend);
 		
 		if(friends1!=null) {
 			throw new RequestException(Error.USER_ALREADY_HAVE_THIS_FRIEND);
 		}
 		
-		friendsRepository.deleteByUserAndFriends(user, friends);
+		friendsRepository.deleteByUserAndFriend(user, friend);
 		
 		return true;
 		

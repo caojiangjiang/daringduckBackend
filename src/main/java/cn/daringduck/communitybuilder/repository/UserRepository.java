@@ -22,4 +22,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	List<User> getByRoleId(int roleId); 
 	
+	List<User> findByClubId(int clubId);
+	
 }
