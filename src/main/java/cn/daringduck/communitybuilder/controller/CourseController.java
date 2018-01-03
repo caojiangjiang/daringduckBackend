@@ -164,24 +164,24 @@ public class CourseController extends GenericController {
 	////////////////////////////////////////////////////////////////////
 
 	/**
-	 * Get chapters in a course
+	 * Get chapters in a course for app
 	 * @throws RequestException 
 	 */
 	@GET
-	@Path("/{courseId: [0-9]*}/chapters/")
+	@Path("/{courseId: [0-9]*}/oneLanguageChapters/")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response chapters(@HeaderParam("Auth-Token") String token,@PathParam("courseId") int id,@QueryParam("type") int type) throws RequestException {
+	public Response oneLanguageChapters(@HeaderParam("Auth-Token") String token,@PathParam("courseId") int id,@QueryParam("type") int type) throws RequestException {
 //		secure(token, "*");
 		return Response.status(Response.Status.OK).entity(courseService.getChapters(id,type)).build();
 	}
 	
 	
 	/**
-	 * Get chapters in a course with all language
+	 * Get chapters in a course with all language for web
 	 * @throws RequestException 
 	 */
 	@GET
-	@Path("/{courseId: [0-9]*}/Lchapters/")
+	@Path("/{courseId: [0-9]*}/chapters/")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response allLanguageChapters(@HeaderParam("Auth-Token") String token,@PathParam("courseId") int id) throws RequestException {
 //		secure(token, "*");

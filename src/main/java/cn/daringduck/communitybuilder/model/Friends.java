@@ -35,23 +35,15 @@ public class Friends {
 		
 	}
 	
-	public long getId() {
-		return this.id;
-	}
+	public long getId() {return this.id;}
 	
-	public User getUser() {
-		return user;
-	}
+	public User getUser() {return user;}
+	public void setUser(User user) {this.user = user;}
 
-	public User getFriends() {
-		return friends;
-	}
+	public User getFriends() {return friends;}
+	public void setFriends(User friends) {this.friends = friends;}
 
-	public boolean isAllowToSeeMyMoments() {
-		return allowToSeeMyMoments;
-	}
-
-
+	public boolean isAllowToSeeMyMoments() {return allowToSeeMyMoments;}
 	public void setAllowToSeeMyMoments(boolean allowToSeeMyMoments) {
 		this.allowToSeeMyMoments = allowToSeeMyMoments;
 	} 

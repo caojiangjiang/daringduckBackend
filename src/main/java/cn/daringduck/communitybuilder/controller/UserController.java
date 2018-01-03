@@ -338,7 +338,8 @@ public class UserController extends GenericController {
 	@GET
 	@Path("/getCourseAvaliable/{userId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getCourseAvaliable(@HeaderParam("Auth-Token") String token,@PathParam("userId") long userId,@QueryParam("page") int page,@QueryParam("type") int type) throws RequestException
+	public Response getCourseAvaliable(@HeaderParam("Auth-Token") String token,@PathParam("userId") long userId,
+			@QueryParam("page") int page,@QueryParam("type") int type) throws RequestException
 	{
 		// set who have the authority to do use this api
 		String members[] = {"teacher","admin"}; 
@@ -364,7 +365,8 @@ public class UserController extends GenericController {
 	  @GET
 	  @Path("/getMyChapter")
 	  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	  public Response getMyChapter(@HeaderParam("Auth-Token") String token,@QueryParam("courseId") int courseId,@QueryParam("page") int page,@QueryParam("type") int type) throws RequestException
+	  public Response getMyChapter(@HeaderParam("Auth-Token") String token,@QueryParam("courseId") int courseId,
+			  @QueryParam("page") int page,@QueryParam("type") int type) throws RequestException
 	  {	
 		  	secure(token, "*");
 			//judge whether the user have the permission to get the UserCourses
