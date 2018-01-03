@@ -826,6 +826,7 @@ public class UserService extends GenericService<User, Long> {
 	        jsonObject.put("score", userChapter.getScore());
 	        jsonObject.put("passOrNot", userChapter.getPassOrNot()); 
 	        jsonObject.put("date", userChapter.getDate());
+	        jsonObject.put("comment", userChapter.getComment());
 	
 	        //choose language accroding to the type
 			switch (type) {
