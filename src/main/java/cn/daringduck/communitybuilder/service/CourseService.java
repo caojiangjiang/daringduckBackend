@@ -25,6 +25,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.sym.Name;
+
 import cn.daringduck.communitybuilder.Error;
 import cn.daringduck.communitybuilder.RequestException;
 
@@ -110,12 +112,26 @@ public class CourseService extends GenericService<Course, Integer> {
 				JSONObject jsonObject2 = new JSONObject();
 				
 				//choose the language accroding to the type
-				if(type == 2)
-					jsonObject2.put("name", course.getChinese_name());
-				else if(type == 3)
-					jsonObject2.put("name", course.getDutch_name());
-				else
-					jsonObject2.put("name", course.getEnglish_name());
+				switch (type) {
+				
+				case 2:{
+					if(course.getChinese_name()!=null)
+						jsonObject2.put("name", course.getChinese_name());
+					else
+						jsonObject2.put("name", course.getEnglish_name());
+					break;
+				}
+				case 3:{
+					if(course.getDutch_name()!=null)
+						jsonObject2.put("name", course.getDutch_name());
+					else
+						jsonObject2.put("name", course.getEnglish_name());
+					break;
+				}
+				default:jsonObject2.put("name", course.getEnglish_name());
+					break;
+				}
+				
 				
 				if(course.getPicture()!=null) {
 					jsonObject2.put("pictureId",course.getPicture().getId());
@@ -181,11 +197,21 @@ public class CourseService extends GenericService<Course, Integer> {
 			
 			switch (type) {
 			case 2:
-				jsonObject2.put("name", courses.get(i).getChinese_name());
+			{
+				if(courses.get(i).getChinese_name()!=null)
+					jsonObject2.put("name", courses.get(i).getChinese_name());
+				else
+					jsonObject2.put("name", courses.get(i).getEnglish_name());
 				break;
+			}
 			case 3:
-				jsonObject2.put("name", courses.get(i).getDutch_name());
+			{
+				if(courses.get(i).getDutch_name()!=null)
+					jsonObject2.put("name", courses.get(i).getDutch_name());
+				else
+					jsonObject2.put("name", courses.get(i).getEnglish_name());
 				break;
+			}
 
 			default:jsonObject2.put("name", courses.get(i).getEnglish_name());
 				break;
@@ -221,14 +247,20 @@ public class CourseService extends GenericService<Course, Integer> {
 		//choose the language accroding to the type
 		switch (type) {
 			
-		case 2:
-			jsonObject.put("name", course.getChinese_name());
+		case 2:{
+			if(course.getChinese_name()!=null)
+				jsonObject.put("name", course.getChinese_name());
+			else
+				jsonObject.put("name", course.getEnglish_name());
 			break;
-			
-		case 3:
-			jsonObject.put("name", course.getDutch_name());
+		}
+		case 3:{
+			if(course.getDutch_name()!=null)
+				jsonObject.put("name", course.getDutch_name());
+			else
+				jsonObject.put("name", course.getEnglish_name());
 			break;
-
+		}
 		default:jsonObject.put("name", course.getEnglish_name());
 			break;
 		}
@@ -368,13 +400,20 @@ public class CourseService extends GenericService<Course, Integer> {
 			jsonObject2.put("courseId", courseChapters.get(i).getChapter().getCourseId());
 			jsonObject2.put("requiredOrNot", courseChapters.get(i).getChapter().isRequiredOrNot());
 			switch (type) {
-			case 2:
-				jsonObject2.put("title",  courseChapters.get(i).getChapter().getChinese_title());
+			case 2:{
+				if( courseChapters.get(i).getChapter().getChinese_title()!=null)
+					jsonObject2.put("title",  courseChapters.get(i).getChapter().getChinese_title());
+				else
+					jsonObject2.put("title", courseChapters.get(i).getChapter().getEnglish_title());
 				break;
-
-			case 3:
-				jsonObject2.put("title",  courseChapters.get(i).getChapter().getDutch_title());
+			}
+			case 3:{
+				if(courseChapters.get(i).getChapter().getDutch_title()!=null)
+					jsonObject2.put("title",  courseChapters.get(i).getChapter().getDutch_title());
+				else
+					jsonObject2.put("title", courseChapters.get(i).getChapter().getEnglish_title());
 				break;
+			}
 			default:jsonObject2.put("title", courseChapters.get(i).getChapter().getEnglish_title());
 				break;
 			}
@@ -765,12 +804,21 @@ public class CourseService extends GenericService<Course, Integer> {
 			}
 				
 			switch (type) {
-			case 2:
-				jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getChinese_text());
+			case 2:{
+				if(chapterChapterParts.get(i).getChapterPart().getChinese_text()!=null)
+					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getChinese_text());
+				else 
+					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
 				break;
-			case 3:
-				jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getDutch_text());
+			}
+			case 3:{
+				if(chapterChapterParts.get(i).getChapterPart().getDutch_text()!=null)
+					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getDutch_text());
+				else 
+					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
 				break;
+			}
+
 			default:jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
 				break;
 			}

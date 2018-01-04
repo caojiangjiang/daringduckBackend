@@ -569,18 +569,23 @@ public class UserService extends GenericService<User, Long> {
 			jsonObject2.put("courseId", course.getId());
 			
 			//choose the language accroding to the type
-			switch (type) {
-				
-			case 2:
-				jsonObject2.put("name", course.getChinese_name());
-				break;
-				
-			case 3:
-				jsonObject2.put("name", course.getDutch_name());
-				break;
-
-			default:jsonObject2.put("name", course.getEnglish_name());
-				break;
+			switch (type) {		
+				case 2:{
+					if(course.getChinese_name()!=null)
+						jsonObject2.put("name", course.getChinese_name());
+					else
+						jsonObject2.put("name", course.getEnglish_name());
+					break;
+				}
+				case 3:{
+					if(course.getDutch_name()!=null)
+						jsonObject2.put("name", course.getDutch_name());
+					else
+						jsonObject2.put("name", course.getEnglish_name());
+					break;
+				}
+				default:jsonObject2.put("name", course.getEnglish_name());
+					break;
 			}
 			
 			jsonObject2.put("date", userCourse.getDate());
@@ -642,19 +647,24 @@ public class UserService extends GenericService<User, Long> {
 		jsonObject2.put("courseId", course.getId());
 			
 		//choose the language accroding to the type
-		switch (type) {
-				
-		case 2:
-			jsonObject2.put("name", course.getChinese_name());
-			break;
-				
-		case 3:
-			jsonObject2.put("name", course.getDutch_name());
-			break;
-
-		default:jsonObject2.put("name", course.getEnglish_name());
-			break;
+		switch (type) {		
+			case 2:{
+				if(course.getChinese_name()!=null)
+					jsonObject2.put("name", course.getChinese_name());
+				else
+					jsonObject2.put("name", course.getEnglish_name());
+				break;
 			}
+			case 3:{
+				if(course.getDutch_name()!=null)
+					jsonObject2.put("name", course.getDutch_name());
+				else
+					jsonObject2.put("name", course.getEnglish_name());
+				break;
+			}
+			default:jsonObject2.put("name", course.getEnglish_name());
+				break;
+		}
 			
 		//put date into json
 		jsonObject2.put("date", userCourse.getDate());
@@ -830,16 +840,23 @@ public class UserService extends GenericService<User, Long> {
 	
 	        //choose language accroding to the type
 			switch (type) {
-				
-			case 2:
-				jsonObject.put("chapterTitle", userChapter.getChapter().getChinese_title());
-				break;
-				
-			case 3:
-				jsonObject.put("chapterTitle", userChapter.getChapter().getDutch_title());
-				break;
+			case 2:{
+				if( userChapter.getChapter().getChinese_title()!=null) {
+					jsonObject.put("title",  userChapter.getChapter().getChinese_title());
+				}
 
-			default:jsonObject.put("chapterTitle", userChapter.getChapter().getEnglish_title());
+				else
+					jsonObject.put("title", userChapter.getChapter().getEnglish_title());
+				break;
+			}
+			case 3:{
+				if(userChapter.getChapter().getDutch_title()!=null)
+					jsonObject.put("title", userChapter.getChapter().getDutch_title());
+				else
+					jsonObject.put("title", userChapter.getChapter().getEnglish_title());
+				break;
+			}
+			default:jsonObject.put("title", userChapter.getChapter().getEnglish_title());
 				break;
 			}
 	        

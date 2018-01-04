@@ -155,9 +155,8 @@ public class PictureController extends GenericController{
 //				file3.mkdir();
 //			}
 //		}
-//		
-//		//String uploadedFileLocation = context.getRealPath("/images/"+imageName);		
-//		String uploadedFileLocation = pathName+"\\"+imageName;
+//			
+		//String uploadedFileLocation = pathName+"\\"+imageName;
 		String uploadedFileLocation = pathName+"/"+imageName;
 		
 		Picture picture = pictureService.createPictureReference(uploadedFileLocation);
