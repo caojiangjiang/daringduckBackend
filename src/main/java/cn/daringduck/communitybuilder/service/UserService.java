@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.Response;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -107,6 +109,14 @@ public class UserService extends GenericService<User, Long> {
 	public List<User> getUserByRoleId(int roleId){ 
 		return userRepository.getByRoleId(roleId); 
 	} 
+	
+	
+	public List<User> getUserByNickName(String nickName){ 
+		
+		nickName = nickName.toUpperCase();
+		
+		return userRepository.findAllByNicknameLike(nickName); 
+	} 
 	  
 	/**
 	 * Adds a new user
@@ -128,6 +138,10 @@ public class UserService extends GenericService<User, Long> {
 		
 		// Check if the passed parameters are correct
 		checkValues(username, password, nickname, gender, phone, wechat, email, false);
+		
+		if(password == null) {
+			password="dd246";
+		}
 		
 		Role role = roleRepository.findOne(roleId);
 
@@ -256,6 +270,55 @@ public class UserService extends GenericService<User, Long> {
 
 		return user;
 	}
+	
+	
+	/**
+	 * change the passWord of a user
+	 * @param user
+	 * @param oldPassword
+	 * @param newPassword
+	 * @return
+	 * 
+	 * @author ²Ü½«½«
+	 * @throws RequestException 
+	 * 
+	 **/
+	public boolean changePassword(User user, String oldPassword,String newPassword) throws RequestException {
+		
+		//whether the old password is correct
+		User user1 = authenticate(user.getUsername(), oldPassword);
+
+		if (user1 == null) {
+			throw new RequestException(Error.NO_USERNAME_OR_PASSWORD);
+		}
+		
+		//set new password
+		String passwordHash = passwordSecurity.hash(newPassword.toCharArray());
+
+		user.setPassword(passwordHash);
+
+		userRepository.save(user);
+		
+		return true;
+	}
+	
+	
+	public boolean changeAllUsersPassword() throws RequestException {
+		
+		List<User> users = userRepository.findAll();
+		
+		//set new password
+		String passwordHash = passwordSecurity.hash("dd246".toCharArray());
+		
+		for(int i=0;i<users.size();i++) {
+			User user = users.get(i);
+			user.setPassword(passwordHash);
+			userRepository.save(user);
+		}
+		
+		return true;
+	}
+	
 
 	/**
 	 * Generate a token for a user
@@ -426,7 +489,7 @@ public class UserService extends GenericService<User, Long> {
 	 * @return UserCourse
 	 * @throws RequestException 
 	 * */
-	public boolean changeUserCourse(long userId,int courseId,long teacherId,String status,long date) throws RequestException {
+	public boolean changeUserCourse(long userId,int courseId,long teacherId,String passOrNot,long date) throws RequestException {
 		//use it to show the result of changeUserCourse
 		boolean result = false;
 		
@@ -461,17 +524,17 @@ public class UserService extends GenericService<User, Long> {
 		}
 		
 		//when the teacher or the admin want to let the user pass and the user pass the chapter he needed, he pass the course
-		if(status.equalsIgnoreCase("true")&&chapterPassOrNot) {
+		if(passOrNot.equalsIgnoreCase("true")&&chapterPassOrNot) {
 			userCourse.setPassedOrNot(true);
 		}
 		
 		//when teacher want to let a user passed but the user dose not pass the chapters, system will give the teacher a prompt
-		if(status.equalsIgnoreCase("true")&&chapterPassOrNot==false) {
+		if(passOrNot.equalsIgnoreCase("true")&&chapterPassOrNot==false) {
 			throw new RequestException(Error.USER_DOES_NOT_PASS_CHAPTERS);
 		}
 		
 		//if the user does not pass the course, the date is 0
-		if(status.equalsIgnoreCase("false")) {
+		if(passOrNot.equalsIgnoreCase("false")) {
 			userCourse.setPassedOrNot(false);
 			date = 0;
 		}
@@ -497,7 +560,7 @@ public class UserService extends GenericService<User, Long> {
 	 * @return UserCourse
 	 * @throws RequestException 
 	 * */
-	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String status,long date,String comment) throws RequestException 
+	public boolean changeUserChapter(long userId,long chapterId,long teacherId,int score,String passOrNot,long date,String comment) throws RequestException 
 	{
 		//easy to understand so there is no need to write
 		boolean result = false;
@@ -514,14 +577,14 @@ public class UserService extends GenericService<User, Long> {
 			userChapter.setTeacher(teacher);
 		}
 		
-		if(status.equalsIgnoreCase("true")) {
+		if(passOrNot.equalsIgnoreCase("true")) {
 			userChapter.setPassOrNot(true);
 		}
 		
 		userChapter.setDate(date);
 		
 		
-		if(status.equalsIgnoreCase("false")) {
+		if(passOrNot.equalsIgnoreCase("false")) {
 			userChapter.setPassOrNot(false);
 		}
 		
@@ -932,24 +995,6 @@ public class UserService extends GenericService<User, Long> {
 		// passwordRegexes[3] = Pattern.compile(".*[~!].*");
 	}
 
-	/**
-	 * Check if password contains number, small and upercase letter and another
-	 * character
-	 */
-	private boolean isLegalPassword(String pass) {
-
-		if (pass.length() < 8) {
-			return false;
-		}
-
-		for (int i = 0; i < passwordRegexes.length; i++) {
-			if (!passwordRegexes[i].matcher(pass).matches()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 
 	/**
 	 * Check values if they are valid
@@ -960,7 +1005,7 @@ public class UserService extends GenericService<User, Long> {
 	private void checkValues(String username, String password, String nickname, int gender, String phone,
 			String wechat, String email, boolean edit) throws RequestException {
 
-		if ((username == null || password == null) && !edit) {
+		if (username == null) {
 			throw new RequestException(Error.NO_USERNAME_OR_PASSWORD);
 		}
 		
@@ -970,10 +1015,6 @@ public class UserService extends GenericService<User, Long> {
 		
 		if (username != null && userRepository.findByUsernameIgnoreCase(username) != null){
 			throw new RequestException(Error.USERNAME_NOT_UNIQUE);
-		}
-
-		if (password != null && !isLegalPassword(password)) {
-			throw new RequestException(Error.UNSAFE_PASSWORD);
 		}
 
 		if (gender < 0 || gender > 2) {
@@ -999,7 +1040,7 @@ public class UserService extends GenericService<User, Long> {
 			throw new RequestException(Error.USERNAME_SHORT);
 		}
 
-		if (password != null && !isLegalPassword(password)) {
+		if (password != null) {
 			throw new RequestException(Error.UNSAFE_PASSWORD);
 		}
 

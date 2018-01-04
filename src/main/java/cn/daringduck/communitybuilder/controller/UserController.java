@@ -118,6 +118,22 @@ public class UserController extends GenericController {
 	 
 	}
 	 
+	/**
+	 * get users by NickName
+	 * 
+	 * @return
+	 * @throws RequestException 
+	 **/
+	@GET
+	@Path("/getUsersByNickName")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getUsersByNickName(@HeaderParam("Auth-Token") String token, @QueryParam("nickName") String nickName) throws RequestException {
+	 
+	  secure(token, "*");
+	 
+	  return Response.status(Response.Status.OK).entity(userService.getUserByNickName(nickName)).build();
+	 
+	}
 	
 	/**
 	 * Update the information for the user with id
@@ -144,6 +160,47 @@ public class UserController extends GenericController {
 		return Response.status(Response.Status.OK).entity(user).build();
 	}
 
+	/**
+	 * change the user's his own password
+	 * 
+	 * @return
+	 * @throws RequestException
+	 */
+	@PUT
+	@Path("/changePassword")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response changePassword(@HeaderParam("Auth-Token") String token,@FormParam("oldPassword")String oldPassword,
+			@FormParam("newPassword")String newPassword ) throws RequestException {
+
+		secure(token, "*");
+		
+		User user =userService.findUserByAuthToken(token);
+
+		boolean result = userService.changePassword(user,oldPassword,newPassword);
+
+		// Return the user data to the RESTful service
+		return Response.status(Response.Status.OK).entity(result).build();
+	}
+	
+	
+	/**
+	 * change all users' password into dd246
+	 * 
+	 * @return
+	 * @throws RequestException
+	 */
+	@GET
+	@Path("/changeAllUsersPassword")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response changeAllUsersPassword() throws RequestException {
+
+		boolean result = userService.changeAllUsersPassword();
+
+		// Return the user data to the RESTful service
+		return Response.status(Response.Status.OK).entity(result).build();
+	}
+	
 	/**
 	 * Get friends of user with id
 	 * 
@@ -417,7 +474,7 @@ public class UserController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response changeUserCourse(@HeaderParam("Auth-Token") String token, @QueryParam("userId") long userId,
-			@QueryParam("courseId") int courseId, @QueryParam("teacherId") long teacherId ,@QueryParam("status") String status,
+			@QueryParam("courseId") int courseId, @QueryParam("teacherId") long teacherId ,@QueryParam("passOrNot") String passOrNot,
 			@QueryParam("date") long date) throws RequestException 
 	{
 		// set who have the authority to do use this api
@@ -427,7 +484,7 @@ public class UserController extends GenericController {
 		secure(token, members);
 		
 		//change userCourse according to the given data 
-		boolean userCourse = userService.changeUserCourse(userId, courseId,teacherId,status,date);
+		boolean userCourse = userService.changeUserCourse(userId, courseId,teacherId,passOrNot,date);
 		
 		//return the result to the RESTful service
 		return Response.status(Response.Status.OK).entity(userCourse).build();
@@ -601,7 +658,7 @@ public class UserController extends GenericController {
 		@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 		public Response changeUserChapter(@HeaderParam("Auth-Token") String token, @QueryParam("userId") long userId,
 				@QueryParam("chapterId") long chapterId, @QueryParam("teacherId") long teacherId,
-				@QueryParam("score") int score ,@QueryParam("status") String status,
+				@QueryParam("score") int score ,@QueryParam("passOrNot") String passOrNot,
 				@QueryParam("date") long date,@QueryParam("comment") String comment) throws RequestException 
 		{
 			
@@ -612,7 +669,7 @@ public class UserController extends GenericController {
 			secure(token, members);
 			
 			//change userChapter
-			boolean userChapter = userService.changeUserChapter(userId, chapterId,teacherId,score,status,date,comment);
+			boolean userChapter = userService.changeUserChapter(userId, chapterId,teacherId,score,passOrNot,date,comment);
 			
 			//Return the user data to the RESTful service
 			return Response.status(Response.Status.OK).entity(userChapter).build();
