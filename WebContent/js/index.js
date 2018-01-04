@@ -593,8 +593,12 @@ function showAdd(pageInfo, objectId, props) {
 		}
 		if(pageInfo.name=="courses"){
 			if(objectId != undefined){
-				console.log(object.id);
 				tempCourseId=object.id;
+				$('.fields').prepend(
+						'<div class="input-group">'
+							+'<span class="input-group-addon">Id</span>'
+							+'<input class="form-control" type="text" readonly="true" value="'+object.id+'">'
+						+'</div><br>')
 			}
 			courseFlag=true;
 		}
@@ -1073,6 +1077,7 @@ function uploadCourseImage(courseId)
 		alert("upload successfully");
 		console.log(data);
 		$('input[type="file"]').after('<input type="text" name="pictureId" style="visibility:hidden;position: absolute;" value="'+data.id+'">');
+		$('.imgBar').attr('src','http://203.195.147.70:8080/daringduckBackend/api/pictures/'+data.id)
 	}
 
 	communityBuilder.uploadImage(form, done, fail);
