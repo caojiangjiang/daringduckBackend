@@ -247,7 +247,7 @@ items = {
 	userCourses : {
 		path : "users/getUserCourse/%userId%",
 		name : "userCourses",
-		nameSingular : "courses",
+		nameSingular : "userCourses",
 		editable : true,
 		addFunction : 'loadPage(items.userAvailableCourses, 0, {userId: %userId%})',
 		fields : [ {
@@ -292,7 +292,7 @@ items = {
 	userChapters : {
 		path : "users/getUserChapter/%userId%/%courseId%",
 		name : "userChapters",
-		nameSingular : "chapters",
+		nameSingular : "userChapters",
 		editable : true,
 		addable:false,
 		fields : [ {

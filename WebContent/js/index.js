@@ -48,11 +48,61 @@ String.prototype.replaceWildcards = function(wildcards) {
 	}
 	return str;
 }
+/*datestamp to format like yyyy-MM-dd h:m:s*/
+Date.prototype.format = function(format) {
+    var date = {
+           "M+": this.getMonth() + 1,
+           "d+": this.getDate(),
+           "h+": this.getHours(),
+           "m+": this.getMinutes(),
+           "s+": this.getSeconds(),
+           "q+": Math.floor((this.getMonth() + 3) / 3),
+           "S+": this.getMilliseconds()
+    };
+    if (/(y+)/i.test(format)) {
+           format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+    }
+    for (var k in date) {
+           if (new RegExp("(" + k + ")").test(format)) {
+                  format = format.replace(RegExp.$1, RegExp.$1.length == 1
+                         ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+           }
+    }
+    return format;
+}
+function formatDateTime(timeStamp) {   
+    var date = new Date();  
+    date.setTime(timeStamp * 1000);  
+    var y = date.getFullYear();      
+    var m = date.getMonth() + 1;      
+    m = m < 10 ? ('0' + m) : m;      
+    var d = date.getDate();      
+    d = d < 10 ? ('0' + d) : d;      
+    var h = date.getHours();    
+    h = h < 10 ? ('0' + h) : h;    
+    var minute = date.getMinutes();    
+    var second = date.getSeconds();    
+    minute = minute < 10 ? ('0' + minute) : minute;      
+    second = second < 10 ? ('0' + second) : second;     
+    return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;      
+}
+
 function isEmptyObject(obj){
 	for(var key in obj){
 		return false;
 	}
 	return true;
+}
+function dateToStamp(dateId,dateStampId){
+	var stringDate=$("#"+dateId).val();
+	var dateStamp=Date.parse(new Date(stringDate));
+	dateStamp=dateStamp/1000;
+	$("#"+dateStampId).val(dateStamp);
+	console.log(stringDate + "的时间戳为：" + dateStamp);
+	var test=formatDateTime(dateStamp);
+	/*var dateStamp1=new Date(dateStamp);
+	var test=dateStamp1.format('yyyy-MM-dd hh:mm:ss');*/
+	console.log("时间戳转回时间"+test);
 }
 
 //
@@ -164,7 +214,7 @@ function generateTable(pageInfo, page, props) {
 			keys=["courseId","picture", "name","date", "teacherId", "teacherName"];
 		}
 		if(pageInfo.name=="userChapters"){                                                      
-			keys=["chapterId", "chapterTitle","passOrNot","date","passOrNot","score", "teacherId","teacherName",];
+			keys=["chapterId", "title","passOrNot","date","passOrNot","score", "teacherId","teacherName",];
 		}
 		if(pageInfo.name=="courses" || pageInfo.name=="availableCourses"){
 			keys=["id","picture","course_name"];		
@@ -212,6 +262,13 @@ function generateTable(pageInfo, page, props) {
 			}
 			if(column=='chapter_title'){
 				val=row['english_title']+'<br>'+row['chinese_title']+'<br>'+row['dutch_title'];
+			}
+			if(column=='date'){
+				if(row['date']!=0){
+					/*var date=new Date(row['date']);
+					val=date.format('yyyy-MM-dd h:m:s');*/
+					val=formatDateTime(row['date']);
+				}
 			}
 			if(column=='picture'){
 				console.log(val);
@@ -476,7 +533,6 @@ function loadPage(pageInfo, page, props) {
 //
 // Add / Edit / Delete
 //
-
 function showAdd(pageInfo, objectId, props) {
 	// Generates an input element
 	console.log(objectId);
@@ -510,13 +566,19 @@ function showAdd(pageInfo, objectId, props) {
 	}
 	
 	var generateDate = function(field, type, val){
+		console.log(val);
+		var date_val="";
+		if(val!="" && val!=null){
+			date_val=formatDateTime(val);
+		}
 		var input = $('<div class="control-group">'
 						+'<div class="controls date form_datetime" data-date="2010-01-01T00:00:00Z"  data-link-field="date_val">'
-							+'<input class="form-control" size="16" type="text" value="" style="border-radius: 0 5px 5px 0;" readonly>'
+							+'<input class="form-control" size="16" type="text" value="'+date_val+'" style="border-radius: 0 5px 5px 0;" readonly>'
 							+'<span style="position:absolute;left: 50px;top: 20px;" class="add-on"><i class="icon-remove"></i></span>'
 							+'<span style="position:absolute;left: 50px;top: 20px;" class="add-on"><i class="icon-th"></i></span>'
 						+'</div>'
-						+'<input name="date" type="hidden" id="date_val" value="" />'
+						+'<input type="hidden" id="date_val" value="'+date_val+'"/>'
+						+'<input name="date" id="date_field" type="hidden" value="" />'
 					+'</div>');
 		return input;
 
@@ -605,6 +667,29 @@ function showAdd(pageInfo, objectId, props) {
 			}
 			courseFlag=true;
 		}
+		/*add course name(no-edit field) in user course page*/
+		if(pageInfo.name=="userCourses"){
+			if(object != undefined){
+				$('.fields').prepend(
+						'<div class="input-group">'
+							+'<span class="input-group-addon">Course</span>'
+							+'<input class="form-control" type="text" readonly="true" value="'+object.name+'">'
+						+'</div><br>')
+			}
+			courseFlag=true;
+		}
+		/*add chapter name(no-edit field) in user course page*/
+		if(pageInfo.name=="userChapters"){
+			if(object != undefined){
+				$('.fields').prepend(
+						'<div class="input-group">'
+							+'<span class="input-group-addon">Chapter</span>'
+							+'<input class="form-control" type="text" readonly="true" value="'+object.chapterTitle+'">'
+						+'</div><br>')
+			}
+			courseFlag=true;
+		}
+		
 		var fields = pageInfo.fields;
 		$(".objectname").html(pageInfo.nameSingular.capitalizeFirstLetter());
 
@@ -641,7 +726,7 @@ function showAdd(pageInfo, objectId, props) {
 				inputGroup.append(generateSelect(field, object != undefined ? object[field.name] : -1));
 				break;
 			case 'date':
-				inputGroup.append(generateDate(field, 'date', ''));
+				inputGroup.append(generateDate(field, 'date',object != undefined ? object[field.name] : ''));
 				break;
 			case 'radio':
 				inputGroup.append(generateRadio(field, object != undefined ? object[field.name] : -1));
@@ -753,21 +838,49 @@ function add(pageInfo, props) {
  * @param props
  */
 function edit(pageInfo, id, props) {
-	var data = $("form#add").serialize();
+	var data;
 	var path;
-	console.log(data);
 	if(pageInfo.path.replaceWildcards(props).indexOf("users/getUserCourse/")>=0){
+		dateToStamp("date_val","date_field");
+		data = $("form#add").serialize();
 		path="users/changeUserCourse";
 		/*add userId to data*/
 		var userId=pageInfo.path.replaceWildcards(props).substring(20,pageInfo.path.replaceWildcards(props).length);
 		var courseId=id;
-		data="userId="+userId+"&courseId="+courseId+"teacherId=2&date=2010-01-14%2010%3A35%3A00&status=false";
+		data="userId="+userId+"&courseId="+courseId+"&"+data;
+		console.log(data);
+		communityBuilder.editUserLink(data, path,
+				function() {
+					loadPage(pageInfo, currentPage, props)
+				}, fail);
+	}
+	else if(pageInfo.path.replaceWildcards(props).indexOf("users/getUserChapter/")>=0){
+		console.log($('#data_val').val());
+		/*if($('#data_val').val()==undefined){
+			console.log("yesssssssssss");
+		}*/
+		dateToStamp("date_val","date_field");
+		data = $("form#add").serialize();
+		console.log(data);
+		path="users/changeUserChapter";
+		/*add userId to data*/
+		console.log(pageInfo);
+		console.log(pageInfo.path.replaceWildcards(props));
+		console.log(id);
+		/*get userId in string temp*/
+		var temp=pageInfo.path.replaceWildcards(props).substring(21,pageInfo.path.replaceWildcards(props).length);
+		endFlag=temp.indexOf("/");
+		var userId=temp.substring(0,endFlag);
+		var chapterId=id;
+		data="userId="+userId+"&chapterId="+chapterId+"&"+data;
+		//data="userId=1&chapterId=2&teacherId=14&score=3&passOrNot=false&date=123455555&comment=test";
 		communityBuilder.editUserLink(data, path,
 				function() {
 					loadPage(pageInfo, currentPage, props)
 				}, fail);
 	}
 	else{
+		data = $("form#add").serialize();
 		path=pageInfo.path.replaceWildcards(props);
 		communityBuilder.edit(id, data, path,
 				function() {
