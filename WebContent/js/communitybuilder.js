@@ -78,6 +78,7 @@ CommunityBuilder.prototype.add = function(data, resource, done, fail) {
 	});
 }
 
+
 /**
  * Edit a single item on the server
  * 
@@ -97,6 +98,17 @@ CommunityBuilder.prototype.edit = function(id, data, resource, done, fail) {
 	$.ajax({
 		type : "PUT",
 		url : "api/" + resource + "/" + id + "?" + data,
+		headers : {
+			'auth-token' : this.token
+		},
+		error : fail,
+		success : done
+	});
+}
+CommunityBuilder.prototype.editUserLink = function(data, resource, done, fail) {
+	$.ajax({
+		type : "PUT",
+		url : "api/" + resource + "?" + data,
 		headers : {
 			'auth-token' : this.token
 		},
