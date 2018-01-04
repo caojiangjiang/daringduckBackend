@@ -487,7 +487,7 @@ function showAdd(pageInfo, objectId, props) {
 			var input=$('<div></div>')
 			var inputfield = $('<input class="form-control">');
 			if(val!="" && val!=null){
-				input.append('<img src="http://203.195.147.70:8080/daringduckBackend/api/pictures/'+val.id+'" style="width:60px;height:60px;"/>');
+				input.append('<img class="imgBar" src="http://203.195.147.70:8080/daringduckBackend/api/pictures/'+val.id+'" style="width:60px;height:60px;"/>');
 			}
 			inputfield.attr('type', type);
 			inputfield.attr('name', field.name);
@@ -583,6 +583,11 @@ function showAdd(pageInfo, objectId, props) {
 		if(pageInfo.name=="users"){
 			if(objectId != undefined){
 				tempUserId=object.id;
+				$('.fields').prepend(
+					'<div class="input-group">'
+						+'<span class="input-group-addon">Id</span>'
+						+'<input class="form-control" type="text" readonly="true" value="'+object.id+'">'
+					+'</div><br>')
 			}
 			userFlag=true;
 		}
@@ -1048,6 +1053,7 @@ function uploadUserImage(userId) {
 		console.log(data);
 		alert("upload successfully");
 		$('input[type="file"]').after('<input type="text" name="pictureId" style="visibility:hidden;position: absolute;" value="'+data.id+'">');
+		$('.imgBar').attr('src','http://203.195.147.70:8080/daringduckBackend/api/pictures/'+data.id)
 	}
 
 	communityBuilder.uploadImage(form, done, fail);

@@ -86,7 +86,7 @@ items = {
 				text : "Enable"
 			}
 		} ],
-		fields : [ {
+		fields : [{
 			name : 'role',
 			type : 'select',
 			list : 'roles',
