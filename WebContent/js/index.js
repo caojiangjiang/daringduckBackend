@@ -125,7 +125,7 @@ function generateTable(pageInfo, page, props) {
 		$('.add-button').hide();
 	}
 	//Generate the language bar
-	if(!pageInfo.language)
+	/*if(!pageInfo.language)
 	{
 		$('.language-button').hide();
 	}
@@ -146,7 +146,7 @@ function generateTable(pageInfo, page, props) {
 			enFlag=false;chFlag=false;Neflag=true;
 			getColumnNames();
 		});
-	}
+	}*/
 	// Generate the table
 
 	// Function that returns all the column names
@@ -167,19 +167,10 @@ function generateTable(pageInfo, page, props) {
 			keys=["chapterId", "chapterTitle","passOrNot","date","passOrNot","score", "teacherId","teacherName",];
 		}
 		if(pageInfo.name=="courses" || pageInfo.name=="availableCourses"){
-			keys=["id","picture","english_name"];		
-			if(chFlag==true){
-				keys=["id","picture","chinese_name"];
-				console.log("test2");
-			}
-			if(Neflag==true){
-				keys=["id","picture","dutch_name"];
-				console.log("test3");
-				
-			}
+			keys=["id","picture","course_name"];		
 		}
 		if(pageInfo.name=="chapters"){
-			keys=["id", "english_title","requiredOrNot"];
+			keys=[ "courseId","id","chapter_title","requiredOrNot"];
 		}
 		if(pageInfo.name=="users"){
 			keys=["id","picture","username","role","club","gender", "nickname", "phone", "wechat", "disabled"];
@@ -215,6 +206,12 @@ function generateTable(pageInfo, page, props) {
 				val = val ? 'Male':'Female';
 			if(column=='requiredOrNot'){
 				val=(val==true)?'yes':'no';
+			}
+			if(column=='course_name'){
+				val=row['english_name']+'<br>'+row['chinese_name']+'<br>'+row['dutch_name'];
+			}
+			if(column=='chapter_title'){
+				val=row['english_title']+'<br>'+row['chinese_title']+'<br>'+row['dutch_title'];
 			}
 			if(column=='picture'){
 				console.log(val);
@@ -463,7 +460,9 @@ function loadPage(pageInfo, page, props) {
 		// Generation after data is loaded
 		var done = function(data) {
 			generateTable(pageInfo, data, props);
-			generatePagination(pageInfo, data, props);
+			/*this is used to replace the param and get the correct path*/
+			pageInfo.path = pageInfo.path.replaceWildcards(props);
+			generatePagination(pageInfo, data, props);		
 		};
 
 		// Load the data
@@ -589,6 +588,10 @@ function showAdd(pageInfo, objectId, props) {
 						+'<input class="form-control" type="text" readonly="true" value="'+object.id+'">'
 					+'</div><br>')
 			}
+			/*else{
+				$('input[type="password"]').val('dd246');
+				console.log($('input[type="password"]').val());
+			}*/
 			userFlag=true;
 		}
 		if(pageInfo.name=="courses"){
