@@ -571,14 +571,14 @@ public class UserService extends GenericService<User, Long> {
 			//choose the language accroding to the type
 			switch (type) {		
 				case 2:{
-					if(course.getChinese_name()!=null)
+					if(!course.getChinese_name().equalsIgnoreCase(""))
 						jsonObject2.put("name", course.getChinese_name());
 					else
 						jsonObject2.put("name", course.getEnglish_name());
 					break;
 				}
 				case 3:{
-					if(course.getDutch_name()!=null)
+					if(!course.getDutch_name().equalsIgnoreCase(""))
 						jsonObject2.put("name", course.getDutch_name());
 					else
 						jsonObject2.put("name", course.getEnglish_name());
@@ -841,7 +841,7 @@ public class UserService extends GenericService<User, Long> {
 	        //choose language accroding to the type
 			switch (type) {
 			case 2:{
-				if( userChapter.getChapter().getChinese_title()!=null) {
+				if( !userChapter.getChapter().getChinese_title().equalsIgnoreCase("")) {
 					jsonObject.put("title",  userChapter.getChapter().getChinese_title());
 				}
 
@@ -850,7 +850,7 @@ public class UserService extends GenericService<User, Long> {
 				break;
 			}
 			case 3:{
-				if(userChapter.getChapter().getDutch_title()!=null)
+				if(!userChapter.getChapter().getDutch_title().equalsIgnoreCase(""))
 					jsonObject.put("title", userChapter.getChapter().getDutch_title());
 				else
 					jsonObject.put("title", userChapter.getChapter().getEnglish_title());

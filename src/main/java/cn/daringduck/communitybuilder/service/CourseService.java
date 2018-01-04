@@ -115,14 +115,14 @@ public class CourseService extends GenericService<Course, Integer> {
 				switch (type) {
 				
 				case 2:{
-					if(course.getChinese_name()!=null)
+					if(!course.getChinese_name().equalsIgnoreCase(""))
 						jsonObject2.put("name", course.getChinese_name());
 					else
 						jsonObject2.put("name", course.getEnglish_name());
 					break;
 				}
 				case 3:{
-					if(course.getDutch_name()!=null)
+					if(!course.getDutch_name().equalsIgnoreCase(""))
 						jsonObject2.put("name", course.getDutch_name());
 					else
 						jsonObject2.put("name", course.getEnglish_name());
@@ -198,7 +198,7 @@ public class CourseService extends GenericService<Course, Integer> {
 			switch (type) {
 			case 2:
 			{
-				if(courses.get(i).getChinese_name()!=null)
+				if(!courses.get(i).getChinese_name().equalsIgnoreCase(""))
 					jsonObject2.put("name", courses.get(i).getChinese_name());
 				else
 					jsonObject2.put("name", courses.get(i).getEnglish_name());
@@ -206,7 +206,7 @@ public class CourseService extends GenericService<Course, Integer> {
 			}
 			case 3:
 			{
-				if(courses.get(i).getDutch_name()!=null)
+				if(!courses.get(i).getDutch_name().equalsIgnoreCase(""))
 					jsonObject2.put("name", courses.get(i).getDutch_name());
 				else
 					jsonObject2.put("name", courses.get(i).getEnglish_name());
@@ -248,14 +248,14 @@ public class CourseService extends GenericService<Course, Integer> {
 		switch (type) {
 			
 		case 2:{
-			if(course.getChinese_name()!=null)
+			if(!course.getChinese_name().equalsIgnoreCase(""))
 				jsonObject.put("name", course.getChinese_name());
 			else
 				jsonObject.put("name", course.getEnglish_name());
 			break;
 		}
 		case 3:{
-			if(course.getDutch_name()!=null)
+			if(!course.getDutch_name().equalsIgnoreCase(""))
 				jsonObject.put("name", course.getDutch_name());
 			else
 				jsonObject.put("name", course.getEnglish_name());
@@ -401,14 +401,14 @@ public class CourseService extends GenericService<Course, Integer> {
 			jsonObject2.put("requiredOrNot", courseChapters.get(i).getChapter().isRequiredOrNot());
 			switch (type) {
 			case 2:{
-				if( courseChapters.get(i).getChapter().getChinese_title()!=null)
+				if( !courseChapters.get(i).getChapter().getChinese_title().equalsIgnoreCase(""))
 					jsonObject2.put("title",  courseChapters.get(i).getChapter().getChinese_title());
 				else
 					jsonObject2.put("title", courseChapters.get(i).getChapter().getEnglish_title());
 				break;
 			}
 			case 3:{
-				if(courseChapters.get(i).getChapter().getDutch_title()!=null)
+				if(!courseChapters.get(i).getChapter().getDutch_title().equalsIgnoreCase(""))
 					jsonObject2.put("title",  courseChapters.get(i).getChapter().getDutch_title());
 				else
 					jsonObject2.put("title", courseChapters.get(i).getChapter().getEnglish_title());
@@ -805,14 +805,14 @@ public class CourseService extends GenericService<Course, Integer> {
 				
 			switch (type) {
 			case 2:{
-				if(chapterChapterParts.get(i).getChapterPart().getChinese_text()!=null)
+				if(!chapterChapterParts.get(i).getChapterPart().getChinese_text().equalsIgnoreCase(""))
 					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getChinese_text());
 				else 
 					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
 				break;
 			}
 			case 3:{
-				if(chapterChapterParts.get(i).getChapterPart().getDutch_text()!=null)
+				if(!chapterChapterParts.get(i).getChapterPart().getDutch_text().equalsIgnoreCase(""))
 					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getDutch_text());
 				else 
 					jsonObject2.put("text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
