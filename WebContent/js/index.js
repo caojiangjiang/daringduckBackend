@@ -481,16 +481,23 @@ function loadPage(pageInfo, page, props) {
 function showAdd(pageInfo, objectId, props) {
 	// Generates an input element
 	console.log(objectId);
-	var generateInput = function(field, type, val){
-		var input = $('<input class="form-control">');
+	var generateInput = function(field, type, val){	
+		console.log(val);
 		if(type=="file"){
-			input.attr('type', type);
-			input.attr('name', field.name);
-			input.attr('placeholder', field.name.capitalizeFirstLetter());
+			var input=$('<div></div>')
+			var inputfield = $('<input class="form-control">');
+			if(val!="" && val!=null){
+				input.append('<img src="http://203.195.147.70:8080/daringduckBackend/api/pictures/'+val.id+'" style="width:60px;height:60px;"/>');
+			}
+			inputfield.attr('type', type);
+			inputfield.attr('name', field.name);
+			inputfield.attr('placeholder', field.name.capitalizeFirstLetter());
+			input.append(inputfield);
 			return input;
 			
 		}
 		else{
+			var input = $('<input class="form-control">');
 			input.attr('type', type);
 			input.attr('name', field.name);
 			input.attr('placeholder', field.name.capitalizeFirstLetter());
@@ -548,11 +555,11 @@ function showAdd(pageInfo, objectId, props) {
 			$.each(field.options, function(i, option){
 				var x = $('<option>');
 				
-				if (field.name == 'gender'){
-					console.log(val++);
+				if (field.name == 'gender' && val == (option.value-1)){
+					x.attr('selected', true);
 				}
 							
-				if (val == option.value){
+				if (field.name != 'gender' && val == option.value){
 					x.attr('selected', true);
 				}
 			
@@ -616,7 +623,7 @@ function showAdd(pageInfo, objectId, props) {
 				inputGroup.append(generateInput(field, field.type, object != undefined ? object[field.name] : ''));
 				break;
 			case 'image':
-				inputGroup.append(generateInput(field, 'file', ''));
+				inputGroup.append(generateInput(field, 'file', object != undefined ? object[field.name] : ''));
 				break;
 			case 'select':
 				inputGroup.append(generateSelect(field, object != undefined ? object[field.name] : -1));
@@ -651,7 +658,7 @@ function showAdd(pageInfo, objectId, props) {
 		$(document).on("click","input[type='file']",function(e){
 			if(userFlag==true){
 				$(this).after('<input type="button" onclick="uploadUserImage('+tempUserId+')" value="UploadFile" class="btn btn-primary upload-btn"/>');
-				console.log(tempUserId+"wbuzhid222223");
+				/*hide the img here*/
 				userFlag=false;
 			}
 			if(courseFlag==true){
@@ -736,21 +743,26 @@ function add(pageInfo, props) {
 function edit(pageInfo, id, props) {
 	var data = $("form#add").serialize();
 	var path;
-	console.log(pageInfo.path.replaceWildcards(props)+'/'+id);
+	console.log(data);
 	if(pageInfo.path.replaceWildcards(props).indexOf("users/getUserCourse/")>=0){
 		path="users/changeUserCourse";
 		/*add userId to data*/
 		var userId=pageInfo.path.replaceWildcards(props).substring(20,pageInfo.path.replaceWildcards(props).length);
 		var courseId=id;
-		data=data+"&userId="+userId+"&courseId="+courseId;
+		data="userId="+userId+"&courseId="+courseId+"teacherId=2&date=2010-01-14%2010%3A35%3A00&status=false";
+		communityBuilder.editUserLink(data, path,
+				function() {
+					loadPage(pageInfo, currentPage, props)
+				}, fail);
 	}
 	else{
 		path=pageInfo.path.replaceWildcards(props);
+		communityBuilder.edit(id, data, path,
+				function() {
+					loadPage(pageInfo, currentPage, props)
+				}, fail);
 	}
-	communityBuilder.edit(id, data, path,
-			function() {
-				loadPage(pageInfo, currentPage, props)
-			}, fail);
+	
 }
 
 /**
@@ -917,9 +929,13 @@ function showEditMoment(momentId,userId) {
 												+'">Paragraph-'
 												+(index+1)
 												+'</a></li>'
-												);
-												
+												);												
 									});
+							$("#momentReturn").on("click",function(){
+								loadPage(items.userMoments,0,{
+									'userId' : userId
+								})
+							})
 							$('#addParagraph').append(
 								'<form class="paragraph" id="paragraph'+(total)+'">'    
 								+'<h1>Paragraph-'+(total)+'</h1>'
