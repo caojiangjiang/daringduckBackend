@@ -20,7 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	User findByUsernameIgnoreCase(String username);
 	
-	List<User> getByRoleId(int roleId); 
+	List<User> getByRoleIdIn(List<Integer> value); 
 	
 	List<User> findByClubId(int clubId);
 	

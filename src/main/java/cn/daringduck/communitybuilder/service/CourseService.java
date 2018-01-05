@@ -167,19 +167,24 @@ public class CourseService extends GenericService<Course, Integer> {
 		
 		List<Course> courses = new ArrayList<>();
 		
-		switch (type) {
-		case 2:
-			courses = courseRepository.findByChineseNameLike(name);
-			break;
-		case 3:
-			courses = courseRepository.findByDutchNameLike(name);
-			break;
-
-		default:courses = courseRepository.findByEnglishNameLike(name);
-			break;
-		}
+		name = name.toUpperCase();
 		
-		System.out.println(courses.size());
+		switch (type) {
+			case 2:{
+				courses = courseRepository.findByChineseNameLike(name);
+				break;
+			}
+			case 3:{
+				name = name.toUpperCase();
+				courses = courseRepository.findByDutchNameLike(name);
+				break;
+			}
+			default:{
+				name = name.toUpperCase();
+				courses = courseRepository.findByEnglishNameLike(name);
+				break;
+			}
+		}
 		
 		for(int i =0;i<courses.size();i++) {
 			JSONObject jsonObject2 = new JSONObject();

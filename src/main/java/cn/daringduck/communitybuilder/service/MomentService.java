@@ -65,9 +65,9 @@ public class MomentService extends GenericService<Moment, Long>{
 	 * 			PUBLIC, PRIVATE, CLUB or FRIENDS
 	 * @return
 	 */
-	public Moment addMoment(String title, User user, String privacyName,String eventDate){
+	public Moment addMoment(String title, User user, String privacyName,long posted, long modifiedDate, String eventDate){
 		Privacy privacy = Privacy.valueOf(privacyName);	
-		Moment moment = new Moment(title, user, privacy,eventDate);
+		Moment moment = new Moment(title, user, privacy,posted,modifiedDate,eventDate);
 		momentRepository.save(moment);
 		return moment;
 	}

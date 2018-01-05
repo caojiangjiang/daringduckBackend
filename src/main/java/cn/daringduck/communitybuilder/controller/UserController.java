@@ -108,13 +108,13 @@ public class UserController extends GenericController {
 	 * @throws RequestException 
 	 **/
 	@GET
-	@Path("/getUserByRoleId/{roleId: [0-9]*}")
+	@Path("/getUserOfTeacherAndAdmin")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getUserByRoleId(@HeaderParam("Auth-Token") String token, @PathParam("roleId") int roleId) throws RequestException {
+	public Response getUserByRoleId(@HeaderParam("Auth-Token") String token) throws RequestException {
 	 
 	  secure(token, "admin");
 	 
-	  return Response.status(Response.Status.OK).entity(userService.getUserByRoleId(roleId)).build();
+	  return Response.status(Response.Status.OK).entity(userService.getUserOfTeacherAndAdmin()).build();
 	 
 	}
 	 
@@ -282,6 +282,7 @@ public class UserController extends GenericController {
 	public Response addUserMoment(@HeaderParam("Auth-Token") String token,
 			@PathParam("userId") long userId,
 			@FormParam("title") String title, @FormParam("privacy") String privacy,
+			@FormParam("posted")long posted, @FormParam("modifiedDate")long modifiedDate,
 			@FormParam("eventDate") String eventDate) throws RequestException {
 		
 		// set who have the authority to do use this api
@@ -290,7 +291,7 @@ public class UserController extends GenericController {
 		//Verify user identity
 		secure(token, members);
 		
-		Moment moment = userService.addUserMoment(userId, title, privacy,eventDate);
+		Moment moment = userService.addUserMoment(userId, title, privacy,posted,modifiedDate,eventDate);
 		
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}

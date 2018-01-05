@@ -106,8 +106,14 @@ public class UserService extends GenericService<User, Long> {
 		return token.getUser();
 	}
 
-	public List<User> getUserByRoleId(int roleId){ 
-		return userRepository.getByRoleId(roleId); 
+	public List<User> getUserOfTeacherAndAdmin(){ 
+		List<Integer> roleIds = new ArrayList<>();
+		
+		roleIds.add(2);
+		
+		roleIds.add(3);
+		
+		return userRepository.getByRoleIdIn(roleIds); 
 	} 
 	
 	
@@ -289,7 +295,7 @@ public class UserService extends GenericService<User, Long> {
 		User user1 = authenticate(user.getUsername(), oldPassword);
 
 		if (user1 == null) {
-			throw new RequestException(Error.NO_USERNAME_OR_PASSWORD);
+			throw new RequestException(Error.PASSWORD_IS_NOT_CORRECT);
 		}
 		
 		//set new password
@@ -349,7 +355,7 @@ public class UserService extends GenericService<User, Long> {
 		return momentRepository.findByUser(user, new PageRequest(page, PAGE_SIZE));
 	}
 
-	public Moment addUserMoment(long userId, String title, String privacyName,String eventDate) throws RequestException {
+	public Moment addUserMoment(long userId, String title, String privacyName,long posted,long modifiedDate, String eventDate) throws RequestException {
 		
 		User user = get(userId);
 
@@ -359,7 +365,7 @@ public class UserService extends GenericService<User, Long> {
 		
 		Privacy privacy = Privacy.valueOf(privacyName);
 		
-		Moment moment = new Moment(title, user, privacy,eventDate);
+		Moment moment = new Moment(title, user, privacy,posted,modifiedDate,eventDate);
 		
 		momentRepository.save(moment);
 		

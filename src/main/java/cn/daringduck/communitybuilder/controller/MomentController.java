@@ -1,6 +1,7 @@
 package cn.daringduck.communitybuilder.controller;
 import java.util.List;
 import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -145,13 +146,14 @@ public class MomentController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response addMoment(@HeaderParam("Auth-Token") String token,
 			@FormParam("title") String title, @FormParam("privacy") String privacy,
+			@FormParam("posted")long posted, @FormParam("modifiedDate")long modifiedDate,
 			@FormParam("eventDate") String eventDate) throws RequestException {
 		
 		secure(token, "*");
 		
 		User user = userService.findUserByAuthToken(token);
 		
-		Moment moment = userService.addUserMoment(user.getId(), title, privacy,eventDate);
+		Moment moment = userService.addUserMoment(user.getId(), title, privacy,posted,modifiedDate,eventDate);
 		
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}
@@ -168,8 +170,6 @@ public class MomentController extends GenericController {
 		Moment moment = momentService.getDD01NewestMoment();
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}
-	
-	
 	
 
 	////////////////////////////////////////////////////////////////////

@@ -21,29 +21,30 @@ public class Moment {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
-	@NotNull private Date posted;
+	@NotNull private long posted;
 	@NotNull private String title;
 	@NotNull @OneToOne private User user;
 	@NotNull private Privacy privacy;
 	private boolean hidden;
+	//when user modified their moments
+	private long modifiedDate;
 	private String eventDate;
 	
 	public Moment() { }
 	
-	public Moment(String title, User user, Privacy privacy,String eventDate) {
+	public Moment(String title, User user, Privacy privacy,long posted,long modifiedDate,String eventDate) {
 		this.title = title;
 		this.user = user;
 		this.privacy = privacy;
-		this.posted = new Date();
+		this.posted = posted;
+		this.modifiedDate =modifiedDate;
 		this.eventDate =  eventDate;
 	}
 
 	public long getId() { return id; }
 
-	public String getPosted() {
-		SimpleDateFormat myFmt=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return myFmt.format(posted);
-	}
+	public void setPosted(long posted) {this.posted = posted;}
+	public long getPosted() {return this.posted;}
 	
 	public String getTitle() { return title; }
 	public void setTitle(String title) { this.title = title; }
@@ -63,6 +64,14 @@ public class Moment {
 
 	public void setEventDate(String eventDate) {
 		this.eventDate = eventDate;
+	}
+
+	public long getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(long modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 	
 }
