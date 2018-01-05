@@ -472,14 +472,17 @@ function generatePagination(pageInfo, page, props) {
  * @param text
  * @param selected
  */
-function fillSelect(resource, text, selected) {
+function fillSelect(name,resource, text, selected) {	
 	var done = function(data) {
-		var data = data.content;
+		if(resource.indexOf("users/getUserOfTeacherAndAdmin")>=0){}
+		else
+			var data = data.content;
 		console.log(data);
 		$.each(data, function(index, row) {
 			var sel = selected == row.id ? 'selected' : '';
 			var option = text.replaceWildcards(row);
-			$("select#" + resource).append(
+			console.log(option);
+			$("select#" + name).append(
 					'<option value="' + row.id + '" ' + sel + '>' + option
 							+ '</option>');
 		});
@@ -611,9 +614,11 @@ function showAdd(pageInfo, objectId, props) {
 	
 	// Generates a select element
 	var generateSelect = function(field, val){
+		console.log(val);
+		console.log(field);
 		var select = $('<select class="form-control">');
 		select.attr('name', field.name);
-		select.attr('id', field.list);
+		select.attr('id', field.name);
 		
 		if (field.options != undefined) {
 			$.each(field.options, function(i, option){
@@ -740,7 +745,7 @@ function showAdd(pageInfo, objectId, props) {
 			$("#add .fields").append('<br>');
 			
 			if (field.list)
-				fillSelect(field.list, field.optionText, object != undefined && object[field.name] != undefined ? object[field.name].id : 0);
+				fillSelect(field.name,field.list, field.optionText, object != undefined && object[field.name] != undefined ? object[field.name].id : 0);
 			
 			/*call the datepicker*/
 			$('.form_datetime').datetimepicker({

@@ -253,10 +253,15 @@ items = {
 		fields : [ {
 				name:'date',
 				type:'date'
-			},
+			}/*,
 			{
 				name : 'teacherId',
 				type : 'text'
+			}*/,{
+				name : 'teacherId',
+				type : 'select',
+				list : 'users/getUserOfTeacherAndAdmin',
+				optionText : '%username%',
 			},{
 				name : 'passOrNot',
 				type : 'radio',
@@ -301,7 +306,9 @@ items = {
 		},
 		{
 			name : 'teacherId',
-			type : 'text'
+			type : 'select',
+			list : 'users/getUserOfTeacherAndAdmin',
+			optionText : '%username%',
 		},
 		{
 			name : 'score',
