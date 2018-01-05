@@ -95,14 +95,17 @@ function isEmptyObject(obj){
 }
 function dateToStamp(dateId,dateStampId){
 	var stringDate=$("#"+dateId).val();
+	if(stringDate=="")
+	{
+		console.log("is nan");
+		$('#date_field').val(0);
+		return;
+	}
 	var dateStamp=Date.parse(new Date(stringDate));
 	dateStamp=dateStamp/1000;
 	$("#"+dateStampId).val(dateStamp);
-	console.log(stringDate + "的时间戳为：" + dateStamp);
+	//console.log(stringDate + "的时间戳为：" + dateStamp);
 	var test=formatDateTime(dateStamp);
-	/*var dateStamp1=new Date(dateStamp);
-	var test=dateStamp1.format('yyyy-MM-dd hh:mm:ss');*/
-	console.log("时间戳转回时间"+test);
 }
 
 //
@@ -988,7 +991,7 @@ function addUserCourse(courseId, userId) {
 	var done = function() {
 		loadPage(items.userCourses, 0, {'userId': userId})
 	}
-	var data="userId="+userId+"&courseId="+courseId+"&teacherId=14&passOrNot=false&date="
+	var data="userId="+userId+"&courseId="+courseId+"&teacherId=&passOrNot=false&date="
 	console.log(data);
 	communityBuilder.add(data,"users/addUserCourse", done, fail);
 }
