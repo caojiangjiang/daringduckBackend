@@ -229,7 +229,10 @@ items = {
 				name : 'Private',
 				value : 'PRIVATE'
 			} ]
-		} ],
+		}/*,{
+			name:'eventDate',
+			type:'date'
+		}*/ ],
 		buttons : [  {
 				color : 'danger',
 				action : "hideMoment(%id%)",
