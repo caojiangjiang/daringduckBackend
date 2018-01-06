@@ -20,6 +20,7 @@ import java.rmi.AccessException;
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.User;
+import cn.daringduck.communitybuilder.service.MomentService;
 import cn.daringduck.communitybuilder.service.UserService;
 
 /**
@@ -33,10 +34,12 @@ public class UserController extends GenericController {
 
 	ServletContext context;
 	private UserService userService;
+	private MomentService momentService;
 	
 	public UserController(@Context ServletContext context) {
 		super(context);
 		this.userService = (UserService) context.getAttribute("userService");
+		this.momentService = (MomentService)context.getAttribute("momentService");
 	}
 
 	/**
@@ -248,8 +251,10 @@ public class UserController extends GenericController {
 	public Response userMoments(@HeaderParam("Auth-Token") String token, @PathParam("id") long id,
 			@QueryParam("page") int page) throws RequestException {
 		secure(token, "admin");
+		
+		User user = userService.get(id);
 
-		return Response.status(Response.Status.OK).entity(userService.getUserMoments(id, page)).build();
+		return Response.status(Response.Status.OK).entity(momentService.getUserMoments(user, page)).build();
 	}
 	
 
@@ -291,7 +296,9 @@ public class UserController extends GenericController {
 		//Verify user identity
 		secure(token, members);
 		
-		Moment moment = userService.addUserMoment(userId, title, privacy,posted,modifiedDate,eventDate);
+		User user = userService.get(userId);
+		
+		Moment moment = momentService.addUserMoment(user, title, privacy,eventDate);
 		
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}

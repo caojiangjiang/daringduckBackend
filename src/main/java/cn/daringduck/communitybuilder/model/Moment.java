@@ -27,17 +27,17 @@ public class Moment {
 	@NotNull private Privacy privacy;
 	private boolean hidden;
 	//when user modified their moments
-	private long modifiedDate;
+	private long modifiedTime;
 	private String eventDate;
 	
 	public Moment() { }
 	
-	public Moment(String title, User user, Privacy privacy,long posted,long modifiedDate,String eventDate) {
+	public Moment(String title, User user, Privacy privacy,long modifiedTime,long posted,String eventDate) {
 		this.title = title;
 		this.user = user;
 		this.privacy = privacy;
+		this.modifiedTime = modifiedTime;
 		this.posted = posted;
-		this.modifiedDate =modifiedDate;
 		this.eventDate =  eventDate;
 	}
 
@@ -61,17 +61,16 @@ public class Moment {
 	public String getEventDate() {
 		return eventDate;
 	}
-
 	public void setEventDate(String eventDate) {
 		this.eventDate = eventDate;
 	}
 
-	public long getModifiedDate() {
-		return modifiedDate;
+	public long getModifiedTime() {
+		return modifiedTime;
 	}
 
-	public void setModifiedDate(long modifiedDate) {
-		this.modifiedDate = modifiedDate;
+	public void setModifiedTime() {
+		this.modifiedTime = System.currentTimeMillis();
 	}
 	
 }

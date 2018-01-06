@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -18,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Table(name = "moment_parts")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
+@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 public class MomentPart {
 	
 	@Id
@@ -49,7 +52,7 @@ public class MomentPart {
 	public void setPicture(Picture picture) { this.picture = picture; }
 
 	public Long getMomentId() {
-		return moment_Id;
+		return this.moment_Id;
 	}
 
 	public void setMomentId(long moment_Id) {

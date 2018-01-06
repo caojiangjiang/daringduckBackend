@@ -21,7 +21,7 @@ public interface MomentRepository extends JpaRepository<Moment, Long> {
 //	@Query(value = "select * from moments where moments.user_id in (1,5) ORDER BY moments.posted DESC LIMIT 5,25",nativeQuery=true)
 //	List<Moment> getMyFriendsMoments();
 	
-	Page<Moment> findByUserIdInOrderByPostedDesc(List <Long> friendsValue,Pageable pageable);
+	Page<Moment> findByUserIdInOrderByModifiedTimeDesc(List <Long> friendsValue,Pageable pageable);
 
 	//	@Query(value = "select moment from Moment moment where moment.user.id in ?2 ORDER BY moment.posted DESC LIMIT ?1,25",nativeQuery=true)
 }

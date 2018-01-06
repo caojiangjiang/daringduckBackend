@@ -7,6 +7,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -79,6 +80,28 @@ public class MomentController extends GenericController {
 	// Me
 	////////////////////////////////////////////////////////////////////	
 	
+	
+	/**
+	 *user add a moment for himself
+	 */
+	@POST
+	@Path("/me/addMoment")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response addMoment(@HeaderParam("Auth-Token") String token,
+			@FormParam("title") String title, @FormParam("privacy") String privacy,
+			@FormParam("eventDate") String eventDate) throws RequestException {
+		
+		secure(token, "*");
+		
+		User user = userService.findUserByAuthToken(token);
+		
+		Moment moment = momentService.addUserMoment(user, title, privacy,eventDate);
+		
+		return Response.status(Response.Status.OK).entity(moment).build();
+	}
+	
+	
 	/**
 	 * Get the user's own moments
 	 * @throws RequestException 
@@ -89,9 +112,30 @@ public class MomentController extends GenericController {
 	public Response getMyMoments(@HeaderParam("Auth-Token") String token,@QueryParam("page") int page) throws RequestException {
 		secure(token, "*");
 		User user = userService.findUserByAuthToken(token);
-		List<Moment> moments = momentService.getMyMoments(user,page);
+		List<Moment> moments = momentService.getUserMoments(user,page).getContent();
 		return Response.status(Response.Status.OK).entity(moments).build();
 		
+	}
+	
+	
+	/**
+	 * Get information about a moment with id
+	 * @throws RequestException 
+	 */
+	@PUT
+	@Path("/{momentId: [0-9]*}/changeMoment")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response changeMoment(@HeaderParam("Auth-Token") String token, @PathParam("momentId") long momentId,
+			@QueryParam("title") String title,@QueryParam("privacyName") String privacyName, @QueryParam("eventDate") String eventDate) throws RequestException {
+		
+		secure(token, "*");
+		
+		Moment moment = momentService.changeUserMoment(momentId,title,privacyName,eventDate);
+		
+		if(moment==null)
+			return Response.status(Response.Status.BAD_REQUEST).entity("fail").build();
+			
+		return Response.status(Response.Status.OK).entity(moment).build();
 	}
 	
 	/**
@@ -123,40 +167,7 @@ public class MomentController extends GenericController {
 		return Response.status(Response.Status.OK).entity(moments).build();
 	}
 	
-	/**
-	 * Get a specific friend's moments
-	 * @throws RequestException 
-	 */
-	@GET
-	@Path("/getSpecificFriendMoments")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getSpecificFriendMoments(@HeaderParam("Auth-Token") String token,@QueryParam("friendId") long friendId,@QueryParam("page") int page) throws RequestException {
-		secure(token, "*");
-		User user = userService.get(friendId);
-		List<Moment> moments = momentService.getMyMoments(user,page);
-		return Response.status(Response.Status.OK).entity(moments).build();
-		
-	}
 	
-	/**
-	 *user add a moment for himself
-	 */
-	@POST
-	@Path("/me/addMoment")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response addMoment(@HeaderParam("Auth-Token") String token,
-			@FormParam("title") String title, @FormParam("privacy") String privacy,
-			@FormParam("posted")long posted, @FormParam("modifiedDate")long modifiedDate,
-			@FormParam("eventDate") String eventDate) throws RequestException {
-		
-		secure(token, "*");
-		
-		User user = userService.findUserByAuthToken(token);
-		
-		Moment moment = userService.addUserMoment(user.getId(), title, privacy,posted,modifiedDate,eventDate);
-		
-		return Response.status(Response.Status.OK).entity(moment).build();
-	}
 	
 	
 	/**
@@ -196,6 +207,7 @@ public class MomentController extends GenericController {
 	@POST
 	@Path("/{momentId: [0-9]*}/add")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response addMomentPart(@HeaderParam("Auth-Token") String token,@PathParam("momentId") long momentId,@FormParam("pictureId") long pictureId,@FormParam("part") int part,@FormParam("text") String text) throws RequestException {
 		secure(token, "*");
 		MomentPart momentPart = momentService.addMomentPart(part, text, momentId,pictureId);
@@ -210,6 +222,7 @@ public class MomentController extends GenericController {
 	@POST
 	@Path("/{momentPartId: [0-9]*}/change")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	
 	public Response changeMomentPart(@HeaderParam("Auth-Token") String token, @PathParam("momentPartId") long momentPartId,@FormParam("text") String text,@FormParam("pictureId") long pictureId,@FormParam("part")int part) throws RequestException {
 		secure(token, "*");
 		MomentPart momentPart = momentService.updateMomentPartWithId(momentPartId, text,pictureId);

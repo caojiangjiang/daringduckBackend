@@ -34,7 +34,9 @@ public enum Error {
 	USERCHAPTER_DOES_NOT_EXIS(24,"User does not choose this chapter",Status.BAD_REQUEST),
 	USER_DOES_NOT_HAVE_CLUB(25,"User does not in any club",Status.BAD_REQUEST),
 	LANGUAGE_DOES_NOT_EXIST(26,"we do not have this language title or name",Status.BAD_REQUEST),
-	PASSWORD_IS_NOT_CORRECT(27,"password is not correct",Status.BAD_REQUEST);
+	PASSWORD_IS_NOT_CORRECT(27,"password is not correct",Status.BAD_REQUEST),
+	MOMENT_DOES_NOT_EXIST(28,"moment does not exist",Status.BAD_REQUEST),
+	MOMENTPART_DOES_NOT_EXIST(29,"momentPart does not exist",Status.BAD_REQUEST);
 	
 	public final int errorCode;
 	public final String errorMessage;

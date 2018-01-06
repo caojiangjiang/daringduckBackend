@@ -65,13 +65,67 @@ public class MomentService extends GenericService<Moment, Long>{
 	 * 			PUBLIC, PRIVATE, CLUB or FRIENDS
 	 * @return
 	 */
-	public Moment addMoment(String title, User user, String privacyName,long posted, long modifiedDate, String eventDate){
-		Privacy privacy = Privacy.valueOf(privacyName);	
-		Moment moment = new Moment(title, user, privacy,posted,modifiedDate,eventDate);
+	public Page<Moment> getUserMoments(User user, int page) throws RequestException {
+
+		if (user == null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		}
+
+		return momentRepository.findByUser(user, new PageRequest(page, PAGE_SIZE));
+	}
+
+	public Moment addUserMoment(User user, String title, String privacyName, String eventDate) throws RequestException {
+
+		if (user == null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		}
+		
+		Privacy privacy = Privacy.valueOf(privacyName);
+		
+		//posted time stamp
+		
+		long posted = System.currentTimeMillis();
+		
+		long modifiedTime = posted;
+		
+		System.out.println(modifiedTime);
+		
+		Moment moment = new Moment(title, user, privacy,posted,modifiedTime,eventDate);
+		
 		momentRepository.save(moment);
+		
 		return moment;
 	}
 	
+	
+	public Moment changeUserMoment(long momentId, String title, String privacyName, String eventDate) throws RequestException {
+		
+		Moment moment =get(momentId);
+		
+		if (moment == null) {
+			throw new RequestException(Error.MOMENT_DOES_NOT_BELONG_TO_USER);
+		}
+		
+		if(title!=null) {
+			moment.setTitle(title);
+		}
+		
+		Privacy privacy = Privacy.valueOf(privacyName);
+		
+		if(privacy!=null) {
+			moment.setPrivacy(privacy);
+		}
+		
+		moment.setModifiedTime();
+		
+		if(eventDate!=null) {
+			moment.setEventDate(eventDate);
+		}
+		
+		momentRepository.save(moment);
+		
+		return moment;
+	}
 	
 	/**
 	 * get the newest Moment that published by DD01
@@ -101,20 +155,6 @@ public class MomentService extends GenericService<Moment, Long>{
 	}
 	
 	/**
-	 * get one's moments
-	 * @param userId
-	 * @param page
-	 * 
-	 * @return
-	 * **/
-	public List<Moment> getMyMoments(User user,int page) {
-		
-		Pageable pageable =(Pageable) new PageRequest(page, PAGE_SIZE);
-		
-		return momentRepository.findByUser(user, pageable).getContent();
-	}
-	
-	/**
 	 * get my friends' moments
 	 * @param user
 	 * 
@@ -137,16 +177,13 @@ public class MomentService extends GenericService<Moment, Long>{
 			
 			friensValue.add(friends.get(i).getFriend().getId());
 		}
-
-		
-		System.out.println(friensValue);
 		
 		//get top N moments from all friends' moments sort by time 
 		//List<Moment> moments = momentRepository.getMyFriendsMoments();
 		
 		Pageable pageable = new PageRequest(page, PAGE_SIZE);
 		
-		List<Moment> moments = momentRepository.findByUserIdInOrderByPostedDesc(friensValue, pageable).getContent();
+		List<Moment> moments = momentRepository.findByUserIdInOrderByModifiedTimeDesc(friensValue, pageable).getContent();
 		
 		return moments;
 	}
@@ -181,7 +218,7 @@ public class MomentService extends GenericService<Moment, Long>{
 		
 		Pageable pageable = new PageRequest(0, PAGE_SIZE);
 		
-		List<Moment> moments = momentRepository.findByUserIdInOrderByPostedDesc(clubValue, pageable).getContent();
+		List<Moment> moments = momentRepository.findByUserIdInOrderByModifiedTimeDesc(clubValue, pageable).getContent();
 		
 		return moments;
 	}
@@ -212,6 +249,10 @@ public class MomentService extends GenericService<Moment, Long>{
 		
 		MomentPart momentpart = momentPartRepository.getOne(id);
 		
+		if(momentpart == null) {
+			throw new RequestException(Error.MOMENTPART_DOES_NOT_EXIST);
+		}
+		
 		Picture picture = pictureRepository.getPictureById(pictureId);
 		
 		if(text==null)
@@ -224,10 +265,20 @@ public class MomentService extends GenericService<Moment, Long>{
 		else
 			momentpart.setPicture(picture);
 
-		Long moentId = momentpart.getMomentId();
+		Long momentId = momentpart.getMomentId();
 		
 		
-		momentPartRepository.upDateMomentPart(id, text, moentId, picture);
+		//when momentPart change, change moment's modifiedDate
+		Moment moment =get(momentId);
+		
+		if(moment == null) {
+			throw new RequestException(Error.MOMENT_DOES_NOT_EXIST);
+		}
+		
+		moment.setModifiedTime();
+		
+		momentRepository.save(moment);
+		momentPartRepository.upDateMomentPart(id, text, momentId, picture);
 		
 		return momentpart;
 	}

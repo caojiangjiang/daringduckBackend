@@ -5,11 +5,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.core.Response;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,7 +23,6 @@ import cn.daringduck.communitybuilder.model.CourseChapter;
 import cn.daringduck.communitybuilder.model.Friends;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.Picture;
-import cn.daringduck.communitybuilder.model.Privacy;
 import cn.daringduck.communitybuilder.model.Role;
 import cn.daringduck.communitybuilder.model.User;
 import cn.daringduck.communitybuilder.model.UserChapter;
@@ -343,33 +339,6 @@ public class UserService extends GenericService<User, Long> {
 		authRepository.save(token);
 
 		return token;
-	}
-
-	public Page<Moment> getUserMoments(long userId, int page) throws RequestException {
-		User user = get(userId);
-
-		if (user == null) {
-			throw new RequestException(Error.USER_DOES_NOT_EXIST);
-		}
-
-		return momentRepository.findByUser(user, new PageRequest(page, PAGE_SIZE));
-	}
-
-	public Moment addUserMoment(long userId, String title, String privacyName,long posted,long modifiedDate, String eventDate) throws RequestException {
-		
-		User user = get(userId);
-
-		if (user == null) {
-			throw new RequestException(Error.USER_DOES_NOT_EXIST);
-		}
-		
-		Privacy privacy = Privacy.valueOf(privacyName);
-		
-		Moment moment = new Moment(title, user, privacy,posted,modifiedDate,eventDate);
-		
-		momentRepository.save(moment);
-		
-		return moment;
 	}
 	
 	public Moment getUserMoment(long userId, long momentId) throws RequestException {		
