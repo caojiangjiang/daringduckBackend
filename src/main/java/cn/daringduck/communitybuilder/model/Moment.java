@@ -32,18 +32,18 @@ public class Moment {
 	
 	public Moment() { }
 	
-	public Moment(String title, User user, Privacy privacy,long modifiedTime,long posted,String eventDate) {
+	public Moment(String title, User user, Privacy privacy,String eventDate) {
 		this.title = title;
 		this.user = user;
 		this.privacy = privacy;
-		this.modifiedTime = modifiedTime;
-		this.posted = posted;
 		this.eventDate =  eventDate;
+		this.posted = System.currentTimeMillis();
+		this.modifiedTime = System.currentTimeMillis();
 	}
 
 	public long getId() { return id; }
 
-	public void setPosted(long posted) {this.posted = posted;}
+	public void setPosted() {this.posted = System.currentTimeMillis();}
 	public long getPosted() {return this.posted;}
 	
 	public String getTitle() { return title; }

@@ -90,7 +90,7 @@ public class MomentService extends GenericService<Moment, Long>{
 		
 		System.out.println(modifiedTime);
 		
-		Moment moment = new Moment(title, user, privacy,posted,modifiedTime,eventDate);
+		Moment moment = new Moment(title, user, privacy,eventDate);
 		
 		momentRepository.save(moment);
 		
@@ -149,8 +149,15 @@ public class MomentService extends GenericService<Moment, Long>{
 	public MomentPart addMomentPart(int part,String text,long moment_id,long pictureId) throws RequestException {
 		
 		Picture picture = pictureRepository.getPictureById(pictureId);	
+		
+		if(picture==null) {
+			throw new RequestException(Error.PICTURE_DOES_NOT_EXIST);
+		}
+		
 		MomentPart momentPart = new MomentPart(part, text, picture, moment_id);
+		
 		momentPartRepository.save(momentPart);
+		
 		return momentPart;
 	}
 	

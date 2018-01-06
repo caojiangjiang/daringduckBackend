@@ -222,7 +222,7 @@ public class MomentController extends GenericController {
 	@POST
 	@Path("/{momentPartId: [0-9]*}/change")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response changeMomentPart(@HeaderParam("Auth-Token") String token, @PathParam("momentPartId") long momentPartId,@FormParam("text") String text,@FormParam("pictureId") long pictureId,@FormParam("part")int part) throws RequestException {
 		secure(token, "*");
 		MomentPart momentPart = momentService.updateMomentPartWithId(momentPartId, text,pictureId);
