@@ -6,6 +6,7 @@
 var token = localStorage.getItem("token");
 var communityBuilder = new CommunityBuilder(token);
 var currentPage = 0;
+var prevPage=0;
 
 // If there is no token, login first
 if (token == null) {
@@ -501,6 +502,8 @@ function fillSelect(name,resource, text, selected) {
  * @param props
  */
 function loadPage(pageInfo, page, props) {
+	console.log(props)
+	prevPage=currentPage;
 	currentPage = page;
 
 	// Function that builds the page
@@ -514,6 +517,15 @@ function loadPage(pageInfo, page, props) {
 		if (pageInfo.addable === false)
 			$('.add-button').hide();
 
+		// If resource is returnable
+		if (pageInfo.returnable) {
+			$('.return-button').on('click',function(){
+				returnPage(pageInfo.name,props);
+			})
+		}
+		else
+			$('.return-button').hide();
+
 		$('.name-of-list').html(pageInfo.nameSingular.capitalizeFirstLetter());
 		$('.name-of-list-plural').html(pageInfo.name.capitalizeFirstLetter());
 		$('.add-button').click(function() {
@@ -524,7 +536,7 @@ function loadPage(pageInfo, page, props) {
 		var done = function(data) {
 			generateTable(pageInfo, data, props);
 			/*this is used to replace the param and get the correct path*/
-			pageInfo.path = pageInfo.path.replaceWildcards(props);
+			//pageInfo.path = pageInfo.path.replaceWildcards(props);
 			generatePagination(pageInfo, data, props);		
 		};
 
@@ -572,7 +584,7 @@ function showAdd(pageInfo, objectId, props) {
 	}
 	
 	var generateDate = function(field, type, val){
-		console.log(val);
+		console.log(field);
 		var date_val="";
 		if(val!="" && val!=null){
 			date_val=formatDateTime(val);
@@ -584,7 +596,7 @@ function showAdd(pageInfo, objectId, props) {
 							+'<span style="position:absolute;left: 50px;top: 20px;" class="add-on"><i class="icon-th"></i></span>'
 						+'</div>'
 						+'<input type="hidden" id="date_val" value="'+date_val+'"/>'
-						+'<input name="date" id="date_field" type="hidden" value="" />'
+						+'<input name="'+field.name+'" id="date_field" type="hidden" value="" />'
 					+'</div>');
 		return input;
 
@@ -712,7 +724,10 @@ function showAdd(pageInfo, objectId, props) {
 				edit(pageInfo, objectId, props);
 			});
 		}
-
+		$('.return').on('click',function(){
+			formReturnPage(pageInfo.name,props);
+		})
+		
 		for ( var i in fields) {
 			var field = fields[i];
 
@@ -888,6 +903,7 @@ function edit(pageInfo, id, props) {
 				}, fail);
 	}
 	else{
+		dateToStamp("date_val","date_field");
 		data = $("form#add").serialize();
 		path=pageInfo.path.replaceWildcards(props);
 		communityBuilder.edit(id, data, path,
@@ -1347,7 +1363,10 @@ function showEditChapterPart(courseId,chapterId) {
 								);
 										
 							});
-							if(chapterParts.length==0){
+							$("#chapterReturn").on("click",function(){
+								loadPage(items.chapters,currentPage,{'courseId':courseId});
+							})
+							/*if(typeof(chapterParts.length)=='undefined'){
 								$('#addParagraph').append(
 									'<form class="paragraph" id="paragraph'+(total)+'">'    
 									+'<h1>Chapter part-1</h1>'
@@ -1371,7 +1390,7 @@ function showEditChapterPart(courseId,chapterId) {
 									+'</div>'
 								+'</form>'
 									)
-							}
+							}*/
 	
 						};
 
@@ -1499,6 +1518,9 @@ function addChapter(courseId,chapterId){
 			flag=index;
 	})
 	var callback=function(){
+		$('.return').on('click',function(){
+			formReturnPage('chapters',{'courseId':courseId});
+		})
 		$(".add").on('click',function(){
 			var data = $("form#add").serialize();	
 			console.log(data);
@@ -1547,4 +1569,38 @@ function addChapterPart(courseId,chapterId,flag){
 			console.log(data);
 		}, fail)
 	}, fail);		
+}
+/*define the return buttons in list*/
+function returnPage(pageType,props){
+	console.log(props);
+	console.log(pageType);
+	if(pageType=="userMoments" || pageType=="userCourses")
+		loadPage(items.users,prevPage);
+	if(pageType=="userChapters" || pageType=="availableCourses"){
+		loadPage(items.userCourses,0,{'userId': props.userId});
+	}
+	if(pageType=="chapters")
+		loadPage(items.courses,currentPage);
+	if(pageType=="members"){
+		loadPage(items.classes,currentPage);
+	}		
+}
+/*define the return buttons in form*/
+function formReturnPage(pageType,props){
+	console.log(props);
+	console.log(pageType);
+	if(pageType=="users")
+		loadPage(items.users,currentPage);
+	if(pageType=="userMoments")
+		loadPage(items.userMoments,currentPage,{'userId': props.userId});
+	if(pageType=="userCourses")
+		loadPage(items.userCourses,currentPage,{'userId': props.userId});
+	if(pageType=="courses")
+		loadPage(items.courses,currentPage);
+	if(pageType=="chapters")
+		loadPage(items.chapters,currentPage,{'courseId': props.couseId});
+	if(pageType=="classes")
+		loadPage(items.classes,currentPage);
+	if(pageType=="clubs")
+		loadPage(items.clubs,currentPage);
 }
