@@ -63,7 +63,7 @@ items = {
 			text : 'Password'
 		}, {
 			color : 'success',
-			action : 'loadPage(items.userMoments, 0, {userId: %id%})',
+			action : "loadPage(items.userMoments, 0, {'userId': %id%})",
 			icon : 'area-chart',
 			text : 'Moments'
 		}, {
@@ -168,6 +168,7 @@ items = {
 		name : "chapters",
 		nameSingular : "chapter",
 		editable: true,
+		returnable:true,
 		//addable:false,
 		fields : [ { 
 			name : 'english_title',
@@ -210,6 +211,7 @@ items = {
 		name : "userMoments",
 		nameSingular : "moment",
 		editable : true,
+		returnable:true,
 		fields : [ {
 			name : 'title',
 			type : 'text'
@@ -252,6 +254,7 @@ items = {
 		name : "userCourses",
 		nameSingular : "userCourses",
 		editable : true,
+		returnable:true,
 		addFunction : 'loadPage(items.userAvailableCourses, 0, {userId: %userId%})',
 		fields : [ {
 				name:'date',
@@ -290,6 +293,7 @@ items = {
 		name : "availableCourses",
 		nameSingular : "availableCourses",
 		addable : false,
+		returnable:true,
 		buttons : [ {
 			color : 'success',
 			action : "addUserCourse(%id%,%userId%)",
@@ -303,6 +307,7 @@ items = {
 		nameSingular : "userChapters",
 		editable : true,
 		addable:false,
+		returnable:true,
 		fields : [ {
 			name:'date',
 			type:'date'
@@ -361,6 +366,7 @@ items = {
 		path : "classes/%classId%/members",
 		name : "members",
 		nameSingular : "member",
+		returnable:true,
 		addFunction : 'loadPage(items.classAvailableMembers, 0, {classId: %classId%})',
 		buttons : [ {
 			color : 'danger',
