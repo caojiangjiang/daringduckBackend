@@ -113,11 +113,11 @@ public class UserService extends GenericService<User, Long> {
 	} 
 	
 	
-	public List<User> getUserByNickName(String nickName){ 
+	public List<User> getUserByNickName(String myNickName, String nickName){ 
 		
-		nickName = nickName.toUpperCase();
+		myNickName = myNickName.toUpperCase();
 		
-		return userRepository.findAllByNicknameLike(nickName); 
+		return userRepository.findAllByNicknameLike(myNickName,nickName); 
 	} 
 	  
 	/**

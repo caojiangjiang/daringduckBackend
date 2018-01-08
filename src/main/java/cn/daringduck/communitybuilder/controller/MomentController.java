@@ -123,7 +123,7 @@ public class MomentController extends GenericController {
 	 * @throws RequestException 
 	 */
 	@PUT
-	@Path("/{momentId: [0-9]*}/changeMoment")
+	@Path("/{momentId: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response changeMoment(@HeaderParam("Auth-Token") String token, @PathParam("momentId") long momentId,
 			@QueryParam("title") String title,@QueryParam("privacyName") String privacyName, @QueryParam("eventDate") String eventDate) throws RequestException {

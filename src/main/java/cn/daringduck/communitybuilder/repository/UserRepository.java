@@ -24,7 +24,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	List<User> findByClubId(int clubId);
 	
-	@Query(value = "select u from User u where upper(u.nickname) like %?1%")
-	List<User> findAllByNicknameLike(String nickName);
+	@Query(value = "select u from User u where upper(u.nickname) like %?2% and u.nickname!=?1")
+	List<User> findAllByNicknameLike(String username,String nickName);
 	
 }

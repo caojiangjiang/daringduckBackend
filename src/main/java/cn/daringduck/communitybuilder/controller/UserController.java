@@ -17,6 +17,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.data.domain.Page;
 import java.rmi.AccessException;
+
+import cn.daringduck.communitybuilder.Error;
 import cn.daringduck.communitybuilder.RequestException;
 import cn.daringduck.communitybuilder.model.Moment;
 import cn.daringduck.communitybuilder.model.User;
@@ -133,8 +135,17 @@ public class UserController extends GenericController {
 	public Response getUsersByNickName(@HeaderParam("Auth-Token") String token, @QueryParam("nickName") String nickName) throws RequestException {
 	 
 	  secure(token, "*");
+	  
+	  User user =userService.findUserByAuthToken(token);
 	 
-	  return Response.status(Response.Status.OK).entity(userService.getUserByNickName(nickName)).build();
+	  if(user == null) {
+		  throw new RequestException(Error.USER_DOES_NOT_EXIST);
+	  }
+
+	  //when we will not return this nickName
+	  String myNickName = user.getNickname();
+
+	  return Response.status(Response.Status.OK).entity(userService.getUserByNickName(myNickName,nickName)).build();
 	 
 	}
 	
