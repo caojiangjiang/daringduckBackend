@@ -137,9 +137,12 @@ tr.disabled {
 
 .upload-btn{
 	position: absolute;
-    top: 0px;
+    /* top: 0px; */
     right: 0px;
     z-index: 2;
+}
+#add .upload-btn{
+    bottom: 0px;
 }
 .picBar{
 	height:340.87px;
