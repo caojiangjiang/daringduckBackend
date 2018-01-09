@@ -312,7 +312,7 @@ public class CourseController extends GenericController {
 		//judge whether the user have the permission to get the UserCourses
 		secure(token, "*");
 		
-		String chapterParts = courseService.getChapterPartList(chapterId);
+		String chapterParts = courseService.getChapterPartListWeb(chapterId);
 		
 		return Response.status(Response.Status.OK).entity(chapterParts).build();
 	}
