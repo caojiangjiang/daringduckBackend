@@ -288,7 +288,7 @@ CommunityBuilder.prototype.uploadImage = function(data, done, fail) {
 CommunityBuilder.prototype.getChapterPartList = function(chapterId,resource, done, fail) {
 	$.ajax({
 		type : "GET",
-		url : "api/" + resource + "/getChapterPartList/" + chapterId,
+		url : "api/" + resource + "/getChapterPartListWeb/" + chapterId,
 		headers : {
 			'auth-token' : this.token
 		},
