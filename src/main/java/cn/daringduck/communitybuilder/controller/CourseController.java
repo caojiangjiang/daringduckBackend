@@ -46,7 +46,7 @@ public class CourseController extends GenericController {
 	////////////////////////////////////////////////////////////////////
 
 	/**
-	 * Get a page with courses for web
+	 * Get a page with courses for web(because web need three languages)
 	 * 
 	 * @return
 	 * @throws RequestException
@@ -60,7 +60,7 @@ public class CourseController extends GenericController {
 	}
 	
 	/**
-	 * Get a page with courses for app
+	 * Get a page with courses for app(because app only need one language)
 	 * 
 	 * @return
 	 * @throws RequestException
@@ -98,10 +98,8 @@ public class CourseController extends GenericController {
 		return Response.status(Response.Status.OK).entity(course).build();
 	}
 	
-	
-	
 	/**
-	 * Get the course with id(for search)
+	 * Get the course with course's name(for search)
 	 * @throws RequestException 
 	 */
 	@GET
@@ -120,7 +118,9 @@ public class CourseController extends GenericController {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response addCourse(@HeaderParam("Auth-Token") String token, @FormParam("english_name") String english_name,@FormParam("chinese_name") String chinese_name,@FormParam("dutch_name") String dutch_name,@FormParam("pictureId")long pictureId)
+	public Response addCourse(@HeaderParam("Auth-Token") String token, @FormParam("english_name") String english_name,
+			@FormParam("chinese_name") String chinese_name,@FormParam("dutch_name") String dutch_name,
+			@FormParam("pictureId")long pictureId)
 			throws RequestException {
 		secure(token, "admin");
 		
@@ -293,6 +293,26 @@ public class CourseController extends GenericController {
 		secure(token, "*");
 		
 		String chapterParts = courseService.getChapterPartList(chapterId,type);
+		
+		return Response.status(Response.Status.OK).entity(chapterParts).build();
+	}
+	
+	
+	/**
+	 * Get  chapterPart list
+	 * @throws RequestException 
+	 */
+	@GET
+	@Path("/getChapterPartListWeb/{chapterId: [0-9]*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getChapterPartListWeb(@HeaderParam("Auth-Token") String token,@PathParam("chapterId") long chapterId) throws RequestException {
+		//set who have the authority to do use this api
+		//String members[] = {"teacher","admin","member","parent"};
+		
+		//judge whether the user have the permission to get the UserCourses
+		secure(token, "*");
+		
+		String chapterParts = courseService.getChapterPartList(chapterId);
 		
 		return Response.status(Response.Status.OK).entity(chapterParts).build();
 	}

@@ -835,6 +835,48 @@ public class CourseService extends GenericService<Course, Integer> {
 			
 	}
 	
+	
+	
+	/**
+	 * get list of chapterParts by chapterId for web
+	 * @author 曹将将
+	 * @param chapterId
+	 * 
+	 * @return
+	 * @throws RequestException 
+	 * 
+	 * */
+	public String getChapterPartListWeb(long chapterId) throws RequestException{
+		
+		List<ChapterChapterPart> chapterChapterParts = chapterChapterPartRepository.getByChapterId(chapterId);
+		
+		if(chapterChapterParts==null) {
+			throw new RequestException(Error.CHAPTER_PART_DOES_NOT_EXIST);
+		}
+		
+		JSONObject jsonObject = new JSONObject();
+			
+		for(int i =0;i<chapterChapterParts.size();i++) {
+			JSONObject jsonObject2 = new JSONObject();
+				
+			jsonObject2.put("id", chapterChapterParts.get(i).getChapterPart().getId());
+			
+			if(chapterChapterParts.get(i).getChapterPart().getPicture()!=null) {
+				jsonObject2.put("pictureId",  chapterChapterParts.get(i).getChapterPart().getPicture().getId());
+				jsonObject2.put("pictureLocation",  chapterChapterParts.get(i).getChapterPart().getPicture().getFileLocation());
+			}
+			
+			jsonObject2.put("english_text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
+			jsonObject2.put("chinese_text",  chapterChapterParts.get(i).getChapterPart().getChinese_text());
+			jsonObject2.put("dutch_text",  chapterChapterParts.get(i).getChapterPart().getDutch_text());
+				
+			jsonObject.put(i+"", jsonObject2);
+		}
+			
+		return jsonObject.toString();
+			
+	}
+	
 	/**
 	 * get chapterPart by chapterPartId
 	 * @author 曹将将
