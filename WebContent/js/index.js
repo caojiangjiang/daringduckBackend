@@ -8,6 +8,10 @@ var communityBuilder = new CommunityBuilder(token);
 var currentPage = 0;
 var prevPage=0;
 
+/*used to text picture uploading*/
+var imgPath="http://203.195.147.70:8080/daringduckBackend/api/pictures/";
+//var imgPath="http://localhost:8080/daringduckBackend/api/pictures/";
+
 // If there is no token, login first
 if (token == null) {
 	window.location.href = "login.html";
@@ -279,8 +283,7 @@ function generateTable(pageInfo, page, props) {
 				//val='picture';
 				if(val!=null)
 				{
-					/*val='<img src="http://localhost:8080/daringduckBackend/api/pictures/'+val.id+'" />'*/
-					val='<img src="http://203.195.147.70:8080/daringduckBackend/api/pictures/'+val.id+'" style="width:40px;height:40px;border-radius:50%;"/>'
+					val='<img src="'+imgPath+val.id+'" style="width:40px;height:40px;border-radius:50%;"/>'
 				}
 				else
 					val='no picture';
@@ -290,8 +293,7 @@ function generateTable(pageInfo, page, props) {
 				//val='picture';
 				if(val!='')
 				{
-					//val='<img src="http://localhost:8080/daringduckBackend/api/pictures/'+val.id+'" />'
-					val='<img src="http://203.195.147.70:8080/daringduckBackend/api/pictures/'+val+'" style="width:40px;height:40px;border-radius:50%;"/>'
+					val='<img src="'+imgPath+val+'" style="width:40px;height:40px;border-radius:50%;"/>'
 				}
 				else
 					val='no picture';
@@ -560,7 +562,7 @@ function showAdd(pageInfo, objectId, props) {
 			var input=$('<div></div>')
 			var inputfield = $('<input class="form-control">');
 			if(val!="" && val!=null){
-				input.append('<img class="imgBar" src="http://203.195.147.70:8080/daringduckBackend/api/pictures/'+val.id+'" style="width:60px;height:60px;"/>');
+				input.append('<img class="imgBar" src="'+imgPath+val.id+'" style="width:60px;height:60px;"/>');
 			}
 			inputfield.attr('type', type);
 			inputfield.attr('name', field.name);
@@ -1039,11 +1041,8 @@ function showEditMoment(momentId,userId) {
 												}
 											else{
 												picId=momentPart.picture.id;
-												/*imagePart='<img src="http://localhost:8080/daringduckBackend/api/pictures/'
-														+picId
-														+'" width="500px;"/>';*/
-												imagePart='<img src="http://203.195.147.70:8080/daringduckBackend/api/pictures/'
-													+picId
+												imagePart='<img src="'
+													+imgPath+picId
 													+'" width="500px;"/>';
 											}
 											$('#moment-content').append(
@@ -1178,7 +1177,9 @@ function uploadImage(index,type,typeId,subId) {
 	var done = function(data) {
 		console.log(data);
 		alert("upload successfully");
-		$("#picId"+index).val(data.id);	}
+		$("#picId"+index).val(data.id);	
+		$('.imgBar').attr('src',imgPath+data.id);
+	}
 	
 
 	communityBuilder.uploadImage(form, done, fail);
@@ -1197,7 +1198,7 @@ function uploadUserImage(userId) {
 		console.log(data);
 		alert("upload successfully");
 		$('input[type="file"]').after('<input type="text" name="pictureId" style="visibility:hidden;position: absolute;" value="'+data.id+'">');
-		$('.imgBar').attr('src','http://203.195.147.70:8080/daringduckBackend/api/pictures/'+data.id)
+		$('.imgBar').attr('src',imgPath+data.id)
 	}
 
 	communityBuilder.uploadImage(form, done, fail);
@@ -1217,7 +1218,7 @@ function uploadCourseImage(courseId)
 		alert("upload successfully");
 		console.log(data);
 		$('input[type="file"]').after('<input type="text" name="pictureId" style="visibility:hidden;position: absolute;" value="'+data.id+'">');
-		$('.imgBar').attr('src','http://203.195.147.70:8080/daringduckBackend/api/pictures/'+data.id)
+		$('.imgBar').attr('src',imgPath+data.id);
 	}
 
 	communityBuilder.uploadImage(form, done, fail);
@@ -1266,9 +1267,8 @@ function noEditStyle(userId,momentId,momentPartId,index,text,picture){
 	$('#paragraph'+index+' .text_content').attr("readonly","readonly");
 	$('#paragraph'+index+' .picBar').html(
 			'<span class="input-group-addon">Picture</span>'
-			/*+'<img src="http://localhost:8080/daringduckBackend/api/pictures/'*/
-			+'<img src="http://203.195.147.70:8080/daringduckBackend/api/pictures/'
-			+picture
+			+'<img src="'
+			+imgPath+picture
 			+'" width="500px;"/>');
 	$('#paragraph'+index+' .btn-bar').html(
 			'<input type="button" onclick="editStyle('
@@ -1304,40 +1304,69 @@ function showEditChapterPart(courseId,chapterId) {
 			.load(
 					"pages/editChapterPart.html",
 					function() {
+						var count=-1;
 						var done = function(chapterParts) {
+							console.log(chapterParts);
 							console.log(chapterParts.length);
 							var total=chapterParts.length+1;
 							$.each(chapterParts,function(index, chapterPart) {
 								var picId;
-								if(chapterPart.picture==null){
+								count=index;
+								picId=chapterPart.pictureId;
+								/*if(chapterPart.picture==null){
 									picId="#";}
 								else{
 									picId=chapterPart.picture.id;
-								}
+								}*/
+								index=parseInt(index);
 								$('#chapter-content').append(
 										'<form class="paragraph" id="paragraph'+(index+1)+'">'										
 										+'<h1>Chapter part-'+(index+1)+'</h1>'
 										+'<span class="chapterPartId" style="display:none;">'+chapterPart.id+'</span>'
 										+'<div class="row">'
 										+'<div class="col-sm-6">'
-											+'<div class="input-group">'
-												+'<span class="input-group-addon">Text</span>'
-												+'<textarea class="form-control text_content" readonly="readonly">'
-												+chapterPart.text
-												+'</textarea>'  
+											+'<ul class="nav nav-tabs">'
+												+'<li class="active"><a href="#engText'+(index+1)+'" data-toggle="tab">English Text</a></li>'
+												+'<li><a href="#chnText'+(index+1)+'" data-toggle="tab">Chinese Text</a></li>'
+												+'<li><a href="#dutText'+(index+1)+'" data-toggle="tab">Dutch Text</a></li>'
+											+'</ul>'
+											+'<div class="tab-content">'
+												+'<div class="tab-pane fade in active" id="engText'+(index+1)+'">'
+													+'<div class="input-group">'
+														/*+'<span class="input-group-addon">Text</span>'*/
+														+'<textarea class="form-control text_content" readonly="readonly">'
+														+chapterPart.english_text
+														+'</textarea>'  
+													+'</div>'
+												+'</div>'
+												+'<div class="tab-pane fade" id="chnText'+(index+1)+'">'
+													+'<div class="input-group">'
+														/*+'<span class="input-group-addon">Text</span>'*/
+														+'<textarea class="form-control text_content" readonly="readonly">'
+														+chapterPart.chinese_text
+														+'</textarea>'  
+													+'</div>'
+												+'</div>'
+												+'<div class="tab-pane fade" id="dutText'+(index+1)+'">'
+													+'<div class="input-group">'
+														/*+'<span class="input-group-addon">Text</span>'*/
+														+'<textarea class="form-control text_content" readonly="readonly">'
+														+chapterPart.dutch_text
+														+'</textarea>'  
+													+'</div>'
+												+'</div>'
 											+'</div>'
 										+'</div>'
 										+'<div class="col-sm-6">'
 											+'<div class="input-group picBar">'
 												//+'<span class="input-group-addon">Picture</span>'
-												/*+'<img src="http://localhost:8080/daringduckBackend/api/pictures/'*/
-												+'<img src="http://203.195.147.70:8080/daringduckBackend/api/pictures/'
-												+picId
+												+'<img src="'
+												+imgPath+picId
 												+'" width="100%;"/>'
 											+'</div>'
 										+'</div>'
 										+'</div>'
-										+'<div class="input-group btn-bar">'
+										+'<div class="btn-bar">'
 											+'<input type="button" onclick="editChapterStyle('
 											+courseId+','
 											+chapterId+','
@@ -1366,32 +1395,54 @@ function showEditChapterPart(courseId,chapterId) {
 							$("#chapterReturn").on("click",function(){
 								loadPage(items.chapters,currentPage,{'courseId':courseId});
 							})
-							/*if(typeof(chapterParts.length)=='undefined'){
-								$('#addParagraph').append(
-									'<form class="paragraph" id="paragraph'+(total)+'">'    
-									+'<h1>Chapter part-1</h1>'
-									+'<div class="input-group">'
-										+'<span class="input-group-addon">Text</span>'
-										+'<textarea class="form-control text_content"></textarea>'  
-									+'</div>'
-									+'<br>'
-									+'<div class="input-group">'
-										+'<span class="input-group-addon">Picture</span>'
-										+'<input type="file" class="form-control post-file" name="file" />'
-										+'<input type="button" onclick="uploadImage(1,\'course\','+courseId+','+chapterId+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
-										+'<span id="picId1" style="display:none;"><span>'
-									+'</div>'
-									+'<div class="input-group btn-bar">'
-									+'<input type="button" onclick="" value="cancel" class="btn btn-primary"/>'
-										+'<input type="button" onclick="addChapterPart('
-										+courseId+","
-										+chapterId+",1"
-										+')" value="submit" class="btn btn-primary"/>'							
-									+'</div>'
-								+'</form>'
-									)
-							}*/
-	
+							if(count==-1){
+								$('#chapter-content').append(
+									'<form class="paragraph" id="paragraph1">'    
+										+'<h1>Chapter part-1</h1>'
+										+'<span class="chapterPartId" id="chapterPartId1" style="display:none;"></span>'
+										+'<div class="row">'
+											+'<div class="col-sm-6">'
+												+'<ul class="nav nav-tabs">'
+													+'<li class="active"><a href="#engText1" data-toggle="tab">English Text</a></li>'
+													+'<li><a href="#chnText1" data-toggle="tab">Chinese Text</a></li>'
+													+'<li><a href="#dutText1" data-toggle="tab">Dutch Text</a></li>'
+												+'</ul>'
+												+'<div class="tab-content">'
+													+'<div class="tab-pane fade in active" id="engText1">'
+														+'<div class="input-group">'
+															+'<textarea class="form-control text_content"></textarea>'  
+														+'</div>'
+													+'</div>'
+													+'<div class="tab-pane fade" id="chnText1">'
+														+'<div class="input-group">'
+															+'<textarea class="form-control text_content"></textarea>'  
+														+'</div>'
+													+'</div>'
+													+'<div class="tab-pane fade" id="dutText1">'
+														+'<div class="input-group">'
+															+'<textarea class="form-control text_content"></textarea>'  
+														+'</div>'
+													+'</div>'
+												+'</div>'
+											+'</div>'
+											+'<div class="col-sm-6">'
+												+'<div class="input-group picBar">'
+													+'<input type="file" class="form-control post-file" name="file" />'
+													+'<input type="button" onclick="uploadImage(1,\'course\','+courseId+','+chapterId+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
+													+'<span id="picId1" style="display:none;"></span>'
+													+'<img class="imgBar" width="100%;">'
+												+'</div>'
+											+'</div>'
+										+'</div>'
+										+'<div class="btn-bar">'
+											+'<input type="button" onclick="addChapterPart('
+											+courseId+","
+											+chapterId+","+1
+											+')" value="submit" class="btn btn-primary"/>'							
+										+'</div>'
+									+'</form>'
+								);
+							}
 						};
 
 						communityBuilder.getChapterPartList(chapterId,"courses",done, fail);
@@ -1403,18 +1454,41 @@ function addNewChapter(courseId,chapterId,index){
 			'<form class="paragraph" id="paragraph'+(index+1)+'">'    
 			+'<h1>Chapter part-'+(index+1)+'</h1>'
 			+'<span class="chapterPartId" id="chapterPartId'+(index+1)+'" style="display:none;"></span>'
-			+'<div class="input-group">'
-				+'<span class="input-group-addon">Text</span>'
-				+'<textarea class="form-control text_content" style="height:100px"></textarea>'  
+			+'<div class="row">'
+				+'<div class="col-sm-6">'
+					+'<ul class="nav nav-tabs">'
+						+'<li class="active"><a href="#engText'+(index+1)+'" data-toggle="tab">English Text</a></li>'
+						+'<li><a href="#chnText'+(index+1)+'" data-toggle="tab">Chinese Text</a></li>'
+						+'<li><a href="#dutText'+(index+1)+'" data-toggle="tab">Dutch Text</a></li>'
+					+'</ul>'
+					+'<div class="tab-content">'
+						+'<div class="tab-pane fade in active" id="engText'+(index+1)+'">'
+							+'<div class="input-group">'
+								+'<textarea class="form-control text_content"></textarea>'  
+							+'</div>'
+						+'</div>'
+						+'<div class="tab-pane fade" id="chnText'+(index+1)+'">'
+							+'<div class="input-group">'
+								+'<textarea class="form-control text_content"></textarea>'  
+							+'</div>'
+						+'</div>'
+						+'<div class="tab-pane fade" id="dutText'+(index+1)+'">'
+							+'<div class="input-group">'
+								+'<textarea class="form-control text_content"></textarea>'  
+							+'</div>'
+						+'</div>'
+					+'</div>'
+				+'</div>'
+				+'<div class="col-sm-6">'
+					+'<div class="input-group picBar">'
+						+'<input type="file" class="form-control post-file" name="file" />'
+						+'<input type="button" onclick="uploadImage('+(index+1)+',\'course\','+courseId+','+chapterId+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
+						+'<span id="picId'+(index+1)+'" style="display:none;"></span>'
+						+'<img class="imgBar" width="100%;">'
+					+'</div>'
+				+'</div>'
 			+'</div>'
-			+'<br>'
-			+'<div class="input-group">'
-				+'<span class="input-group-addon">Picture</span>'
-				+'<input type="file" class="form-control post-file" name="file" />'
-				+'<input type="button" onclick="uploadImage('+(index+1)+',\'course\','+courseId+','+chapterId+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
-				+'<span id="picId'+(index+1)+'" style="display:none;"><span>'
-			+'</div>'
-			+'<div class="input-group btn-bar">'
+			+'<div class="btn-bar">'
 				+'<input type="button" onclick="cancelAddChapterPart('
 				+chapterId+","+(index+1)
 				+')" value="cancel" class="btn btn-primary"/>'
@@ -1430,16 +1504,42 @@ function addNewChapter(courseId,chapterId,index){
 		if(i>index){
 			$(element).children("h1").text('Chapter part-'+(i+1));
 			$(element).attr('id','paragraph'+(i+1));
+			$(element).children(".row").children().children("ul").children("li").eq(0).children("a").attr('href','#engText'+(i+1));
+			$(element).children(".row").children().children("ul").children("li").eq(1).children("a").attr('href','#chnText'+(i+1));
+			$(element).children(".row").children().children("ul").children("li").eq(2).children("a").attr('href','#dutText'+(i+1));
+			$(element).children(".row").children().children(".tab-content").children(".tab-pane").eq(0).attr('id','engText'+(i+1));
+			$(element).children(".row").children().children(".tab-content").children(".tab-pane").eq(1).attr('id','chnText'+(i+1));
+			$(element).children(".row").children().children(".tab-content").children(".tab-pane").eq(2).attr('id','dutText'+(i+1));
+
 		}
 	})
 }
-function editChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){
+function cancelAddChapterPart(chapterId,index){
+	/*update the following chapter parts*/
+	$('.paragraph').each(function(i,element){
+		if(i>index-1){
+			$(element).children("h1").text('Chapter part-'+(i));
+			$(element).attr('id','paragraph'+(i));
+			$(element).children(".row").children().eq(0).children("ul").children("li").eq(0).children("a").attr('href','#engText'+(i));
+			$(element).children(".row").children().eq(0).children("ul").children("li").eq(1).children("a").attr('href','#chnText'+(i));
+			$(element).children(".row").children().eq(0).children("ul").children("li").eq(2).children("a").attr('href','#dutText'+(i));
+			$(element).children(".row").children().eq(0).children(".tab-content").children(".tab-pane").eq(0).attr('id','engText'+(i));
+			$(element).children(".row").children().eq(0).children(".tab-content").children(".tab-pane").eq(1).attr('id','chnText'+(i));
+			$(element).children(".row").children().eq(0).children(".tab-content").children(".tab-pane").eq(2).attr('id','dutText'+(i));
+
+		}
+	})
+	$('#paragraph'+index).remove();
+}
+function editChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){	
 	$('#paragraph'+index+' .text_content').removeAttr("readonly");
 	$('#paragraph'+index+' .picBar').html(
-			'<span class="input-group-addon">Picture</span>'
-			+'<input type="file" class="form-control post-file" name="file" />'
+			'<input type="file" class="form-control post-file" name="file" />'
 			+'<input type="button" onclick="uploadImage('+(index)+',\'course\','+courseId+','+chapterId+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
-			+'<span id="picId'+(index)+'" style="display:none;"><span>');
+			+'<span id="picId'+(index)+'" style="display:none;"></span>'
+			+'<img class="imgBar" src="'
+			+imgPath+picture+'" width="100%;"/>');
+			
 	$('#paragraph'+index+' .btn-bar').html(
 			'<input type="button" onclick="noEditChapterStyle('
 			+courseId+','
@@ -1460,11 +1560,10 @@ function editChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){
 function noEditChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){
 	$('#paragraph'+index+' .text_content').attr("readonly","readonly");
 	$('#paragraph'+index+' .picBar').html(
-			'<span class="input-group-addon">Picture</span>'
-			//+'<img src="http://localhost:8080/daringduckBackend/api/pictures/'
-			+'<img src="http://203.195.147.70:8080/daringduckBackend/api/pictures/'
-			+picture
-			+'" width="500px;"/>');
+			//'<span class="input-group-addon">Picture</span>'
+			'<img src="'
+			+imgPath+picture
+			+'" width="100%;"/>');
 	$('#paragraph'+index+' .btn-bar').html(
 			'<input type="button" onclick="editChapterStyle('
 			+courseId+','
@@ -1481,10 +1580,13 @@ function noEditChapterStyle(courseId,chapterId,chapterPartId,index,text,picture)
 			+')" value="add" class="btn btn-primary"/>');
 }
 function changeChapterPart(courseId,chapterId,chapterPartId,index){
-	var text = $('#paragraph'+index+' .text_content').val();
+	//var text = $('#paragraph'+index+' .text_content').val();
+	var english_text=$('#paragraph'+index+' #engText'+index+' .text_content').val();
+	var chinese_text=$('#paragraph'+index+' #chnText'+index+' .text_content').val();
+	var dutch_text=$('#paragraph'+index+' #dutText'+index+' .text_content').val();
 	var pictureId=$("#picId"+(index)).val();
 	console.log(pictureId);
-	var data="text="+text+"&pictureId="+pictureId;
+	var data="english_text="+english_text+"&chinese_text="+chinese_text+"&dutch_text="+dutch_text+"&pictureId="+pictureId;
 	communityBuilder.changeChapterPart(chapterId,chapterPartId,data,"courses",
 			function(data){		
 				showEditChapterPart(courseId,chapterId);
@@ -1550,13 +1652,14 @@ function addChapterPart(courseId,chapterId,flag){
 		if(id!="")
 			chapterPartIdList.push(parseInt(id));
 	})
-	var text = $('#paragraph'+flag+' .text_content').val();
-	//var pictureId=$("#picId"+(flag)).val();
+	//var text = $('#paragraph'+flag+' .text_content').val();
+	var english_text=$('#paragraph'+flag+' #engText'+flag+' .text_content').val();
+	var chinese_text=$('#paragraph'+flag+' #chnText'+flag+' .text_content').val();
+	var dutch_text=$('#paragraph'+flag+' #dutText'+flag+' .text_content').val();
+
 	var pictureId=$("#picId"+(flag)).val();
-	//var pictureId='49';
 	 
-	console.log(text);
-	var data="text="+text+"&pictureId="+pictureId;
+	var data="english_text="+english_text+"&chinese_text="+chinese_text+"&dutch_text="+dutch_text+"&pictureId="+pictureId;
 	communityBuilder.addChapterPartStep1(chapterId, data, "courses", function(data){		
 		/*insert new chapter id to the chapterid array(at "flag" position)*/
 		$("#chapterPartId"+flag).text(data.id);
