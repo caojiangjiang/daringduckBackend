@@ -208,7 +208,8 @@ public class MomentController extends GenericController {
 	@Path("/{momentId: [0-9]*}/add")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response addMomentPart(@HeaderParam("Auth-Token") String token,@PathParam("momentId") long momentId,@FormParam("pictureId") long pictureId,@FormParam("part") int part,@FormParam("text") String text) throws RequestException {
+	public Response addMomentPart(@HeaderParam("Auth-Token") String token,@PathParam("momentId") long momentId,
+			@FormParam("pictureId") long pictureId,@FormParam("part") int part,@FormParam("text") String text) throws RequestException {
 		secure(token, "*");
 		MomentPart momentPart = momentService.addMomentPart(part, text, momentId,pictureId);
 		return Response.status(Response.Status.OK).entity(momentPart).build();

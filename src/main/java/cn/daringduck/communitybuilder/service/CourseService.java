@@ -475,15 +475,15 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @param title
 	 * 
 	 * */
-	public Chapter addChapterStep1(int courseId, String english_name,String chinese_name,String dutch_name,String requiredOrNot) throws RequestException {
+	public Chapter addChapterStep1(int courseId, String english_title,String chinese_title,String dutch_title,String requiredOrNot) throws RequestException {
 		
 		Chapter chapter;
 		
 		if(requiredOrNot.equalsIgnoreCase("true")) {
-			chapter = new Chapter(english_name,chinese_name,dutch_name,courseId,true);
+			chapter = new Chapter(english_title,chinese_title,dutch_title,courseId,true);
 		}
 		else {
-			chapter = new Chapter(english_name,chinese_name,dutch_name,courseId,false);
+			chapter = new Chapter(english_title,chinese_title,dutch_title,courseId,false);
 		}
 
 		chapterRepository.save(chapter);
