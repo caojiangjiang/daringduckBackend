@@ -1043,23 +1043,28 @@ function showEditMoment(momentId,userId) {
 												picId=momentPart.picture.id;
 												imagePart='<img src="'
 													+imgPath+picId
-													+'" width="500px;"/>';
+													+'" width="100%;"/>';
 											}
 											$('#moment-content').append(
 													'<form class="paragraph" id="paragraph'+(index+1)+'">'    
 													+'<h1>Paragraph-'+(index+1)+'</h1>'
-													+'<div class="input-group">'
-														+'<span class="input-group-addon">Text</span>'
-														+'<textarea class="form-control text_content" style="height:100px" readonly="readonly">'
-														+momentPart.text
-														+'</textarea>'  
+													+'<div class="row">'
+														+'<div class="col-sm-6">'
+															+'<div class="input-group">'
+																+'<span class="input-group-addon">Text</span>'
+																+'<textarea class="form-control text_content" style="height:100px" readonly="readonly">'
+																+momentPart.text
+																+'</textarea>'  
+															+'</div>'
+														+'</div>'
+														+'<div class="col-sm-6">'
+															+'<div class="input-group picBar momentPic">'
+																+imagePart
+																//+'<span id="picId'+(index+1)+'" style="display:none;"></span>'
+															+'</div>'
+														+'</div>'
 													+'</div>'
-													+'<br>'
-													+'<div class="input-group picBar">'
-														+'<span class="input-group-addon">Picture</span>'
-														+imagePart
-													+'</div>'
-													+'<div class="input-group btn-bar">'
+													+'<div class="btn-bar">'
 														+'<input type="button" onclick="editStyle('
 														+userId+','
 														+momentId+','
@@ -1087,18 +1092,23 @@ function showEditMoment(momentId,userId) {
 							$('#addParagraph').append(
 								'<form class="paragraph" id="paragraph'+(total)+'">'    
 								+'<h1>Paragraph-'+(total)+'</h1>'
-								+'<div class="input-group">'
-									+'<span class="input-group-addon">Text</span>'
-									+'<textarea class="form-control" style="height:100px" id="text_content"></textarea>'  
+								+'<div class="row">'
+									+'<div class="col-sm-6">'
+										+'<div class="input-group">'
+											+'<span class="input-group-addon">Text</span>'
+											+'<textarea class="form-control" style="height:300px" id="text_content"></textarea>'  
+										+'</div>'
+									+'</div>'
+									+'<div class="col-sm-6">'
+										+'<div class="input-group">'
+											+'<input type="file" class="form-control post-file" name="file" />'
+											+'<input type="button" onclick="uploadImage('+(total)+',\'user\','+(userId)+','+(momentId)+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
+											+'<span id="picId'+(total)+'" style="display:none;"></span>'
+											+'<img class="imgBar" width="100%;">'
+										+'</div>'
+									+'</div>'
 								+'</div>'
-								+'<br>'
-								+'<div class="input-group">'
-									+'<span class="input-group-addon">Picture</span>'
-									+'<input type="file" class="form-control post-file" name="file" />'
-									+'<input type="button" onclick="uploadImage('+(total)+',\'user\','+(userId)+','+(momentId)+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
-									+'<span id="picId'+(total)+'" style="display:none;"><span>'
-								+'</div>'
-								+'<div class="input-group btn-bar">'
+								+'<div class="btn-bar">'
 									+'<input type="button" onclick="" value="cancel" class="btn btn-primary"/>'
 									+'<input type="button" onclick="addMomentPart('
 									+momentId+","+total
@@ -1133,9 +1143,9 @@ function changeMomentPart(momentId,momentPartId,index){
 	var text = $('#paragraph'+index+' .text_content').val();
 	console.log(text+"===========");
 	var part=index+1;
-	var pictureId=$("#picId"+(index)).val();
+	var pictureId=$("#picId"+index).val();
 	console.log(pictureId);
-	var data="text="+text+"&pictureId="+pictureId;
+	var data="text="+text+"&pictureId="+pictureId+"&part="+index;
 	communityBuilder.changeMomentPart(momentPartId,data,"moments",
 			function(){		
 				//loadPage(pageInfo, currentPage, props)
@@ -1178,7 +1188,10 @@ function uploadImage(index,type,typeId,subId) {
 		console.log(data);
 		alert("upload successfully");
 		$("#picId"+index).val(data.id);	
-		$('.imgBar').attr('src',imgPath+data.id);
+		if(type=='user')
+			$('#paragraph'+(index)+' .imgBar').attr('src',imgPath+data.id);
+		else
+			$('.imgBar').attr('src',imgPath+data.id);
 	}
 	
 
@@ -1242,10 +1255,11 @@ function uploadCourseImage(courseId)
 function editStyle(userId,momentId,momentPartId,index,text,picture){
 	$('#paragraph'+index+' .text_content').removeAttr("readonly");
 	$('#paragraph'+index+' .picBar').html(
-			'<span class="input-group-addon">Picture</span>'
-			+'<input type="file" class="form-control post-file" name="file" />'
+			'<input type="file" class="form-control post-file" name="file" />'
 			+'<input type="button" onclick="uploadImage('+(index)+',\'user\','+(userId)+','+(momentId)+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
-			+'<span id="picId'+(index)+'" style="display:none;"><span>');
+			+'<span id="picId'+(index)+'" style="display:none;"></span>'
+			+'<img class="imgBar" src="'+imgPath+picture+'" width="100%" style="height:260px">');
+		
 	$('#paragraph'+index+' .btn-bar').html(
 			'<input type="button" onclick="noEditStyle('
 			+userId+','
@@ -1266,10 +1280,9 @@ function editStyle(userId,momentId,momentPartId,index,text,picture){
 function noEditStyle(userId,momentId,momentPartId,index,text,picture){
 	$('#paragraph'+index+' .text_content').attr("readonly","readonly");
 	$('#paragraph'+index+' .picBar').html(
-			'<span class="input-group-addon">Picture</span>'
-			+'<img src="'
+			'<img src="'
 			+imgPath+picture
-			+'" width="500px;"/>');
+			+'" width="100%;"/>');
 	$('#paragraph'+index+' .btn-bar').html(
 			'<input type="button" onclick="editStyle('
 			+userId+','

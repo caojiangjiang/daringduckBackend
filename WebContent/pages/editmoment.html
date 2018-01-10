@@ -1,89 +1,15 @@
 
-<!-- 	<div class="panel admin-panel">
-		<div class="panel-head" id="add">
-			<strong><i class="fa fa-pencil-square-o"></i> Edit Moment</strong>
-		</div>
-		<div class="body-content">
-			<form id="edit-moment" class="form-x">
-
-				<div class="form-group">
-					<div class="label">
-						<label>Title:</label>
-					</div>
-					<div class="field">
-						<input type="text" class="input w50" value="" name="title"/>
-						<div class="tips"></div>
-					</div>
-				</div>
-
-				
-				<div class="form-group">
-					<div class="label">
-						<label>Posted Time:</label>
-					</div>
-					<div class="field">
-						<input type=text class="input w50" value="" name="time" disabled="disabled">
-						<div class="tips"></div>
-					</div>
-				</div>
-				
-				<div class="form-group">
-					<div class="label">
-						<label>Content:</label>
-					</div>
-					<div class="field" id="moment-content">					
-					</div>
-				</div>
-				
-				<div class="form-group"> 
-					<div class="label">
-						<label></label>
-					</div>
-					<div class="field">
-						<button class="button bg-main icon-check-square-o" onclick="editMoment()" type="button"> Submit</button>
-					</div>
-				</div>
-			</form>
-		</div>
-	</div> -->
 		<div class="panel admin-panel" class="body-content" data-spy="scroll" data-target="#myScrollspy" data-offset="20">
 		<div class="panel-head" id="add">
 			<strong><i class="fa fa-pencil-square-o"></i> Edit Moment</strong>
 		</div>
 		<div>
 			<form id="edit-moment" class="form-x">
-				<!-- <div class="edit-moment-head">
-					<div class="input-group">
-						<span class="input-group-addon">Title</span>
-						<div class="field">
-							<input type="text" class="input w50" value="" name="title"/>
-							<input type="text" class="form-control" value="" name="title"/>	
-							<div class="tips"></div>
-						</div>			
-					</div>		
-					<div class="input-group" style="margin-top:20px;">
-						<span class="input-group-addon">Privacy</span>
-						<div class="field">
-							<input type="text" class="input w50" value="" name="title"/>
-							<select class="form-control"  name="privacy"/></select>
-							<div class="tips"></div>
-						</div>			
-					</div>	
-				</div>	 -->		
-				
-				<!-- <div class="form-group"> 
-					<div class="label">
-						<label></label>
-					</div>
-					<div class="field">
-						<button class="button bg-main icon-check-square-o" onclick="editMoment()" type="button"> Submit</button>
-					</div>
-				</div> -->
 				
 				<!--展示moment的主题内容  -->
-				<div class="container">
+				<div class="container" style="padding-left: 0px;width:100%;">
 					<div class="row">
-						<nav class="col-sm-3" id="myScrollspy">
+						<nav class="col-sm-2" id="myScrollspy">
 							<div class="container-fluid"> 
 							<ul class="nav nav-pills nav-stacked">
 								<li class="dropdown active">
@@ -99,7 +25,7 @@
 							</div>	
 		
 						</nav>
-						<div class="col-sm-7">
+						<div class="col-sm-10">
 						<div id="moment-content">
 						</div>
 						<div id="addParagraph"></div>

@@ -206,7 +206,7 @@ CommunityBuilder.prototype.getMomentPart = function(id, resource, done, fail) {
 CommunityBuilder.prototype.addMomentPart = function(id, data, resource, done, fail) {
 	$.ajax({
 		type : "POST",
-		url : "api/" + resource+ "/" + id+ "/add"+"?" + data,
+		url : "api/" + resource+ "/" + id+ "/add"/*+"?" + data*/,
 		headers : {
 			'auth-token' : this.token
 		},
@@ -234,7 +234,7 @@ CommunityBuilder.prototype.addMomentPart = function(id, data, resource, done, fa
 CommunityBuilder.prototype.changeMomentPart = function(id, data, resource, done, fail) {
 	$.ajax({
 		type : "POST",
-		url :"api/" + resource+ "/" + id+ "/change"+"?" + data,
+		url :"api/" + resource+ "/" + id+ "/change"/*+"?" + data*/,
 		headers : {
 			'auth-token' : this.token
 		},
