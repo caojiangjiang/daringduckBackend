@@ -314,6 +314,26 @@ public class UserController extends GenericController {
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}
 	
+	/**
+	 * Get information about a moment with id
+	 * @throws RequestException 
+	 */
+	@PUT
+	@Path("/{userId: [0-9]*}/moments/{momentId: [0-9]*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response changeMoment(@HeaderParam("Auth-Token") String token, @PathParam("momentId") long momentId,
+			@QueryParam("title") String title,@QueryParam("privacyName") String privacyName, @QueryParam("eventDate") String eventDate) throws RequestException {
+		
+		secure(token, "admin");
+		
+		Moment moment = momentService.changeUserMoment(momentId,title,privacyName,eventDate);
+		
+		if(moment==null)
+			return Response.status(Response.Status.BAD_REQUEST).entity("fail").build();
+			
+		return Response.status(Response.Status.OK).entity(moment).build();
+	}
+	
 	////////
 	// ME //
 	////////

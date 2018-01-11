@@ -141,9 +141,8 @@ public class UserService extends GenericService<User, Long> {
 		// Check if the passed parameters are correct
 		checkValues(username, password, nickname, gender, phone, wechat, email, false);
 		
-		if(password == null) {
-			password="dd246";
-		}
+
+		password="dd246";
 		
 		Role role = roleRepository.findOne(roleId);
 
