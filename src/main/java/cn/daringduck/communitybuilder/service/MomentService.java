@@ -154,7 +154,13 @@ public class MomentService extends GenericService<Moment, Long>{
 			throw new RequestException(Error.PICTURE_DOES_NOT_EXIST);
 		}
 		
-		MomentPart momentPart = new MomentPart(part, text, picture, moment_id);
+		Moment moment = get(moment_id);
+		
+		if(moment == null) {
+			throw new RequestException(Error.MOMENT_DOES_NOT_EXIST);
+		}
+		
+		MomentPart momentPart = new MomentPart(part, text, picture, moment);
 		
 		momentPartRepository.save(momentPart);
 		
@@ -230,6 +236,33 @@ public class MomentService extends GenericService<Moment, Long>{
 		return moments;
 	}
 	
+	
+	/**
+	 * delete a momentPart
+	 * @param moment_id
+	 * 	
+	 * @return
+	 * @throws RequestException 
+	 * */
+	public boolean deleteMoment(long momentId) throws RequestException {
+		
+		System.out.println(momentId);
+		
+		List<MomentPart> momentParts = momentPartRepository.getMomentPart(momentId);
+		
+		if(momentParts==null) {
+			throw new RequestException(Error.MOMENTPART_DOES_NOT_EXIST);
+		}
+		
+		momentPartRepository.delete(momentParts);
+		
+		momentRepository.delete(momentId);
+		
+		return true;
+	}
+	
+	
+	
 	/**
 	 * delete a momentPart
 	 * @param moment_id
@@ -272,8 +305,7 @@ public class MomentService extends GenericService<Moment, Long>{
 		else
 			momentpart.setPicture(picture);
 
-		Long momentId = momentpart.getMomentId();
-		
+		Long momentId = momentpart.getMoment().getId();
 		
 		//when momentPart change, change moment's modifiedDate
 		Moment moment =get(momentId);
@@ -285,7 +317,7 @@ public class MomentService extends GenericService<Moment, Long>{
 		moment.setModifiedTime();
 		
 		momentRepository.save(moment);
-		momentPartRepository.upDateMomentPart(id, text, momentId, picture);
+		momentPartRepository.upDateMomentPart(id, text, picture);
 		
 		return momentpart;
 	}

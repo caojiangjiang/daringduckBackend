@@ -402,7 +402,7 @@ public class CourseService extends GenericService<Course, Integer> {
 		for(int i=0;i<courseChapters.size();i++) {
 			JSONObject jsonObject2 = new JSONObject();
 			jsonObject2.put("id",courseChapters.get(i).getChapter().getId());
-			jsonObject2.put("courseId", courseChapters.get(i).getChapter().getCourseId());
+			jsonObject2.put("course", courseChapters.get(i).getChapter().getCourse());
 			jsonObject2.put("requiredOrNot", courseChapters.get(i).getChapter().isRequiredOrNot());
 			switch (type) {
 			case 2:{
@@ -479,11 +479,17 @@ public class CourseService extends GenericService<Course, Integer> {
 		
 		Chapter chapter;
 		
+		Course course = get(courseId);
+		
+		if(course == null) {
+			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
+		}
+		
 		if(requiredOrNot.equalsIgnoreCase("true")) {
-			chapter = new Chapter(english_title,chinese_title,dutch_title,courseId,true);
+			chapter = new Chapter(english_title,chinese_title,dutch_title,course,true);
 		}
 		else {
-			chapter = new Chapter(english_title,chinese_title,dutch_title,courseId,false);
+			chapter = new Chapter(english_title,chinese_title,dutch_title,course,false);
 		}
 
 		chapterRepository.save(chapter);
@@ -522,7 +528,7 @@ public class CourseService extends GenericService<Course, Integer> {
 				throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
 			}
 			
-			chapter.setCourseId(courseId);
+			chapter.setCourse(course);
 			
 			chapterRepository.save(chapter);
 			
@@ -596,6 +602,12 @@ public class CourseService extends GenericService<Course, Integer> {
 			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
 		}
 		
+		Chapter chapter1 = getChapter(chapterId);
+		
+		if(chapter1 == null) {
+			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
+		}
+		
 		int j = 1;
 		
 		//delete the Specified courseChapter then reorder old courseChapter
@@ -618,7 +630,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	    userChapterRepository.deleteByChapterId(chapterId); 
 	     
 	    //delete chapterPart 
-	    partRepository.deleteByChapterId(chapterId); 
+	    partRepository.deleteByChapter(chapter1); 
 		
 		//delete chapter
 		chapterRepository.delete(chapterId);
@@ -639,7 +651,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return
 	 * @throws RequestException
 	 */
-	public ChapterPart addChapterPartStep1(long chapterId, String english_text,String chinese_text,String dutch_text, long pictureId) throws RequestException {
+	public ChapterPart addChapterPartStep1(long chapterId, String english_text,String chinese_text,String dutch_text, long pictureId,int courseId) throws RequestException {
 
 		//get the picture By pictureId
 		Picture picture = pictureRepository.findOne(pictureId);
@@ -654,7 +666,9 @@ public class CourseService extends GenericService<Course, Integer> {
 			throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
 		}
 		
-		ChapterPart part = new ChapterPart(english_text,chinese_text,dutch_text,picture,chapterId);
+		Course course = get(courseId);
+		
+		ChapterPart part = new ChapterPart(english_text,chinese_text,dutch_text,picture,chapter,course);
 
 		partRepository.save(part);
 		
@@ -715,7 +729,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * @return
 	 * @throws RequestException
 	 */
-	public ChapterPart editChapterPart(long chapterPartId, String english_text,String chinese_text, String dutch_text, long pictureId) throws RequestException {
+	public ChapterPart editChapterPart(long chapterPartId, String english_text,String chinese_text, String dutch_text, long pictureId,int courseId) throws RequestException {
 		ChapterPart part = partRepository.findOne(chapterPartId);
 		
 		if (part == null) {
@@ -743,6 +757,11 @@ public class CourseService extends GenericService<Course, Integer> {
 			
 			part.setPicture(picture);
 		}
+		
+		Course course = get(courseId);
+		
+		if(course!=null)
+			part.setRelationCourse(course);
 		
 		partRepository.save(part);
 		

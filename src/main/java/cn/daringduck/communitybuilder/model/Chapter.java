@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -31,17 +32,17 @@ public class Chapter{
 	
 	private String dutch_title;
 	
-	private int courseId;
+	@NotNull @OneToOne private Course course;
 	
 	@NotNull private boolean requiredOrNot;
 	
 	public Chapter() {}
 	
-	public Chapter(String english_title,String chinese_title,String dutch_title,int courseId,boolean requiredOrNot) { 
+	public Chapter(String english_title,String chinese_title,String dutch_title,Course course,boolean requiredOrNot) { 
 		this.english_title = english_title;
 		this.chinese_title = chinese_title;
 		this.dutch_title = dutch_title;
-		this.courseId= courseId; 
+		this.course= course; 
 		this.requiredOrNot = requiredOrNot; 
 	} 
 	
@@ -59,14 +60,6 @@ public class Chapter{
 		this.requiredOrNot = requiredOrNot;
 	}
 
-	public int getCourseId() {
-		return courseId;
-	}
-
-	public void setCourseId(int courseId) {
-		this.courseId = courseId;
-	}
-
 	public String getChinese_title() {
 		return chinese_title;
 	}
@@ -81,6 +74,14 @@ public class Chapter{
 
 	public void setDutch_title(String dutch_title) {
 		this.dutch_title = dutch_title;
+	}
+
+	public Course getCourse() {
+		return course;
+	}
+
+	public void setCourse(Course course) {
+		this.course = course;
 	}
 	
 }

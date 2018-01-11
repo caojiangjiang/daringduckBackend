@@ -28,32 +28,25 @@ public class ChapterPart {
 	
 	@NotNull @OneToOne private Picture picture;
 	
-	private long chapterId;
+	@NotNull @OneToOne private Chapter chapter;
+	
+	@NotNull @OneToOne private Course relationCourse;
 	
 	public ChapterPart() {}
 	
-	public ChapterPart(String english_text,String chinese_text,String dutch_text, Picture picture,long chapterId) {
+	public ChapterPart(String english_text,String chinese_text,String dutch_text, Picture picture,Chapter chapter,Course course) {
 		this.english_text = english_text;
 		this.chinese_text = chinese_text;
 		this.dutch_text =dutch_text;
 		this.picture = picture;
-		this.chapterId = chapterId;
+        this.chapter = chapter;
+		this.relationCourse = course;
 	}
 	
 	public long getId() { return id; }
 	
 	public Picture getPicture() { return picture; }
 	public void setPicture(Picture picture) { this.picture = picture; }
-
-	
-
-	public long getChapterId() {
-		return chapterId;
-	}
-
-	public void setChapterId(long chapterId) {
-		this.chapterId = chapterId;
-	}
 
 	public String getEnglish_text() {
 		return english_text;
@@ -77,6 +70,22 @@ public class ChapterPart {
 
 	public void setDutch_text(String dutch_text) {
 		this.dutch_text = dutch_text;
+	}
+
+	public Course getRelationCourse() {
+		return relationCourse;
+	}
+
+	public void setRelationCourse(Course relationCourse) {
+		this.relationCourse = relationCourse;
+	}
+
+	public Chapter getChapter() {
+		return chapter;
+	}
+
+	public void setChapter(Chapter chapter) {
+		this.chapter = chapter;
 	}
 	
 }

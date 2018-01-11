@@ -79,6 +79,8 @@ public class PictureController extends GenericController{
 		case "jpeg":
 		case "jpg":
 		case "png":
+		case "pdf":
+		case "gif":
 			break;
 		default:
 			return Response.status(Response.Status.BAD_REQUEST).build();
@@ -155,7 +157,7 @@ public class PictureController extends GenericController{
 //				file3.mkdir();
 //			}
 //		}
-//			
+			
 //		String uploadedFileLocation = pathName+"\\"+imageName;
 		String uploadedFileLocation = pathName+"/"+imageName;
 		

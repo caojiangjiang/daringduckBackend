@@ -76,6 +76,21 @@ public class MomentController extends GenericController {
 		
 	}
 	
+	
+	/**
+	 * Delete a moment
+	 * 
+	 * @throws RequestException
+	 */
+	@DELETE
+	@Path("/{momentId: [0-9]*}")
+	public Response deleteMoment(@HeaderParam("Auth-Token") String token, @PathParam("momentId") long momentId)
+			throws RequestException {
+		secure(token, "admin");
+		System.out.println(momentId);
+		return Response.status(Response.Status.OK).entity(momentService.deleteMoment(momentId)).build();
+	}
+	
 	////////////////////////////////////////////////////////////////////
 	// Me
 	////////////////////////////////////////////////////////////////////	
@@ -167,9 +182,6 @@ public class MomentController extends GenericController {
 		return Response.status(Response.Status.OK).entity(moments).build();
 	}
 	
-	
-	
-	
 	/**
 	 * get DD01 newest moment
 	 * @throws RequestException 
@@ -238,7 +250,7 @@ public class MomentController extends GenericController {
 	 * delete momentsPart
 	 */
 	@DELETE
-	@Path("/{id: [0-9]*}")
+	@Path("/deleteMomentPart/{id: [0-9]*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response deleteMomentPart(@HeaderParam("Auth-Token") String token, @PathParam("id") long id) {
 		//Moment moment = momentService.deleteMomentPart(id);

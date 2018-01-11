@@ -24,7 +24,6 @@ public class UserCourse {
 	
 	private long date;
 	
-
 	private boolean passedOrNot;
 	
 	public UserCourse() {}

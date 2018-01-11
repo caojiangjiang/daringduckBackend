@@ -20,14 +20,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Table(name = "moment_parts")
 @JsonIgnoreProperties({ "handler","hibernateLazyInitializer" })
-@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 public class MomentPart {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	private long moment_Id;
+	@NotNull @OneToOne private Moment moment;
 	private int part;
 	
 	private String text;
@@ -35,11 +34,11 @@ public class MomentPart {
 	
 	public MomentPart() { }
 	
-	public MomentPart(int part, String text, Picture picture,long moment_Id) {
+	public MomentPart(int part, String text, Picture picture,Moment moment) {
 		this.part = part;
 		this.text = text;
 		this.picture = picture;
-		this.moment_Id = moment_Id;
+		this.moment = moment;
 	}
 	
 	public int getPart() { return part; }
@@ -50,14 +49,6 @@ public class MomentPart {
 	
 	public Picture getPicture() { return picture; }
 	public void setPicture(Picture picture) { this.picture = picture; }
-
-	public Long getMomentId() {
-		return this.moment_Id;
-	}
-
-	public void setMomentId(long moment_Id) {
-		this.moment_Id = moment_Id;
-	}
 	
 	public void setId(long id) {
 		this.id = id;
@@ -68,7 +59,15 @@ public class MomentPart {
 	}
 	
 	public String toString() {
-		return this.id+","+this.moment_Id+","+this.part+","+this.text;
+		return this.id+","+this.part+","+this.text;
+	}
+
+	public Moment getMoment() {
+		return moment;
+	}
+
+	public void setMoment(Moment moment) {
+		this.moment = moment;
 	}
 	
 }
