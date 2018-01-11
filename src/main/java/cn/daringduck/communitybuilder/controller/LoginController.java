@@ -35,8 +35,8 @@ public class LoginController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response login(@QueryParam("username") String username, @QueryParam("password") String password) {
-		User user = userService.authenticate(username, password);
+	public Response login(@QueryParam("id") long id, @QueryParam("password") String password) {
+		User user = userService.authenticate(id, password);
 
 		if (user == null) {
 			return Response.status(Response.Status.FORBIDDEN).build();

@@ -176,9 +176,9 @@ public class UserService extends GenericService<User, Long> {
 	 * @param password
 	 * @return
 	 */
-	public User authenticate(String username, String password) {
+	public User authenticate(long id, String password) {
 
-		User user = userRepository.findByUsernameIgnoreCase(username);
+		User user = get(id);
 
 		if (user == null || !passwordSecurity.authenticate(password.toCharArray(), user.getPassword())) {
 			return null;
@@ -288,7 +288,7 @@ public class UserService extends GenericService<User, Long> {
 	public boolean changePassword(User user, String oldPassword,String newPassword) throws RequestException {
 		
 		//whether the old password is correct
-		User user1 = authenticate(user.getUsername(), oldPassword);
+		User user1 = authenticate(user.getId(), oldPassword);
 
 		if (user1 == null) {
 			throw new RequestException(Error.PASSWORD_IS_NOT_CORRECT);
@@ -567,7 +567,11 @@ public class UserService extends GenericService<User, Long> {
 			userChapter.setScore(score);
 		}
 		
-		if(!comment.equalsIgnoreCase(""))
+		//
+//		if(!comment.equalsIgnoreCase(""))
+//			userChapter.setComment(comment);
+		
+		if(comment!=null)
 			userChapter.setComment(comment);
 		
 		if(userChapterRepository.save(userChapter)!=null)
@@ -747,7 +751,7 @@ public class UserService extends GenericService<User, Long> {
 		Pageable pageable = new PageRequest(page, PAGE_SIZE);
 		
 		//the courses that user has choosed
-		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId,pageable);
+		List<UserCourse> userCourses = userCourseRepository.findByUserId(userId);
 		
 		if(userCourses ==null) {
 			throw new RequestException(Error.USERCOURSE_DOES_NOT_EXIS);
@@ -816,7 +820,7 @@ public class UserService extends GenericService<User, Long> {
 		
 		JSONObject jsonObject2 = new JSONObject();
 		
-		//decide 
+		//rearrange 
 		for(;page<end;page++) {
 			String pageS = page+"";
 			

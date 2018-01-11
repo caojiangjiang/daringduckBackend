@@ -402,7 +402,7 @@ public class CourseService extends GenericService<Course, Integer> {
 		for(int i=0;i<courseChapters.size();i++) {
 			JSONObject jsonObject2 = new JSONObject();
 			jsonObject2.put("id",courseChapters.get(i).getChapter().getId());
-			jsonObject2.put("course", courseChapters.get(i).getChapter().getCourse());
+			jsonObject2.put("courseId", courseChapters.get(i).getChapter().getCourse().getId());
 			jsonObject2.put("requiredOrNot", courseChapters.get(i).getChapter().isRequiredOrNot());
 			switch (type) {
 			case 2:{

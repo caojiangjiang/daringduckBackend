@@ -14,7 +14,9 @@ public interface UserCourseRepository extends JpaRepository<UserCourse,Long>{
 
 	public UserCourse findByUserIdAndCourseId(long userId,int courseId);
 	
-	List<UserCourse> findByUserId(long userId,Pageable pageable);
+	List<UserCourse> findByUserId(long userId);
+	
+	List<UserCourse> findByUserId(long userId, Pageable pageable);
 	
 	@Modifying
 	@Query(value = "delete from UserCourse userCourse where userCourse.user.id=?1 and userCourse.course.id = ?2")
