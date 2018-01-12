@@ -13,7 +13,7 @@ import cn.daringduck.communitybuilder.model.Picture;
 public interface MomentPartRepository  extends JpaRepository<MomentPart, Long> {
 	
 	
-	@Query(value = "SELECT momentPart FROM MomentPart momentPart WHERE momentPart.moment.id = ?1")
+	@Query(value = "SELECT momentPart FROM MomentPart momentPart WHERE momentPart.momentId = ?1")
 	List<MomentPart> getMomentPart(long moment_id);
 	
 	@Modifying

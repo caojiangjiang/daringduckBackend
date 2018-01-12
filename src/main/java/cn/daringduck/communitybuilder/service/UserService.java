@@ -115,7 +115,7 @@ public class UserService extends GenericService<User, Long> {
 	
 	public List<User> getUserByNickName(String myNickName, String nickName){ 
 		
-		myNickName = myNickName.toUpperCase();
+		nickName = nickName.toUpperCase();
 		
 		return userRepository.findAllByNicknameLike(myNickName,nickName); 
 	} 

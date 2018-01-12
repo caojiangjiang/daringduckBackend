@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -80,15 +81,17 @@ public class MomentService extends GenericService<Moment, Long>{
 			throw new RequestException(Error.USER_DOES_NOT_EXIST);
 		}
 		
+		if(title ==null) {
+			title = "";
+		}
+		
 		Privacy privacy = Privacy.valueOf(privacyName);
 		
 		//posted time stamp
-		
-		long posted = System.currentTimeMillis();
-		
-		long modifiedTime = posted;
-		
-		System.out.println(modifiedTime);
+
+		if(eventDate == null) {
+			eventDate = "";
+		}
 		
 		Moment moment = new Moment(title, user, privacy,eventDate);
 		
@@ -160,7 +163,7 @@ public class MomentService extends GenericService<Moment, Long>{
 			throw new RequestException(Error.MOMENT_DOES_NOT_EXIST);
 		}
 		
-		MomentPart momentPart = new MomentPart(part, text, picture, moment);
+		MomentPart momentPart = new MomentPart(part, text, picture, moment_id);
 		
 		momentPartRepository.save(momentPart);
 		
@@ -305,7 +308,7 @@ public class MomentService extends GenericService<Moment, Long>{
 		else
 			momentpart.setPicture(picture);
 
-		Long momentId = momentpart.getMoment().getId();
+		long momentId = momentpart.getMomentId();
 		
 		//when momentPart change, change moment's modifiedDate
 		Moment moment =get(momentId);
@@ -332,6 +335,47 @@ public class MomentService extends GenericService<Moment, Long>{
 	 */
 	public List<MomentPart> getMomentPartWithId(long id){
 		return momentPartRepository.getMomentPart(id);
+	}
+	
+	
+	/**
+	 * get momentParts
+	 * @param id
+	 * 	
+	 * @return
+	 * @throws RequestException 
+	 */
+	public String getMomentPartWithIdWeb(long id) throws RequestException{
+		
+		List<MomentPart> momentParts=  momentPartRepository.getMomentPart(id);
+		
+//		JSONObject jsonObject = new JSONObject();
+//		
+//		for(int i =0;i<momentParts.size();i++) {
+//			jsonObject.put(i+"",momentParts.get(i));
+//		}
+//		
+		JSONObject jsonObject2 = new JSONObject();
+		
+		Moment moment = get(id);
+		
+		if(moment == null) {
+			throw new RequestException(Error.MOMENT_DOES_NOT_EXIST);
+		}
+		
+		User user = userRespository.findOne(id);
+		
+		if(user == null) {
+			throw new RequestException(Error.USER_DOES_NOT_EXIST);
+		}
+		
+		jsonObject2.put("content", momentParts);
+		jsonObject2.put("momentId", moment.getId());
+		jsonObject2.put("momentTitle", moment.getTitle());
+		jsonObject2.put("userId", user.getId());
+		jsonObject2.put("userName", user.getUsername());
+		
+		return jsonObject2.toString();
 	}
 	
 }

@@ -3,7 +3,7 @@ function login() {
 	var password = $('#password').val();
 
 	$.ajax({
-		url: "api/login?username=" + username + "&password="+ password,
+		url: "api/login?id=" + username + "&password="+ password,
 		dataType: "text"
 	})
 	.done(function(token) {

@@ -28,18 +28,18 @@ public class ChapterPart {
 	
 	@NotNull @OneToOne private Picture picture;
 	
-	@NotNull @OneToOne private Chapter chapter;
+	private long chapterId;
 	
 	@NotNull @OneToOne private Course relationCourse;
 	
 	public ChapterPart() {}
 	
-	public ChapterPart(String english_text,String chinese_text,String dutch_text, Picture picture,Chapter chapter,Course course) {
+	public ChapterPart(String english_text,String chinese_text,String dutch_text, Picture picture,long chapterId,Course course) {
 		this.english_text = english_text;
 		this.chinese_text = chinese_text;
 		this.dutch_text =dutch_text;
 		this.picture = picture;
-        this.chapter = chapter;
+        this.setChapterId(chapterId);
 		this.relationCourse = course;
 	}
 	
@@ -80,12 +80,12 @@ public class ChapterPart {
 		this.relationCourse = relationCourse;
 	}
 
-	public Chapter getChapter() {
-		return chapter;
+	public long getChapterId() {
+		return chapterId;
 	}
 
-	public void setChapter(Chapter chapter) {
-		this.chapter = chapter;
+	public void setChapterId(long chapterId) {
+		this.chapterId = chapterId;
 	}
 	
 }

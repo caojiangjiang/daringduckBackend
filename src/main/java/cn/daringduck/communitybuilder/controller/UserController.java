@@ -334,6 +334,20 @@ public class UserController extends GenericController {
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}
 	
+	
+	/**
+	 * Delete a moment
+	 * 
+	 * @throws RequestException
+	 */
+	@DELETE
+	@Path("/{userId: [0-9]*}/moments/{momentId: [0-9]*}")
+	public Response deleteMoment(@HeaderParam("Auth-Token") String token, @PathParam("momentId") long momentId)
+			throws RequestException {
+		secure(token, "admin");
+		return Response.status(Response.Status.OK).entity(momentService.deleteMoment(momentId)).build();
+	}
+	
 	////////
 	// ME //
 	////////

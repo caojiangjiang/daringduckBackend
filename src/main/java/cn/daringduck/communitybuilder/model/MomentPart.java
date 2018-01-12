@@ -7,9 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -26,7 +23,7 @@ public class MomentPart {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@NotNull @OneToOne private Moment moment;
+	private long momentId;
 	private int part;
 	
 	private String text;
@@ -34,11 +31,11 @@ public class MomentPart {
 	
 	public MomentPart() { }
 	
-	public MomentPart(int part, String text, Picture picture,Moment moment) {
+	public MomentPart(int part, String text, Picture picture,long momentId) {
 		this.part = part;
 		this.text = text;
 		this.picture = picture;
-		this.moment = moment;
+		this.setMomentId(momentId);
 	}
 	
 	public int getPart() { return part; }
@@ -62,12 +59,13 @@ public class MomentPart {
 		return this.id+","+this.part+","+this.text;
 	}
 
-	public Moment getMoment() {
-		return moment;
+	public long getMomentId() {
+		return momentId;
 	}
 
-	public void setMoment(Moment moment) {
-		this.moment = moment;
+	public void setMomentId(long momentId) {
+		this.momentId = momentId;
 	}
+
 	
 }

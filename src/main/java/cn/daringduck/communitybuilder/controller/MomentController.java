@@ -76,20 +76,7 @@ public class MomentController extends GenericController {
 		
 	}
 	
-	
-	/**
-	 * Delete a moment
-	 * 
-	 * @throws RequestException
-	 */
-	@DELETE
-	@Path("/{momentId: [0-9]*}")
-	public Response deleteMoment(@HeaderParam("Auth-Token") String token, @PathParam("momentId") long momentId)
-			throws RequestException {
-		secure(token, "admin");
-		System.out.println(momentId);
-		return Response.status(Response.Status.OK).entity(momentService.deleteMoment(momentId)).build();
-	}
+
 	
 	////////////////////////////////////////////////////////////////////
 	// Me
@@ -209,6 +196,18 @@ public class MomentController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getMomentPart(@PathParam("momentId") long momentId) throws RequestException {
 		return Response.status(Response.Status.OK).entity(momentService.getMomentPartWithId(momentId)).build();
+	}
+	
+	
+	/**
+	 * get a momentPart about a moment with id
+	 * @throws RequestException 
+	 */
+	@GET
+	@Path("/{momentId: [0-9]*}/getMomentPartWeb")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getMomentPartWeb(@PathParam("momentId") long momentId) throws RequestException {
+		return Response.status(Response.Status.OK).entity(momentService.getMomentPartWithIdWeb(momentId)).build();
 	}
 	
 	

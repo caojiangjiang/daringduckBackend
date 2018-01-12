@@ -402,7 +402,7 @@ public class CourseService extends GenericService<Course, Integer> {
 		for(int i=0;i<courseChapters.size();i++) {
 			JSONObject jsonObject2 = new JSONObject();
 			jsonObject2.put("id",courseChapters.get(i).getChapter().getId());
-			jsonObject2.put("courseId", courseChapters.get(i).getChapter().getCourse().getId());
+			jsonObject2.put("courseId", courseChapters.get(i).getChapter().getCourseId());
 			jsonObject2.put("requiredOrNot", courseChapters.get(i).getChapter().isRequiredOrNot());
 			switch (type) {
 			case 2:{
@@ -486,10 +486,10 @@ public class CourseService extends GenericService<Course, Integer> {
 		}
 		
 		if(requiredOrNot.equalsIgnoreCase("true")) {
-			chapter = new Chapter(english_title,chinese_title,dutch_title,course,true);
+			chapter = new Chapter(english_title,chinese_title,dutch_title,courseId,true);
 		}
 		else {
-			chapter = new Chapter(english_title,chinese_title,dutch_title,course,false);
+			chapter = new Chapter(english_title,chinese_title,dutch_title,courseId,false);
 		}
 
 		chapterRepository.save(chapter);
@@ -528,7 +528,7 @@ public class CourseService extends GenericService<Course, Integer> {
 				throw new RequestException(Error.CHAPTER_DOES_NOT_EXIST);
 			}
 			
-			chapter.setCourse(course);
+			chapter.setCourseId(courseId);
 			
 			chapterRepository.save(chapter);
 			
@@ -630,7 +630,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	    userChapterRepository.deleteByChapterId(chapterId); 
 	     
 	    //delete chapterPart 
-	    partRepository.deleteByChapter(chapter1); 
+	    partRepository.deleteByChapterId(chapterId); 
 		
 		//delete chapter
 		chapterRepository.delete(chapterId);
@@ -668,7 +668,7 @@ public class CourseService extends GenericService<Course, Integer> {
 		
 		Course course = get(courseId);
 		
-		ChapterPart part = new ChapterPart(english_text,chinese_text,dutch_text,picture,chapter,course);
+		ChapterPart part = new ChapterPart(english_text,chinese_text,dutch_text,picture,chapterId,course);
 
 		partRepository.save(part);
 		
@@ -849,7 +849,7 @@ public class CourseService extends GenericService<Course, Integer> {
 				
 			jsonObject.put(i+"", jsonObject2);
 		}
-			
+		
 		return jsonObject.toString();
 			
 	}
@@ -873,25 +873,44 @@ public class CourseService extends GenericService<Course, Integer> {
 			throw new RequestException(Error.CHAPTER_PART_DOES_NOT_EXIST);
 		}
 		
+		List<ChapterPart> chapterParts = new ArrayList<>();
+		
 		JSONObject jsonObject = new JSONObject();
 			
 		for(int i =0;i<chapterChapterParts.size();i++) {
-			JSONObject jsonObject2 = new JSONObject();
-				
-			jsonObject2.put("id", chapterChapterParts.get(i).getChapterPart().getId());
 			
-			if(chapterChapterParts.get(i).getChapterPart().getPicture()!=null) {
-				jsonObject2.put("pictureId",  chapterChapterParts.get(i).getChapterPart().getPicture().getId());
-				jsonObject2.put("pictureLocation",  chapterChapterParts.get(i).getChapterPart().getPicture().getFileLocation());
-			}
-			
-			jsonObject2.put("english_text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
-			jsonObject2.put("chinese_text",  chapterChapterParts.get(i).getChapterPart().getChinese_text());
-			jsonObject2.put("dutch_text",  chapterChapterParts.get(i).getChapterPart().getDutch_text());
-				
-			jsonObject.put(i+"", jsonObject2);
+			chapterParts.add(chapterChapterParts.get(i).getChapterPart());
+//			JSONObject jsonObject2 = new JSONObject();
+//				
+//			jsonObject2.put("id", chapterChapterParts.get(i).getChapterPart().getId());
+//			
+//			if(chapterChapterParts.get(i).getChapterPart().getPicture()!=null) {
+//				jsonObject2.put("pictureId",  chapterChapterParts.get(i).getChapterPart().getPicture().getId());
+//				jsonObject2.put("pictureLocation",  chapterChapterParts.get(i).getChapterPart().getPicture().getFileLocation());
+//			}
+//			
+//			jsonObject2.put("english_text",  chapterChapterParts.get(i).getChapterPart().getEnglish_text());
+//			jsonObject2.put("chinese_text",  chapterChapterParts.get(i).getChapterPart().getChinese_text());
+//			jsonObject2.put("dutch_text",  chapterChapterParts.get(i).getChapterPart().getDutch_text());
+//				
+//			jsonObject.put(i+"", jsonObject2);
 		}
-			
+		//get chapter
+		Chapter chapter = chapterRepository.getOne(chapterId); 
+		
+		//get Course
+		Course course = get(chapter.getCourseId());
+		
+		if(course == null) {
+			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
+		}
+		
+		jsonObject.put("content", chapterParts);
+		jsonObject.put("chapterId", chapter.getId());
+		jsonObject.put("chapterTitle", chapter.getEnglish_title());
+		jsonObject.put("courseId", course.getId());
+		jsonObject.put("courseName", course.getEnglish_name());
+		
 		return jsonObject.toString();
 			
 	}
