@@ -388,6 +388,10 @@ public class UserService extends GenericService<User, Long> {
 		//when user choose one course and chapters of this course, the date should be 0
 		//when he finish this chapter, we can set the value of the date
 		long date = 0;
+		
+		if(comment == null) {
+			comment = "";
+		}
 			
 		UserChapter userChapter = new UserChapter(user,chapter,teacher,date,passedOrNot,score,comment);
 			

@@ -348,13 +348,7 @@ public class MomentService extends GenericService<Moment, Long>{
 	public String getMomentPartWithIdWeb(long id) throws RequestException{
 		
 		List<MomentPart> momentParts=  momentPartRepository.getMomentPart(id);
-		
-//		JSONObject jsonObject = new JSONObject();
-//		
-//		for(int i =0;i<momentParts.size();i++) {
-//			jsonObject.put(i+"",momentParts.get(i));
-//		}
-//		
+
 		JSONObject jsonObject2 = new JSONObject();
 		
 		Moment moment = get(id);
@@ -363,7 +357,7 @@ public class MomentService extends GenericService<Moment, Long>{
 			throw new RequestException(Error.MOMENT_DOES_NOT_EXIST);
 		}
 		
-		User user = userRespository.findOne(id);
+		User user = userRespository.findOne(moment.getUser().getId());
 		
 		if(user == null) {
 			throw new RequestException(Error.USER_DOES_NOT_EXIST);
@@ -374,6 +368,7 @@ public class MomentService extends GenericService<Moment, Long>{
 		jsonObject2.put("momentTitle", moment.getTitle());
 		jsonObject2.put("userId", user.getId());
 		jsonObject2.put("userName", user.getUsername());
+		jsonObject2.put("userName", user.getNickname());
 		
 		return jsonObject2.toString();
 	}
