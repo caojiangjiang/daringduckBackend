@@ -9,8 +9,8 @@ var currentPage = 0;
 var prevPage=0;
 
 /*used to text picture uploading*/
-var imgPath="http://203.195.147.70:8080/daringduckBackend/api/pictures/";
-//var imgPath="http://localhost:8080/daringduckBackend/api/pictures/";
+//var imgPath="http://203.195.147.70:8080/daringduckBackend/api/pictures/";
+var imgPath="http://localhost:8080/daringduckBackend/api/pictures/";
 
 // If there is no token, login first
 if (token == null) {
@@ -89,7 +89,8 @@ function formatDateTime(timeStamp) {
     var second = date.getSeconds();    
     minute = minute < 10 ? ('0' + minute) : minute;      
     second = second < 10 ? ('0' + second) : second;     
-    return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;      
+    //return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second; 
+    return y + '-' + m + '-' + d; 
 }
 
 function isEmptyObject(obj){
@@ -592,7 +593,7 @@ function showAdd(pageInfo, objectId, props) {
 			date_val=formatDateTime(val);
 		}
 		var input = $('<div class="control-group">'
-						+'<div class="controls date form_datetime" data-date="2010-01-01T00:00:00Z"  data-link-field="date_val">'
+						+'<div class="controls date form_date" data-date="" data-date-format="yyyy-mm-dd" data-link-format="yyyy-mm-dd" data-link-field="date_val">'
 							+'<input class="form-control" size="16" type="text" value="'+date_val+'" style="border-radius: 0 5px 5px 0;" readonly>'
 							+'<span style="position:absolute;left: 50px;top: 20px;" class="add-on"><i class="icon-remove"></i></span>'
 							+'<span style="position:absolute;left: 50px;top: 20px;" class="add-on"><i class="icon-th"></i></span>'
@@ -765,16 +766,15 @@ function showAdd(pageInfo, objectId, props) {
 				fillSelect(field.name,field.list, field.optionText, object != undefined && object[field.name] != undefined ? object[field.name].id : 0);
 			
 			/*call the datepicker*/
-			$('.form_datetime').datetimepicker({
-		        //language:  'fr',
-		        format: 'yyyy-mm-dd hh:ii',
+			$('.form_date').datetimepicker({
+		        language:  'fr',
 		        weekStart: 1,
 		        todayBtn:  1,
-				autoclose: 1,
-				todayHighlight: 1,
-				startView: 2,
-				forceParse: 0,
-		        showMeridian: 1
+		        autoclose: 1,
+		        todayHighlight: 1,
+		        startView: 2,
+		        minView: 2,
+		        forceParse: 0
 		    });
 		}
 		$(document).on("click","input[type='file']",function(e){
@@ -880,11 +880,15 @@ function edit(pageInfo, id, props) {
 				}, fail);
 	}
 	else if(pageInfo.path.replaceWildcards(props).indexOf("users/getUserChapter/")>=0){
-		console.log($('#data_val').val());
+		console.log($("#data_field").val());
 		/*if($('#data_val').val()==undefined){
 			console.log("yesssssssssss");
 		}*/
 		dateToStamp("date_val","date_field");
+		if($("input[name='date']").val()==0){
+			alert("Please fill date filed first!");
+			return;
+		}
 		data = $("form#add").serialize();
 		console.log(data);
 		path="users/changeUserChapter";
@@ -924,11 +928,30 @@ function edit(pageInfo, id, props) {
  * @param props
  */
 function del(pageInfo, id, props) {
-	communityBuilder.del(id, pageInfo.path.replaceWildcards(props), function() {
-		loadPage(pageInfo, currentPage, props)
-	}, fail);
+	console.log(pageInfo)
+	var result=confirm("Delete this "+pageInfo.nameSingular+"?");
+	if(result==true){
+		communityBuilder.del(id, pageInfo.path.replaceWildcards(props), function() {
+			loadPage(pageInfo, currentPage, props)
+		}, fail);
+	}
 }
-
+function deleteMomentPart(momentId,momentPartId) {
+	var result=confirm("Delete this moment paragragh?");
+	if(result==true){
+		communityBuilder.del(momentPartId, "moments/deleteMomentPart", function() {
+			showEditMoment(momentId);
+		}, fail);
+	}
+}
+function deleteChapterPart(courseId,chapterId,chapterPartId){
+	var result=confirm("Delete this chapter Part?");
+	if(result==true){
+		communityBuilder.del(chapterPartId, 'courses/deleteChapterPart/'+chapterId+'/parts', function() {
+			showEditChapterPart(courseId,chapterId);
+		}, fail);
+	}
+}
 //
 // Change Password
 //
@@ -1024,15 +1047,21 @@ function addUserCourse(courseId, userId) {
 //
 
 function showEditMoment(momentId,userId) {
+	console.log(userId+"!!!!!!");
 	$(".main")
 			.load(
 					"pages/editmoment.html",
 					function() {
 						var done = function(moment) {
 							console.log(moment);
-							console.log(moment.length);
-							var total=moment.length+1;
-							$.each(moment,function(index, momentPart) {
+							console.log(moment.content.length);
+							var total=moment.content.length+1;
+							$('.whereComeFrom').text(
+									'userId:'
+									+moment.userId+' /user nickname: '
+									+moment.userName+' /moment title: '
+									+moment.momentTitle);
+							$.each(moment.content,function(index, momentPart) {
 											var picId;
 											var imagePart;
 											if(momentPart.picture==null){
@@ -1065,14 +1094,20 @@ function showEditMoment(momentId,userId) {
 														+'</div>'
 													+'</div>'
 													+'<div class="btn-bar">'
-														+'<input type="button" onclick="editStyle('
+														+'<button onclick="deleteMomentPart('
+														+momentId+','
+														+momentPart.id
+														+')" type="button" class="btn btn-danger">'
+														+'<i class="fa fa-close"></i> Delete</button>'
+														+'<button onclick="editStyle('
 														+userId+','
 														+momentId+','
 														+momentPart.id+','
 														+(index+1)+','
 														+'88'+','
 														+picId
-														+')" value="edit" class="btn btn-primary"/>'				
+														+')" type="button" class="btn btn-primary">'
+														+'<i class="fa fa-edit"></i> Edit</button>'
 													+'</div>'
 												+'</form>'
 										);
@@ -1086,7 +1121,7 @@ function showEditMoment(momentId,userId) {
 									});
 							$("#momentReturn").on("click",function(){
 								loadPage(items.userMoments,0,{
-									'userId' : userId
+									'userId' :userId
 								})
 							})
 							$('#addParagraph').append(
@@ -1100,19 +1135,18 @@ function showEditMoment(momentId,userId) {
 										+'</div>'
 									+'</div>'
 									+'<div class="col-sm-6">'
-										+'<div class="input-group">'
+										+'<div class="input-group picBar momentPic">'
 											+'<input type="file" class="form-control post-file" name="file" />'
 											+'<input type="button" onclick="uploadImage('+(total)+',\'user\','+(userId)+','+(momentId)+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
 											+'<span id="picId'+(total)+'" style="display:none;"></span>'
-											+'<img class="imgBar" width="100%;">'
+											+'<img class="imgBar" width="100%;" style="height:260px">'
 										+'</div>'
 									+'</div>'
 								+'</div>'
 								+'<div class="btn-bar">'
-									+'<input type="button" onclick="" value="cancel" class="btn btn-primary"/>'
-									+'<input type="button" onclick="addMomentPart('
+									+'<button onclick="addMomentPart('
 									+momentId+","+total
-									+')" value="submit" class="btn btn-primary"/>'							
+									+')" type="button" class="btn btn-success"><i class="fa fa-check-square-o"></i> Submit</button>'							
 								+'</div>'
 							+'</form>'
 								)
@@ -1179,23 +1213,72 @@ function uploadImage(index,type,typeId,subId) {
 		sub='chapter';
 	
 	var form = new FormData();
-	form.append('file',$('#paragraph'+index+' .post-file')[0].files[0]);
-	form.append('type',type);
-	form.append('id',type+'_'+typeId);
-	form.append('subDirectory',sub+'_'+subId);
-	
-	var done = function(data) {
-		console.log(data);
-		alert("upload successfully");
-		$("#picId"+index).val(data.id);	
-		if(type=='user')
-			$('#paragraph'+(index)+' .imgBar').attr('src',imgPath+data.id);
-		else
-			$('.imgBar').attr('src',imgPath+data.id);
-	}
-	
-
-	communityBuilder.uploadImage(form, done, fail);
+	oFile=$('#paragraph'+index+' .post-file')[0].files[0];
+	fileType = oFile.type;
+	imgSize=oFile.size;
+	console.log(imgSize);
+	if(imgSize < 256 * 1024){
+		form.append('file',$('#paragraph'+index+' .post-file')[0].files[0]);
+		form.append('type',type);
+		form.append('id',type+'_'+typeId);
+		form.append('subDirectory',sub+'_'+subId);
+		console.log(form);
+		
+		var done = function(data) {
+			console.log(data);
+			alert("upload successfully");
+			$("#picId"+index).val(data.id);	
+			if(type=='user')
+				$('#paragraph'+(index)+' .imgBar').attr('src',imgPath+data.id);
+			else
+				$('.imgBar').attr('src',imgPath+data.id);
+		}
+		communityBuilder.uploadImage(form, done, fail);
+    } 
+	else{
+		console.log("pic resize");
+		var fileReader   = new FileReader();
+		fileReader.readAsDataURL(oFile);
+		fileReader.onload = function(event){
+			var result = event.target.result;   //返回的dataURL
+			var image = new Image();
+			image.src = result;
+			image.onload = function(){  //创建一个image对象，给canvas绘制使用
+				var cvs = document.createElement('canvas');
+				var scale = 1;  
+				if(this.width > 1280 || this.height > 1000){  //1000只是示例，可以根据具体的要求去设定  
+					if(this.width > this.height){  
+						scale = 1280 / this.width;
+					}else{  
+						scale = 1000 / this.height;  
+					}  
+				}
+				cvs.width = this.width*scale;  
+    			                cvs.height = this.height*scale;     //计算等比缩小后图片宽高
+				var ctx = cvs.getContext('2d');  
+				ctx.drawImage(this, 0, 0, cvs.width, cvs.height);   
+                var newImageData = cvs.toDataURL(fileType, 0.8);   //重新生成图片，<span style="font-family: Arial, Helvetica, sans-serif;">fileType为用户选择的图片类型</span>
+				var blob = dataURLtoBlob(newImageData);
+				form.append('file',blob);
+				form.append('type',type);
+				form.append('id',type+'_'+typeId);
+				form.append('subDirectory',sub+'_'+subId);
+				console.log(form);
+				
+				var done = function(data) {
+					console.log(data);
+					alert("upload successfully");
+					$("#picId"+index).val(data.id);	
+					if(type=='user')
+						$('#paragraph'+(index)+' .imgBar').attr('src',imgPath+data.id);
+					else
+						$('.imgBar').attr('src',imgPath+data.id);
+				}
+				communityBuilder.uploadImage(form, done, fail);
+			}
+			
+		}
+	}	
 }
 
 function uploadUserImage(userId) {
@@ -1261,20 +1344,22 @@ function editStyle(userId,momentId,momentPartId,index,text,picture){
 			+'<img class="imgBar" src="'+imgPath+picture+'" width="100%" style="height:260px">');
 		
 	$('#paragraph'+index+' .btn-bar').html(
-			'<input type="button" onclick="noEditStyle('
+			'<button onclick="noEditStyle('
 			+userId+','
 			+momentId+','
 			+momentPartId+','
 			+index+','
 			+text+','
 			+picture
-			+')" value="cancel" class="btn btn-primary"/>'
-			+'<input type="button" onclick="changeMomentPart('
+			+')" type="button" class="btn btn-primary">'
+			+'<i class="fa fa-reply"></i> Cancel</button>'
+			+'<button onclick="changeMomentPart('
 			+momentId+','
 			+momentPartId
 			+','
 			+(index)
-			+')" value="submit" class="btn btn-primary"/>');
+			+')" type="button" class="btn btn-success">'
+			+'<i class="fa fa-check-square-o"></i> Submit</button>');
 	
 }
 function noEditStyle(userId,momentId,momentPartId,index,text,picture){
@@ -1284,14 +1369,22 @@ function noEditStyle(userId,momentId,momentPartId,index,text,picture){
 			+imgPath+picture
 			+'" width="100%;"/>');
 	$('#paragraph'+index+' .btn-bar').html(
-			'<input type="button" onclick="editStyle('
+			'<button onclick="deleteMomentPart('
+			/*+userId+','
+			+momentId+','
+			+momentPart.id+','
+			+(index+1)+','*/
+			+')" type="button" class="btn btn-danger">'
+			+'<i class="fa fa-close"></i> Delete</button>'
+			+'<button onclick="editStyle('
 			+userId+','
 			+momentId+','
 			+momentPartId+','
 			+(index)+','
 			+text+','
 			+picture
-			+')" value="edit" class="btn btn-primary"/>');
+			+')" type="button" class="btn btn-primary">'
+			+'<i class="fa fa-edit"></i> Edit</button>');
 }
 
 
@@ -1320,17 +1413,23 @@ function showEditChapterPart(courseId,chapterId) {
 						var count=-1;
 						var done = function(chapterParts) {
 							console.log(chapterParts);
-							console.log(chapterParts.length);
-							var total=chapterParts.length+1;
-							$.each(chapterParts,function(index, chapterPart) {
+							console.log(chapterParts.content.length);
+							var total=chapterParts.content.length+1;
+							$('.whereComeFrom').text(
+									'course id:'
+									+chapterParts.courseId
+									+' /course name: '
+									+chapterParts.courseName+' /chapter title: '
+									+chapterParts.chapterTitle);
+							$.each(chapterParts.content,function(index, chapterPart) {
 								var picId;
 								count=index;
-								picId=chapterPart.pictureId;
-								/*if(chapterPart.picture==null){
+								//picId=chapterPart.picture.id;
+								if(chapterPart.picture==null){
 									picId="#";}
 								else{
 									picId=chapterPart.picture.id;
-								}*/
+								}
 								index=parseInt(index);
 								$('#chapter-content').append(
 										'<form class="paragraph" id="paragraph'+(index+1)+'">'										
@@ -1378,21 +1477,37 @@ function showEditChapterPart(courseId,chapterId) {
 												+'" width="100%;"/>'
 											+'</div>'
 										+'</div>'
+										+'</div><br>'
+										+'<div class="row">'
+											+'<div class="col-sm-6">'
+												+'<div class="input-group">'
+													+'<span class="input-group-addon">Course</span>'
+													+'<select class="form-control" name="courseId"></select>'
+												+'</div>'
+											+'</div>'
 										+'</div>'
 										+'<div class="btn-bar">'
-											+'<input type="button" onclick="editChapterStyle('
+											+'<button onclick="deleteChapterPart('
+											+courseId+','
+											+chapterId+','
+											+chapterPart.id
+											+')" type="button" class="btn btn-danger">'
+											+'<i class="fa fa-close"></i> Delete</button>'
+											+'<button onclick="editChapterStyle('
 											+courseId+','
 											+chapterId+','
 											+chapterPart.id+','
 											+(index+1)+','
 											+'88'+','
 											+picId
-											+')" value="edit" class="btn btn-primary"/>'	
-											+'<input type="button" onclick="addNewChapter('
+											+')" type="button" class="btn btn-primary">'
+											+'<i class="fa fa-edit"></i> Edit</button>'
+											+'<button onclick="addNewChapter('
 											+courseId+','
 											+chapterId+','
 											+(index+1)
-											+')" value="add" class="btn btn-primary"/>'
+											+')" type="button" class="btn btn-primary">'
+											+'<i class="fa fa-plus"></i> Add</button>'
 										+'</div>'
 									+'</form>'
 								);
@@ -1446,12 +1561,21 @@ function showEditChapterPart(courseId,chapterId) {
 													+'<img class="imgBar" width="100%;">'
 												+'</div>'
 											+'</div>'
+										+'</div><br>'
+										+'<div class="row">'
+											+'<div class="col-sm-6">'
+												+'<div class="input-group">'
+													+'<span class="input-group-addon">Course</span>'
+													+'<select class="form-control" name="courseId"></select>'
+												+'</div>'
+											+'</div>'
 										+'</div>'
 										+'<div class="btn-bar">'
-											+'<input type="button" onclick="addChapterPart('
+											+'<button onclick="addChapterPart('
 											+courseId+","
 											+chapterId+","+1
-											+')" value="submit" class="btn btn-primary"/>'							
+											+')" type="button" class="btn btn-success">'
+											+'<i class="fa fa-check-square-o"></i> Submit</button>'							
 										+'</div>'
 									+'</form>'
 								);
@@ -1500,15 +1624,25 @@ function addNewChapter(courseId,chapterId,index){
 						+'<img class="imgBar" width="100%;">'
 					+'</div>'
 				+'</div>'
+			+'</div><br>'
+			+'<div class="row">'
+				+'<div class="col-sm-6">'
+					+'<div class="input-group">'
+						+'<span class="input-group-addon">Course</span>'
+						+'<select class="form-control" name="courseId"></select>'
+					+'</div>'
+				+'</div>'
 			+'</div>'
 			+'<div class="btn-bar">'
-				+'<input type="button" onclick="cancelAddChapterPart('
+				+'<button onclick="cancelAddChapterPart('
 				+chapterId+","+(index+1)
-				+')" value="cancel" class="btn btn-primary"/>'
-				+'<input type="button" onclick="addChapterPart('
+				+')" type="button" class="btn btn-primary">'
+				+'<i class="fa fa-reply"></i> Cancel</button>'
+				+'<button onclick="addChapterPart('
 				+courseId+","
 				+chapterId+","+(index+1)
-				+')" value="submit" class="btn btn-primary"/>'							
+				+')" type="button" class="btn btn-success">'
+				+'<i class="fa fa-check-square-o"></i> Submit</button>'
 			+'</div>'
 		+'</form>'
 			);
@@ -1554,20 +1688,22 @@ function editChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){
 			+imgPath+picture+'" width="100%;"/>');
 			
 	$('#paragraph'+index+' .btn-bar').html(
-			'<input type="button" onclick="noEditChapterStyle('
+			'<button onclick="noEditChapterStyle('
 			+courseId+','
 			+chapterId+','
 			+chapterPartId+','
 			+index+','
 			+text+','
 			+picture
-			+')" value="cancel" class="btn btn-primary"/>'
-			+'<input type="button" onclick="changeChapterPart('
+			+')" type="button" class="btn btn-primary">'
+			+'<i class="fa fa-reply"></i> Cancel</button>'
+			+'<button onclick="changeChapterPart('
 			+courseId+','
 			+chapterId+','
 			+chapterPartId+','
 			+(index)
-			+')" value="submit" class="btn btn-primary"/>');
+			+')" type="button" class="btn btn-success">'
+			+'<i class="fa fa-check-square-o"></i> Submit</button>');
 	
 }
 function noEditChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){
@@ -1578,19 +1714,21 @@ function noEditChapterStyle(courseId,chapterId,chapterPartId,index,text,picture)
 			+imgPath+picture
 			+'" width="100%;"/>');
 	$('#paragraph'+index+' .btn-bar').html(
-			'<input type="button" onclick="editChapterStyle('
+			'<button onclick="editChapterStyle('
 			+courseId+','
 			+chapterId+','
 			+chapterPartId+','
 			+(index)+','
 			+text+','
 			+picture
-			+')" value="edit" class="btn btn-primary"/>'
-			+'<input type="button" onclick="addNewChapter('
+			+')" type="button" class="btn btn-primary">'
+			+'<i class="fa fa-edit"></i> Edit</button>'
+			+'<button onclick="addNewChapter('
 			+chapterId+','
 			+chapterPartId+','
 			+(index)
-			+')" value="add" class="btn btn-primary"/>');
+			+')" type="button" class="btn btn-primary">'
+			+'<i class="fa fa-plus"></i> Add</button>');
 }
 function changeChapterPart(courseId,chapterId,chapterPartId,index){
 	//var text = $('#paragraph'+index+' .text_content').val();
@@ -1711,10 +1849,12 @@ function formReturnPage(pageType,props){
 		loadPage(items.userMoments,currentPage,{'userId': props.userId});
 	if(pageType=="userCourses")
 		loadPage(items.userCourses,currentPage,{'userId': props.userId});
+	if(pageType=="userChapters")
+		loadPage(items.userChapters,currentPage,{'userId': props.userId,'courseId': props.courseId});
 	if(pageType=="courses")
 		loadPage(items.courses,currentPage);
 	if(pageType=="chapters")
-		loadPage(items.chapters,currentPage,{'courseId': props.couseId});
+		loadPage(items.chapters,currentPage,{'courseId': props.courseId});
 	if(pageType=="classes")
 		loadPage(items.classes,currentPage);
 	if(pageType=="clubs")

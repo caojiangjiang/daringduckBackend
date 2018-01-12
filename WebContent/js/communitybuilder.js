@@ -181,7 +181,7 @@ CommunityBuilder.prototype.uploadImage = function(data, done, fail) {
 CommunityBuilder.prototype.getMomentPart = function(id, resource, done, fail) {
 	$.ajax({
 		type : "GET",
-		url : "api/" + resource + "/" + id+ "/get",
+		url : "api/" + resource + "/" + id+ "/getMomentPartWeb",
 		headers : {
 			'auth-token' : this.token
 		},

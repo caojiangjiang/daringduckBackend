@@ -169,6 +169,7 @@ items = {
 		nameSingular : "chapter",
 		editable: true,
 		returnable:true,
+		deleteable : true,
 		//addable:false,
 		fields : [ { 
 			name : 'english_title',
@@ -193,16 +194,22 @@ items = {
 			}  ]
 		}],
 		buttons : [  
+		 /*{
+			color : 'danger',
+			action : "deleteChapter()",
+			icon : "close",
+			text : "Delete"
+		},*/{
+			color : 'primary',
+			action : "addChapter(%courseId%,%id%)",
+			icon : "edit",
+			text : "Add"
+		},
 		{
 			color : 'success',
 			action : "showEditChapterPart(%courseId%,%id%)",
 			icon : "check",
 			text : "Show"
-		},{
-			color : 'primary',
-			action : "addChapter(%courseId%,%id%)",
-			icon : "edit",
-			text : "Add"
 		}
 	]	
 	},
@@ -212,11 +219,12 @@ items = {
 		nameSingular : "moment",
 		editable : true,
 		returnable:true,
+		deleteable : true,
 		fields : [ {
 			name : 'title',
 			type : 'text'
 		}, {
-			name : 'privacy',
+			name : 'privacyName',
 			type : 'select',
 			options : [ {
 				name : 'Public',
@@ -231,16 +239,16 @@ items = {
 				name : 'Private',
 				value : 'PRIVATE'
 			} ]
-		}/*,{
+		},{
 			name:'eventDate',
 			type:'date'
-		}*/ ],
-		buttons : [  {
+		} ],
+		buttons : [  /*{
 				color : 'danger',
-				action : "hideMoment(%id%)",
+				action : "deleteMoment(%id%)",
 				icon : "close",
-				text : "Hide"
-			},
+				text : "Delete"
+			},*/
 			{
 				color : 'success',
 				action : "showEditMoment(%id%,%userId%)",
@@ -252,7 +260,7 @@ items = {
 	userCourses : {
 		path : "users/getUserCourse/%userId%",
 		name : "userCourses",
-		nameSingular : "userCourses",
+		nameSingular : "userCourse",
 		editable : true,
 		returnable:true,
 		addFunction : 'loadPage(items.userAvailableCourses, 0, {userId: %userId%})',
@@ -291,7 +299,7 @@ items = {
 	userAvailableCourses: {
 		path : "courses",
 		name : "availableCourses",
-		nameSingular : "availableCourses",
+		nameSingular : "availableCourse",
 		addable : false,
 		returnable:true,
 		buttons : [ {
@@ -304,7 +312,7 @@ items = {
 	userChapters : {
 		path : "users/getUserChapter/%userId%/%courseId%",
 		name : "userChapters",
-		nameSingular : "userChapters",
+		nameSingular : "userChapter",
 		editable : true,
 		addable:false,
 		returnable:true,

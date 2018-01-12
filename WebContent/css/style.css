@@ -155,9 +155,14 @@ tr.disabled {
 	margin:10px 15px 0 0;
 	float:right;
 }
-.btn-bar input[type="button"]
+.btn-bar input[type="button"],.btn-bar button
 {
 	margin-left:20px;
+}
+.container{
+	padding-left: 0px;
+	width:100%;
+	position: relative;
 }
 .paragraph{
 	overflow:hidden;
@@ -192,4 +197,11 @@ tr.disabled {
 }
 .language-button li{
 	display:inline-block;
+}
+.whereComeFrom{
+	position:absolute;
+	top:10px;
+	right:15px;
+	color: #999;
+    font-size: 15px;	
 }
