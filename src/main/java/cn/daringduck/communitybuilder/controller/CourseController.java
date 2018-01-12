@@ -1,4 +1,6 @@
 package cn.daringduck.communitybuilder.controller;
+import java.util.List;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -84,6 +86,18 @@ public class CourseController extends GenericController {
 	public Response course(@PathParam("id") int id,@QueryParam("type") int type) throws RequestException {
 		String course = courseService.getCourse(id,type);
 		return Response.status(Response.Status.OK).entity(course).build();
+	}
+	
+	/**
+	 * Get the course with id for app
+	 * @throws RequestException 
+	 */
+	@GET
+	@Path("/allCourse")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response course() throws RequestException {
+		List<Course> courses = courseService.allCourse();
+		return Response.status(Response.Status.OK).entity(courses).build();
 	}
 	
 	/**

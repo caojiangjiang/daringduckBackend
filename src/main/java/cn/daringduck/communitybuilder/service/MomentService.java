@@ -373,4 +373,8 @@ public class MomentService extends GenericService<Moment, Long>{
 		return jsonObject2.toString();
 	}
 	
+	
+//	public boolean deleteMomentPart(long momentId) {
+//		
+//	}
 }

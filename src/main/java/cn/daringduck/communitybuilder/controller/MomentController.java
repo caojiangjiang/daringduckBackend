@@ -245,16 +245,16 @@ public class MomentController extends GenericController {
 		return Response.status(Response.Status.OK).entity(momentPart).build();
 	}
 	
-	/**
-	 * delete momentsPart
-	 */
-	@DELETE
-	@Path("/deleteMomentPart/{id: [0-9]*}")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response deleteMomentPart(@HeaderParam("Auth-Token") String token, @PathParam("id") long id) {
-		//Moment moment = momentService.deleteMomentPart(id);
-		return Response.status(Response.Status.OK).build();
-	}
+//	/**
+//	 * delete momentsPart
+//	 */
+//	@DELETE
+//	@Path("/deleteMomentPart/{id: [0-9]*}")
+//	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+//	public Response deleteMomentPart(@HeaderParam("Auth-Token") String token, @PathParam("id") long id) {
+//		Moment moment = momentService.deleteMomentPart(id);
+//		return Response.status(Response.Status.OK).build();
+//	}
 	
 	public void  name() {
 		

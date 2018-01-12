@@ -156,7 +156,19 @@ public class UserService extends GenericService<User, Long> {
 			picture = pictureRepository.getPictureById(pictureId);
 		}
 		
-		User user = new User(username, "", gender == 2, nickname, phone, wechat, email, role, picture, club, null);	
+		if(nickname == null)
+			nickname = "";
+		
+		if(phone == null)
+			phone = "";
+		
+		if(wechat == null)
+			wechat = "";
+		
+		if(email == null)
+			email = "";
+		
+		User user = new User(username, password, gender == 2, nickname, phone, wechat, email, role, picture, club, null);	
 
 		String passwordHash = passwordSecurity.hash(password.toCharArray());
 

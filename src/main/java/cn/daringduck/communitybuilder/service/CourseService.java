@@ -88,6 +88,7 @@ public class CourseService extends GenericService<Course, Integer> {
 	 * get list of Course By page
 	 * 
 	 * @param page
+	 * @param type
 	 * @return String
 	 * */
 	
@@ -151,6 +152,14 @@ public class CourseService extends GenericService<Course, Integer> {
 		}
 	}
 	
+	/**
+	 * get list of Course 
+	 * 
+	 * @return List
+	 * */
+	public List<Course> allCourse(){
+		return courseRepository.findAll();
+	}
 	
 	/**
 	 * Get courses By courseName
