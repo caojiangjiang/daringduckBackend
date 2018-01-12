@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "chapter_chapterPart")
+@Table(name = "chapter_chapterpart")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ChapterChapterPart {
 	
