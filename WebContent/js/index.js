@@ -54,27 +54,6 @@ String.prototype.replaceWildcards = function(wildcards) {
 	return str;
 }
 /*datestamp to format like yyyy-MM-dd h:m:s*/
-Date.prototype.format = function(format) {
-    var date = {
-           "M+": this.getMonth() + 1,
-           "d+": this.getDate(),
-           "h+": this.getHours(),
-           "m+": this.getMinutes(),
-           "s+": this.getSeconds(),
-           "q+": Math.floor((this.getMonth() + 3) / 3),
-           "S+": this.getMilliseconds()
-    };
-    if (/(y+)/i.test(format)) {
-           format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
-    }
-    for (var k in date) {
-           if (new RegExp("(" + k + ")").test(format)) {
-                  format = format.replace(RegExp.$1, RegExp.$1.length == 1
-                         ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
-           }
-    }
-    return format;
-}
 function formatDateTime(timeStamp) {   
     var date = new Date();  
     date.setTime(timeStamp * 1000);  
@@ -180,33 +159,8 @@ function generateTable(pageInfo, page, props) {
 	if (data.length == 0)
 		return;
 	if(!isEmptyObject(data) && pageInfo.name=='chapters'){
-	 	console.log(data.length+"yeshide");
 		$('.add-button').hide();
 	}
-	//Generate the language bar
-	/*if(!pageInfo.language)
-	{
-		$('.language-button').hide();
-	}
-	else
-	{
-		$('.language-button').append(
-			'<li id="lang-en">English</li>/<li id="lang-ch">简体中文</li>/<li id="lang-ne">Nederlands</li>');
-		$('#lang-en').on('click',function(){
-			enFlag=true;chFlag=false;Neflag=false;
-			console.log("en");
-			getColumnNames();
-		});
-		$('#lang-ch').on('click',function(){
-			enFlag=false;chFlag=true;Neflag=false;
-			getColumnNames();
-		});
-		$('#lang-ne').on('click',function(){
-			enFlag=false;chFlag=false;Neflag=true;
-			getColumnNames();
-		});
-	}*/
-	// Generate the table
 
 	// Function that returns all the column names
 	var getColumnNames = function() {
@@ -849,6 +803,7 @@ function add(pageInfo, props) {
 	else{
 		path=pageInfo.path.replaceWildcards(props);
 	}
+	console.log(data);
 	communityBuilder.add(data,path,function() {
 				loadPage(pageInfo, currentPage, props)
 			}, fail);
@@ -1765,7 +1720,7 @@ function addChapter(courseId,chapterId){
 	var chapterIdList=[];
 	var flag;
 	$('#list tbody tr').each(function(index){
-		var id=parseInt($(this).children('td:first').text());
+		var id=parseInt($(this).children('td:nth-child(2)').text());
 		chapterIdList.push(id);
 		if(id==parseInt(chapterId))
 			flag=index;
@@ -1776,12 +1731,12 @@ function addChapter(courseId,chapterId){
 		})
 		$(".add").on('click',function(){
 			var data = $("form#add").serialize();	
-			console.log(data);
 			communityBuilder.addChapterStep1(courseId, data, "courses", function(data){		
 				/*insert new chapter id to the chapterid array(at "flag" position)*/
 				chapterIdList.splice(flag+1,0,data.id);
 				chapterIdList=chapterIdList.join(",");
 				var data2="lists="+chapterIdList;
+				console.log(data2);
 				communityBuilder.addChapterStep2(courseId, data2, "courses", function(data){
 					loadPage(items.chapters,0,{
 						'courseId' : courseId
