@@ -494,7 +494,7 @@ public class CourseService extends GenericService<Course, Integer> {
 			throw new RequestException(Error.COURSE_DOES_NOT_EXIST);
 		}
 		
-		if(requiredOrNot.equalsIgnoreCase("true")) {
+		if(requiredOrNot!=null&&requiredOrNot.equalsIgnoreCase("true")) {
 			chapter = new Chapter(english_title,chinese_title,dutch_title,courseId,true);
 		}
 		else {
@@ -664,10 +664,6 @@ public class CourseService extends GenericService<Course, Integer> {
 
 		//get the picture By pictureId
 		Picture picture = pictureRepository.findOne(pictureId);
-		
-		if (picture == null) {
-			throw new RequestException(Error.PICTURE_DOES_NOT_EXIST);
-		}
 		
 		Chapter chapter = chapterRepository.findOne(chapterId);
 		

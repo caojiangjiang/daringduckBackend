@@ -91,14 +91,14 @@ public class MomentController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response addMoment(@HeaderParam("Auth-Token") String token,
-			@FormParam("title") String title, @FormParam("privacy") String privacy,
+			@FormParam("title") String title, @FormParam("privacyName") String privacy,
 			@FormParam("eventDate") String eventDate) throws RequestException {
 		
 		secure(token, "*");
 		
 		User user = userService.findUserByAuthToken(token);
 		
-		Moment moment = momentService.addUserMoment(user, title, privacy,eventDate);
+		Moment moment = momentService.addUserMoment(user.getId(), title, privacy,eventDate);
 		
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}

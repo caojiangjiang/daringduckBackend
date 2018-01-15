@@ -9,8 +9,8 @@ var currentPage = 0;
 var prevPage=0;
 
 /*used to text picture uploading*/
-//var imgPath="http://203.195.147.70:8080/daringduckBackend/api/pictures/";
-var imgPath="http://localhost:8080/daringduckBackend/api/pictures/";
+var imgPath="http://203.195.147.70:8080/daringduckBackend/api/pictures/";
+//var imgPath="http://localhost:8080/daringduckBackend/api/pictures/";
 
 // If there is no token, login first
 if (token == null) {

@@ -75,8 +75,10 @@ public class MomentService extends GenericService<Moment, Long>{
 		return momentRepository.findByUser(user, new PageRequest(page, PAGE_SIZE));
 	}
 
-	public Moment addUserMoment(User user, String title, String privacyName, String eventDate) throws RequestException {
+	public Moment addUserMoment(long userId, String title, String privacyName, String eventDate) throws RequestException {
 
+		User user = userRespository.findOne(userId);
+		
 		if (user == null) {
 			throw new RequestException(Error.USER_DOES_NOT_EXIST);
 		}
@@ -163,6 +165,9 @@ public class MomentService extends GenericService<Moment, Long>{
 			throw new RequestException(Error.MOMENT_DOES_NOT_EXIST);
 		}
 		
+		if(text == null)
+			text = "";
+		
 		MomentPart momentPart = new MomentPart(part, text, picture, moment_id);
 		
 		momentPartRepository.save(momentPart);
@@ -232,7 +237,9 @@ public class MomentService extends GenericService<Moment, Long>{
 			clubValue.add(users.get(i).getId());
 		}
 		
-		Pageable pageable = new PageRequest(0, PAGE_SIZE);
+		int pageNumber = page*25;
+		
+		Pageable pageable = new PageRequest(pageNumber, PAGE_SIZE);
 		
 		List<Moment> moments = momentRepository.findByUserIdInOrderByModifiedTimeDesc(clubValue, pageable).getContent();
 		

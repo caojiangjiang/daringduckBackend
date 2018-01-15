@@ -297,7 +297,7 @@ public class UserController extends GenericController {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response addUserMoment(@HeaderParam("Auth-Token") String token,
 			@PathParam("userId") long userId,
-			@FormParam("title") String title, @FormParam("privacy") String privacy,
+			@FormParam("title") String title, @FormParam("privacyName") String privacy,
 			@FormParam("posted")long posted, @FormParam("modifiedDate")long modifiedDate,
 			@FormParam("eventDate") String eventDate) throws RequestException {
 		
@@ -307,9 +307,7 @@ public class UserController extends GenericController {
 		//Verify user identity
 		secure(token, members);
 		
-		User user = userService.get(userId);
-		
-		Moment moment = momentService.addUserMoment(user, title, privacy,eventDate);
+		Moment moment = momentService.addUserMoment(userId, title, privacy,eventDate);
 		
 		return Response.status(Response.Status.OK).entity(moment).build();
 	}

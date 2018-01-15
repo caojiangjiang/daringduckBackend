@@ -5,9 +5,6 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
-import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
-
 import cn.daringduck.communitybuilder.service.PictureService;
 import cn.daringduck.communitybuilder.service.RoleService;
 import cn.daringduck.communitybuilder.service.UserService;
@@ -58,9 +55,6 @@ public class ContextListener implements ServletContextListener {
 		context.getServletContext().setAttribute("statusService", ctx.getBean("statusService"));
 		context.getServletContext().setAttribute("roleService", roleService);
 		
-		
-//		context.getServletContext().addFilter("openSessionInViewFilter",new OpenEntityManagerInViewFilter())
-//		.addMappingForUrlPatterns(null, false, "/*");
 
 		// Add some basic data if it is not there yet
 		if (userService.getPage(0).getNumberOfElements() == 0){
