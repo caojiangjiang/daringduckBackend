@@ -1,5 +1,7 @@
 package cn.daringduck.communitybuilder.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +19,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Page<User> getUsersNotInClass(@Param("classid") int classId, Pageable pageable);
 
 	User findByUsernameIgnoreCase(String username);
+	
+	List<User> getByRoleIdIn(List<Integer> value); 
+	
+	List<User> findByClubId(int clubId);
+	
+	@Query(value = "select u from User u where upper(u.nickname) like %?2% and upper(u.nickname)!=?1")
+	List<User> findAllByNicknameLike(String username,String nickName);
 	
 }

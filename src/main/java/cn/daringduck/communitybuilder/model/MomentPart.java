@@ -4,12 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -26,7 +23,7 @@ public class MomentPart {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	private long moment_Id;
+	private long momentId;
 	private int part;
 	
 	private String text;
@@ -34,11 +31,11 @@ public class MomentPart {
 	
 	public MomentPart() { }
 	
-	public MomentPart(int part, String text, Picture picture,long moment_Id) {
+	public MomentPart(int part, String text, Picture picture,long momentId) {
 		this.part = part;
 		this.text = text;
 		this.picture = picture;
-		this.moment_Id = moment_Id;
+		this.setMomentId(momentId);
 	}
 	
 	public int getPart() { return part; }
@@ -49,14 +46,6 @@ public class MomentPart {
 	
 	public Picture getPicture() { return picture; }
 	public void setPicture(Picture picture) { this.picture = picture; }
-
-	public Long getMomentId() {
-		return moment_Id;
-	}
-
-	public void setMomentId(long moment_Id) {
-		this.moment_Id = moment_Id;
-	}
 	
 	public void setId(long id) {
 		this.id = id;
@@ -67,7 +56,16 @@ public class MomentPart {
 	}
 	
 	public String toString() {
-		return this.id+","+this.moment_Id+","+this.part+","+this.text;
+		return this.id+","+this.part+","+this.text;
 	}
+
+	public long getMomentId() {
+		return momentId;
+	}
+
+	public void setMomentId(long momentId) {
+		this.momentId = momentId;
+	}
+
 	
 }

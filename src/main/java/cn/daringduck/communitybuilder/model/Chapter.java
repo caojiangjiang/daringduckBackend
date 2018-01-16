@@ -1,17 +1,13 @@
 package cn.daringduck.communitybuilder.model;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -23,133 +19,68 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Table(name = "chapters")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Chapter implements Iterable<ChapterPart>{
+public class Chapter{
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
-	@NotNull private String title;
-	@OneToOne private Chapter nextChapter;
-	@OneToOne private ChapterPart firstPart;
-	@OneToOne private ChapterPart lastPart;
+	
+	@NotNull private String english_title;
+	
+	private String chinese_title;
+	
+	private String dutch_title;
+	
+	private int courseId;
+	
+	@NotNull private boolean requiredOrNot;
 	
 	public Chapter() {}
 	
-	public Chapter(String title) {
-		this.title = title;
-	}
+	public Chapter(String english_title,String chinese_title,String dutch_title,int courseId,boolean requiredOrNot) { 
+		this.english_title = english_title;
+		this.chinese_title = chinese_title;
+		this.dutch_title = dutch_title;
+		this.courseId = courseId;
+		this.requiredOrNot = requiredOrNot; 
+	} 
 	
 	public long getId() { return id;}
 	
-	public String getTitle() { return title; }
-	public void setTitle(String title) { this.title = title; }
-	
-	protected Chapter getNextChapter() { return nextChapter; }
-	protected void setNextChapter(Chapter nextChapter) { this.nextChapter = nextChapter; }
-	
-	/**
-	 * Constructs a list from the chapter parts
-	 * @return
-	 */
-	@Transient
-	public List<ChapterPart> getChapterParts() { 		
-		List<ChapterPart> parts = new LinkedList<ChapterPart>();
-		ChapterPart part = firstPart;
+	public String getEnglish_title() { return english_title; }
+	public void setEnglish_title(String english_title) { this.english_title = english_title; }
 
-		while (part != null){
-			parts.add(part);
-			part = part.getNextPart();
-		}
-		
-		return parts;
-	}
-	
-	/**
-	 * Add a chapterPart
-	 * @param part
-	 */
-	public void addChapterPart(ChapterPart part) { 	
-		if (firstPart == null){ 
-			firstPart = part;
-		} else {
-			lastPart.setNextPart(part);
-		}
-		lastPart = part;
+
+	public boolean isRequiredOrNot() {
+		return requiredOrNot;
 	}
 
-	/**
-	 * Remove a part from the parts list
-	 * @param part
-	 * 			The part that should be removed
-	 * @return is the part found or not
-	 */
-	public boolean removeChapterPart(ChapterPart part) {
-		// If there are no items in our list
-		if (firstPart == null) {
-			return false;
-		}
-		
-		// If the item is the first one in the list
-		if (firstPart == part) {
-			firstPart = firstPart.getNextPart();
-			return true;
-		}
-		
-		ChapterPart previousPart = firstPart;
-		
-		// If it is any other item in the list
-		while (previousPart.getNextPart() != null) {
-			ChapterPart currentChapter = previousPart.getNextPart();
-			
-			// If the item we got in the loop is the item that should be removed
-			if (currentChapter == part) {
-				previousPart.setNextPart(currentChapter.getNextPart());
-				
-				// If we removed the last item reset the last variable to the previous one
-				if (currentChapter == lastPart) {
-					lastPart = previousPart;
-				}
-				
-				return true;
-			}
-			
-			previousPart = currentChapter;
-		}
-		
-		// If item wasn't in the list
-		return false;
+	public void setRequiredOrNot(boolean requiredOrNot) {
+		this.requiredOrNot = requiredOrNot;
 	}
 
-	/////////////////////////////////////
-	// CODE TO MAKE THE CLASS ITERABLE //
-	/////////////////////////////////////
-	
-	public static final class ChapterPartIterator implements Iterator<ChapterPart> {
-
-		private ChapterPart cursor;
-		
-		private ChapterPartIterator(ChapterPart firstPart){
-            this.cursor = firstPart;
-		}
-		
-		@Override
-		public boolean hasNext() {
-			return this.cursor != null;
-		}
-
-		@Override
-		public ChapterPart next() {
-            if(this.hasNext()) {
-                throw new IndexOutOfBoundsException();
-            }
-        	ChapterPart current = cursor;
-            cursor = current.getNextPart();
-            return current;
-		}
+	public String getChinese_title() {
+		return chinese_title;
 	}
-	
-	@Override
-	public Iterator<ChapterPart> iterator() {
-		return new ChapterPartIterator(firstPart);
+
+	public void setChinese_title(String chinese_title) {
+		this.chinese_title = chinese_title;
+	}
+
+	public String getDutch_title() {
+		return dutch_title;
+	}
+
+	public void setDutch_title(String dutch_title) {
+		this.dutch_title = dutch_title;
+	}
+
+	public int getCourseId() {
+		return courseId;
+	}
+
+	public void setCourseId(int courseId) {
+		this.courseId = courseId;
 	}
 	
 }

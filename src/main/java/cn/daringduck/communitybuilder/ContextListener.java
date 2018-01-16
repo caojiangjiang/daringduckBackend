@@ -5,7 +5,6 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 import cn.daringduck.communitybuilder.service.PictureService;
 import cn.daringduck.communitybuilder.service.RoleService;
 import cn.daringduck.communitybuilder.service.UserService;
@@ -56,6 +55,7 @@ public class ContextListener implements ServletContextListener {
 		context.getServletContext().setAttribute("statusService", ctx.getBean("statusService"));
 		context.getServletContext().setAttribute("roleService", roleService);
 		
+
 		// Add some basic data if it is not there yet
 		if (userService.getPage(0).getNumberOfElements() == 0){
 			roleService.addRole("user", 1);

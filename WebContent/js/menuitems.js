@@ -63,10 +63,15 @@ items = {
 			text : 'Password'
 		}, {
 			color : 'success',
-			action : 'loadPage(items.userMoments, 0, {userId: %id%})',
+			action : "loadPage(items.userMoments, 0, {'userId': %id%})",
 			icon : 'area-chart',
 			text : 'Moments'
 		}, {
+			color : 'primary',
+			action : "loadPage(items.userCourses, 0, {'userId': %id%})",
+			icon : "bars",
+			text : "Courses"
+		},{
 			condition : 'disabled',
 			wrong : {
 				color : 'danger',
@@ -81,7 +86,7 @@ items = {
 				text : "Enable"
 			}
 		} ],
-		fields : [ {
+		fields : [{
 			name : 'role',
 			type : 'select',
 			list : 'roles',
@@ -89,7 +94,8 @@ items = {
 		}, {
 			name : 'username',
 			type : 'text'
-		}, {
+		}, 
+		{
 			name : 'password',
 			type : 'password',
 			noedit : true
@@ -98,10 +104,10 @@ items = {
 			type : 'select',
 			options : [ {
 				name : 'Male',
-				value : 1
+				value : 2
 			}, {
 				name : 'Female',
-				value : 2
+				value : 1
 			} ]
 		}, {
 			name : 'nickname',
@@ -134,12 +140,22 @@ items = {
 		name : "courses",
 		nameSingular : "course",
 		icon : 'graduation-cap',
+		language:true,
 		menu : true,
 		editable : true,
 		fields : [ {
-			name : 'name',
+			name : 'english_name',
 			type : 'text'
-		} ],
+		} ,{
+			name : 'chinese_name',
+			type : 'text'
+		} ,{
+			name : 'dutch_name',
+			type : 'text'
+		} ,{
+			name : 'picture',
+			type : 'image'
+		}],
 		buttons : [ {
 			color : 'success',
 			action : "loadPage(items.chapters, 0, {'courseId': %id%})",
@@ -152,21 +168,63 @@ items = {
 		name : "chapters",
 		nameSingular : "chapter",
 		editable: true,
+		returnable:true,
+		deleteable : true,
+		//addable:false,
 		fields : [ { 
-			name : 'title',
+			name : 'english_title',
 			type : 'text'
-		} ]
+		} ,{ 
+			name : 'chinese_title',
+			type : 'text'
+		} ,{ 
+			name : 'dutch_title',
+			type : 'text'
+		} ,{
+			name : 'requiredOrNot',
+			type : 'radio',
+			//list : 'RequiredOrNot',
+			//optionText : '%name% (%location%)',
+			options : [ {
+				name : 'yes',
+				value : true
+			},{
+				name : 'no',
+				value :false
+			}  ]
+		}],
+		buttons : [  
+		 /*{
+			color : 'danger',
+			action : "deleteChapter()",
+			icon : "close",
+			text : "Delete"
+		},*/{
+			color : 'primary',
+			action : "addChapter(%courseId%,%id%)",
+			icon : "edit",
+			text : "Add"
+		},
+		{
+			color : 'success',
+			action : "showEditChapterPart(%courseId%,%id%)",
+			icon : "check",
+			text : "Show"
+		}
+	]	
 	},
 	userMoments : {
 		path : "users/%userId%/moments",
 		name : "userMoments",
 		nameSingular : "moment",
 		editable : true,
+		returnable:true,
+		deleteable : true,
 		fields : [ {
 			name : 'title',
 			type : 'text'
 		}, {
-			name : 'privacy',
+			name : 'privacyName',
 			type : 'select',
 			options : [ {
 				name : 'Public',
@@ -181,33 +239,134 @@ items = {
 				name : 'Private',
 				value : 'PRIVATE'
 			} ]
+		},{
+			name:'eventDate',
+			type:'date'
 		} ],
-		/*buttons : [ {
-			condition : 'hidden',
-			wrong : {
+		buttons : [  /*{
 				color : 'danger',
-				action : "hideMoment(%id%)",
+				action : "deleteMoment(%id%)",
 				icon : "close",
-				text : "Hide"
-			},
-			right : {
+				text : "Delete"
+			},*/
+			{
 				color : 'success',
-				action : "showEditMoment(%id%)",
+				action : "showEditMoment(%id%,%userId%)",
 				icon : "check",
 				text : "Show"
 			}
-		} ]*/
-		buttons : [  {
-				color : 'danger',
-				action : "hideMoment(%id%)",
-				icon : "close",
-				text : "Hide"
-			},
+		]
+	},
+	userCourses : {
+		path : "users/getUserCourse/%userId%",
+		name : "userCourses",
+		nameSingular : "userCourse",
+		editable : true,
+		returnable:true,
+		addFunction : 'loadPage(items.userAvailableCourses, 0, {userId: %userId%})',
+		fields : [ {
+				name:'date',
+				type:'date'
+			}/*,
+			{
+				name : 'teacherId',
+				type : 'text'
+			}*/,{
+				name : 'teacherId',
+				type : 'select',
+				list : 'users/getUserOfTeacherAndAdmin',
+				optionText : '%username%',
+			},{
+				name : 'passOrNot',
+				type : 'radio',
+				options : [ {
+					name : 'yes',
+					value : true
+				},{
+					name : 'no',
+					value :false
+				}  ]
+			}],
+		buttons : [  
 			{
 				color : 'success',
-				action : "showEditMoment(%id%)",
+				action : "loadPage(items.userChapters, 0, {'userId': %userId%,'courseId':%courseId%})",
 				icon : "check",
-				text : "Show"
+				text : "Chapter"
+			}
+		]
+	},
+	userAvailableCourses: {
+		path : "courses",
+		name : "availableCourses",
+		nameSingular : "availableCourse",
+		addable : false,
+		returnable:true,
+		buttons : [ {
+			color : 'success',
+			action : "addUserCourse(%id%,%userId%)",
+			icon : 'Check',
+			text : 'Add'
+		} ]
+	},
+	userChapters : {
+		path : "users/getUserChapter/%userId%/%courseId%",
+		name : "userChapters",
+		nameSingular : "userChapter",
+		editable : true,
+		addable:false,
+		returnable:true,
+		fields : [ {
+			name:'date',
+			type:'date'
+		},
+		{
+			name : 'teacherId',
+			type : 'select',
+			list : 'users/getUserOfTeacherAndAdmin',
+			optionText : '%username%',
+		},
+		{
+			name : 'score',
+			type : 'radio',
+			options : [ {
+				name : '1',
+				value :1
+			},{
+				name : '2',
+				value :2
+			} ,{
+				name : '3',
+				value :3
+			} ,{
+				name : '4',
+				value :4
+			} ,{
+				name : '5',
+				value :5
+			}  ]
+		},
+		{
+			name : 'passOrNot',
+			type : 'radio',
+			options : [ {
+				name : 'yes',
+				value : true
+			},{
+				name : 'no',
+				value :false
+			}  ]
+		},
+		{
+			name : 'comment',
+			type : 'text'
+		}],
+		buttons: [  
+			{
+				color : 'success',
+				action : "",
+				icon : "check",
+				text : "comment"
 			}
 		]
 	},
@@ -215,6 +374,7 @@ items = {
 		path : "classes/%classId%/members",
 		name : "members",
 		nameSingular : "member",
+		returnable:true,
 		addFunction : 'loadPage(items.classAvailableMembers, 0, {classId: %classId%})',
 		buttons : [ {
 			color : 'danger',

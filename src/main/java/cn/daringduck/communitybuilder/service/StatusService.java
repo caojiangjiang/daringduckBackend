@@ -1,10 +1,7 @@
 package cn.daringduck.communitybuilder.service;
 
-
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import cn.daringduck.communitybuilder.model.StudentsStudyStatus;
 import cn.daringduck.communitybuilder.repository.StudentsStudyStatusRepository;
 

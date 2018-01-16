@@ -24,7 +24,19 @@ public enum Error {
 	UNSAFE_PASSWORD(14, "Password needs 8 characters and at least 1 small letter, 1 Capital letter and 1 number", Status.BAD_REQUEST),
 	GENDER_INVALID(15, "Gender needs to be 1 for male, 2 for female", Status.BAD_REQUEST), 
 	USERNAME_SHORT(16, "Username need at least 6 characters", Status.BAD_REQUEST), 
-	USERNAME_NOT_UNIQUE(17, "Username is already used", Status.BAD_REQUEST);
+	USERNAME_NOT_UNIQUE(17, "Username is already used", Status.BAD_REQUEST),
+	USERCOURSE_NOT_UNIQUE(18,"User has choosed this course",Status.BAD_REQUEST),
+	USERCHAPTER_NOT_UNIQUE(19,"User has choosed this chapter",Status.BAD_REQUEST),
+	USERCOURSE_DOES_NOT_EXIS(20,"User does not have this course",Status.BAD_REQUEST),
+	USER_DOES_NOT_PASS_CHAPTERS(21,"User does not pass all chapters",Status.BAD_REQUEST),
+	USER_DOES_NOT_HAVE_FRIENDS(22,"User does not have friends",Status.BAD_REQUEST),
+	USER_ALREADY_HAVE_THIS_FRIEND(23,"User have already have this friends",Status.BAD_REQUEST),
+	USERCHAPTER_DOES_NOT_EXIS(24,"User does not choose this chapter",Status.BAD_REQUEST),
+	USER_DOES_NOT_HAVE_CLUB(25,"User does not in any club",Status.BAD_REQUEST),
+	LANGUAGE_DOES_NOT_EXIST(26,"we do not have this language title or name",Status.BAD_REQUEST),
+	PASSWORD_IS_NOT_CORRECT(27,"password is not correct",Status.BAD_REQUEST),
+	MOMENT_DOES_NOT_EXIST(28,"moment does not exist",Status.BAD_REQUEST),
+	MOMENTPART_DOES_NOT_EXIST(29,"momentPart does not exist",Status.BAD_REQUEST);
 	
 	public final int errorCode;
 	public final String errorMessage;
