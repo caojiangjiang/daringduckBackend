@@ -41,7 +41,7 @@ public class Chapter{
 		this.english_title = english_title;
 		this.chinese_title = chinese_title;
 		this.dutch_title = dutch_title;
-		this.setCourseId(courseId); 
+		this.courseId = courseId;
 		this.requiredOrNot = requiredOrNot; 
 	} 
 	

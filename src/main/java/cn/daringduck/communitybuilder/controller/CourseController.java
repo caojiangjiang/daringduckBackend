@@ -89,7 +89,7 @@ public class CourseController extends GenericController {
 	}
 	
 	/**
-	 * Get the course with id for app
+	 * Get all course
 	 * @throws RequestException 
 	 */
 	@GET

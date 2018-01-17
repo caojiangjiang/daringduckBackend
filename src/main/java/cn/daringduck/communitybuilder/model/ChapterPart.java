@@ -1,5 +1,7 @@
 package cn.daringduck.communitybuilder.model;
 
+import java.awt.RenderingHints;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -39,7 +41,7 @@ public class ChapterPart {
 		this.chinese_text = chinese_text;
 		this.dutch_text =dutch_text;
 		this.picture = picture;
-        this.setChapterId(chapterId);
+        this.chapterId = chapterId;
 		this.relationCourse = course;
 	}
 	
