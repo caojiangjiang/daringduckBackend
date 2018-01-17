@@ -58,14 +58,7 @@ public class MomentService extends GenericService<Moment, Long>{
 		return moments;
 	}
 	
-	/**
-	 * Add a moment
-	 * @param title
-	 * @param user
-	 * @param privacyName
-	 * 			PUBLIC, PRIVATE, CLUB or FRIENDS
-	 * @return
-	 */
+
 	public Page<Moment> getUserMoments(User user, int page) throws RequestException {
 
 		if (user == null) {
@@ -75,6 +68,14 @@ public class MomentService extends GenericService<Moment, Long>{
 		return momentRepository.findByUser(user, new PageRequest(page, PAGE_SIZE));
 	}
 
+	/**
+	 * Add a moment
+	 * @param title
+	 * @param user
+	 * @param privacyName
+	 * 			PUBLIC, PRIVATE, CLUB or FRIENDS
+	 * @return
+	 */
 	public Moment addUserMoment(long userId, String title, String privacyName, String eventDate) throws RequestException {
 
 		User user = userRespository.findOne(userId);
@@ -88,6 +89,7 @@ public class MomentService extends GenericService<Moment, Long>{
 		}
 		
 		Privacy privacy = Privacy.valueOf(privacyName);
+		
 		
 		//posted time stamp
 
@@ -154,10 +156,10 @@ public class MomentService extends GenericService<Moment, Long>{
 	public MomentPart addMomentPart(int part,String text,long moment_id,long pictureId) throws RequestException {
 		
 		Picture picture = pictureRepository.getPictureById(pictureId);	
-		
-		if(picture==null) {
-			throw new RequestException(Error.PICTURE_DOES_NOT_EXIST);
-		}
+//		
+//		if(picture==null) {
+//			throw new RequestException(Error.PICTURE_DOES_NOT_EXIST);
+//		}
 		
 		Moment moment = get(moment_id);
 		
@@ -184,7 +186,7 @@ public class MomentService extends GenericService<Moment, Long>{
 	 * **/
 	public List<Moment> getMyFriendsMoments(User user,int page) throws RequestException{
 		//find user's friends
-		List<Friends> friends = friendsRepository.findByUser(user);
+		List<Friends> friends = friendsRepository.findByFriend(user);
 		
 		if(friends.size() == 0) {
 			throw new RequestException(Error.USER_DOES_NOT_HAVE_FRIENDS);
@@ -375,7 +377,7 @@ public class MomentService extends GenericService<Moment, Long>{
 		jsonObject2.put("momentTitle", moment.getTitle());
 		jsonObject2.put("userId", user.getId());
 		jsonObject2.put("userName", user.getUsername());
-		jsonObject2.put("userName", user.getNickname());
+		jsonObject2.put("nickName", user.getNickname());
 		
 		return jsonObject2.toString();
 	}
@@ -384,4 +386,5 @@ public class MomentService extends GenericService<Moment, Long>{
 //	public boolean deleteMomentPart(long momentId) {
 //		
 //	}
+	
 }

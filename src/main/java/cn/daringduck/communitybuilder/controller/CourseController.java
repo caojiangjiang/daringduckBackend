@@ -228,7 +228,8 @@ public class CourseController extends GenericController {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response addChapterStep1(@HeaderParam("Auth-Token") String token, @PathParam("courseId") int courseId,
-			@FormParam("english_title") String english_title,@FormParam("chinese_title") String chinese_title,@FormParam("dutch_title") String dutch_title,@FormParam("requiredOrNot")  String requiredOrNot) throws RequestException {
+			@FormParam("english_title") String english_title,@FormParam("chinese_title") String chinese_title,
+			@FormParam("dutch_title") String dutch_title,@FormParam("requiredOrNot")  String requiredOrNot) throws RequestException {
 		secure(token, "admin");
 		Chapter chapter = courseService.addChapterStep1(courseId,english_title,chinese_title,dutch_title,requiredOrNot);
 		return Response.status(Response.Status.OK).entity(chapter).build();

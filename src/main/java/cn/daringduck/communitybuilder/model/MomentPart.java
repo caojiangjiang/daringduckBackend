@@ -1,5 +1,7 @@
 package cn.daringduck.communitybuilder.model;
 
+import java.sql.Blob;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,8 +35,11 @@ public class MomentPart {
 	
 	public MomentPart(int part, String text, Picture picture,long momentId) {
 		this.part = part;
+		
 		this.text = text;
+		
 		this.picture = picture;
+		
 		this.setMomentId(momentId);
 	}
 	

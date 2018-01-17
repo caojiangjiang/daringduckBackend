@@ -16,6 +16,10 @@ public interface FriendsRepository extends JpaRepository<Friends, Long> {
 	
 	List<Friends> findByUser(User user);
 	
+	List<Friends> findByFriend(User user,Pageable pageable);
+	
+	List<Friends> findByFriend(User user);
+	
 	int deleteByUserAndFriend(User user,User Friend);
 	
 	Friends findByUserAndFriend(User user,User friend);

@@ -499,6 +499,7 @@ function loadPage(pageInfo, page, props) {
 
 		// Load the data
 		var path = pageInfo.path.replaceWildcards(props);
+		console.log(path);
 		communityBuilder.getPage(path, page, done, fail);
 	}
 
@@ -891,11 +892,11 @@ function del(pageInfo, id, props) {
 		}, fail);
 	}
 }
-function deleteMomentPart(momentId,momentPartId) {
+function deleteMomentPart(userId,momentId,momentPartId) {
 	var result=confirm("Delete this moment paragragh?");
 	if(result==true){
 		communityBuilder.del(momentPartId, "moments/deleteMomentPart", function() {
-			showEditMoment(momentId);
+			showEditMoment(momentId,userId);
 		}, fail);
 	}
 }
@@ -1050,6 +1051,7 @@ function showEditMoment(momentId,userId) {
 													+'</div>'
 													+'<div class="btn-bar">'
 														+'<button onclick="deleteMomentPart('
+														+userId+','
 														+momentId+','
 														+momentPart.id
 														+')" type="button" class="btn btn-danger">'
@@ -1100,7 +1102,7 @@ function showEditMoment(momentId,userId) {
 								+'</div>'
 								+'<div class="btn-bar">'
 									+'<button onclick="addMomentPart('
-									+momentId+","+total
+									+userId+","+momentId+","+total
 									+')" type="button" class="btn btn-success"><i class="fa fa-check-square-o"></i> Submit</button>'							
 								+'</div>'
 							+'</form>'
@@ -1127,7 +1129,7 @@ function showEditMoment(momentId,userId) {
 			}, fail);
 }*/
 /*used to change moment part*/
-function changeMomentPart(momentId,momentPartId,index){
+function changeMomentPart(userId,momentId,momentPartId,index){
 	console.log("index="+index);
 	var text = $('#paragraph'+index+' .text_content').val();
 	console.log(text+"===========");
@@ -1138,7 +1140,7 @@ function changeMomentPart(momentId,momentPartId,index){
 	communityBuilder.changeMomentPart(momentPartId,data,"moments",
 			function(){		
 				//loadPage(pageInfo, currentPage, props)
-				showEditMoment(momentId);
+				showEditMoment(momentId,userId);
 			}, fail);
 }
 
@@ -1309,6 +1311,7 @@ function editStyle(userId,momentId,momentPartId,index,text,picture){
 			+')" type="button" class="btn btn-primary">'
 			+'<i class="fa fa-reply"></i> Cancel</button>'
 			+'<button onclick="changeMomentPart('
+			+userId+','
 			+momentId+','
 			+momentPartId
 			+','
@@ -1700,7 +1703,7 @@ function changeChapterPart(courseId,chapterId,chapterPartId,index){
 }
 
 /*used to add moment part*/
-function addMomentPart(momentId,total){
+function addMomentPart(userId,momentId,total){
 	var text = $("#text_content").val();
 	var part=total;
 	var pictureId=$("#picId"+total).val();
@@ -1709,7 +1712,7 @@ function addMomentPart(momentId,total){
 	communityBuilder.addMomentPart(momentId,data,"moments",
 			function(){	
 		console.log("jiazaiyemian");
-				showEditMoment(momentId);
+				showEditMoment(momentId,userId);
 			}, fail);
 }
 

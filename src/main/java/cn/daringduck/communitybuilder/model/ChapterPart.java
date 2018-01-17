@@ -1,7 +1,4 @@
 package cn.daringduck.communitybuilder.model;
-
-import java.awt.RenderingHints;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

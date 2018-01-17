@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ImportResource("beans.xml")
 public class ApplicationConfig {
 
+	//指定Spring定义的数据源
 	@Bean
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -38,16 +39,19 @@ public class ApplicationConfig {
 		return dataSource;
 	}
 
+	//设置实现厂商JPA实现的特定属性
 	@Bean
 	public JpaVendorAdapter jpaAdapter() {
 		return new HibernateJpaVendorAdapter();
 	}
 	
+	//实体管理工厂
 	@Bean
 	public EntityManagerFactory entityManagerFactory() {
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		vendorAdapter.setGenerateDdl(true);
 
+		//指定Spring定义的DataSource
 		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 		factory.setPersistenceUnitName("DaringDuck");
 		factory.afterPropertiesSet();
@@ -55,6 +59,7 @@ public class ApplicationConfig {
 		return factory.getObject();
 	}
 
+	//Spring事物管理器TransactionManager
 	@Bean
 	public PlatformTransactionManager transactionManager() {
 		JpaTransactionManager txManager = new JpaTransactionManager();
