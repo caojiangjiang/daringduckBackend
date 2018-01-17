@@ -6,6 +6,7 @@
 var token = localStorage.getItem("token");
 var communityBuilder = new CommunityBuilder(token);
 var currentPage = 0;
+
 var prevPage=0;
 
 /*used to text picture uploading*/
@@ -432,7 +433,7 @@ function generatePagination(pageInfo, page, props) {
  */
 function fillSelect(name,resource, text, selected) {	
 	var done = function(data) {
-		if(resource.indexOf("users/getUserOfTeacherAndAdmin")>=0){}
+		if(resource.indexOf("users/getUserOfTeacherAndAdmin")>=0 || resource.indexOf("courses/allCourse")>=0){}
 		else
 			var data = data.content;
 		console.log(data);
@@ -447,6 +448,15 @@ function fillSelect(name,resource, text, selected) {
 	}
 
 	communityBuilder.getPage(resource, 0, done, fail);
+}
+function fillCourseSelect(data,name,text,selected) {	
+	$.each(data, function(index, row) {
+		var sel = selected == row.id ? 'selected' : '';
+		var option = text.replaceWildcards(row);
+		$("select#" + name).append(
+				'<option value="' + row.id + '" ' + sel + '>' + option
+						+ '</option>');
+	});
 }
 
 /**
@@ -1276,21 +1286,6 @@ function uploadCourseImage(courseId)
 
 	communityBuilder.uploadImage(form, done, fail);
 }
-/*function uploadImage(position) {
-	console.log(position);
-
-	var data = $('#Paragraph'+index+' .post-file').val();
-	console.log(data);
-	var form = new FormData();
-	form.append('file',$('#paragraph'+index+' .post-file')[0].files[0]);
-	
-	var done = function(data) {
-		console.log(data);
-		$("#picId"+index).val(data.id);	}
-
-	communityBuilder.uploadImage(form, done, fail);
-
-}*/
 
 function editStyle(userId,momentId,momentPartId,index,text,picture){
 	$('#paragraph'+index+' .text_content').removeAttr("readonly");
@@ -1370,9 +1365,12 @@ function showEditChapterPart(courseId,chapterId) {
 					function() {
 						var count=-1;
 						var done = function(chapterParts) {
+						var doneCourseLoad=function(courseData){
+							console.log(courseData);
 							console.log(chapterParts);
 							console.log(chapterParts.content.length);
 							var total=chapterParts.content.length+1;
+							//var courseData=communityBuilder.getPage("courses/allCourse", 0, doneCourseLoad, fail);
 							$('.whereComeFrom').text(
 									'course id:'
 									+chapterParts.courseId
@@ -1381,12 +1379,19 @@ function showEditChapterPart(courseId,chapterId) {
 									+chapterParts.chapterTitle);
 							$.each(chapterParts.content,function(index, chapterPart) {
 								var picId;
+								var picPath;
 								count=index;
 								//picId=chapterPart.picture.id;
 								if(chapterPart.picture==null){
-									picId="#";}
+									picPath="#";}
 								else{
 									picId=chapterPart.picture.id;
+									picPath=imgPath+picId;
+								}
+								if(chapterPart.relationCourse==null){
+									relationCourseId="";}
+								else{
+									relationCourseId=chapterPart.relationCourse.id;
 								}
 								index=parseInt(index);
 								$('#chapter-content').append(
@@ -1431,7 +1436,7 @@ function showEditChapterPart(courseId,chapterId) {
 											+'<div class="input-group picBar">'
 												//+'<span class="input-group-addon">Picture</span>'
 												+'<img src="'
-												+imgPath+picId
+												+picPath
 												+'" width="100%;"/>'
 											+'</div>'
 										+'</div>'
@@ -1440,7 +1445,8 @@ function showEditChapterPart(courseId,chapterId) {
 											+'<div class="col-sm-6">'
 												+'<div class="input-group">'
 													+'<span class="input-group-addon">Course</span>'
-													+'<select class="form-control" name="courseId"></select>'
+													+'<select class="form-control" name="courseId" id="courseId'+(index+1)+'" disabled="true">'
+													+'<option value="-1">-- No course related --</option></select>'
 												+'</div>'
 											+'</div>'
 										+'</div>'
@@ -1476,7 +1482,7 @@ function showEditChapterPart(courseId,chapterId) {
 										+(index+1)
 										+'</a></li>'
 								);
-										
+								fillCourseSelect(courseData,'courseId'+(index+1),'%english_name%',relationCourseId);		
 							});
 							$("#chapterReturn").on("click",function(){
 								loadPage(items.chapters,currentPage,{'courseId':courseId});
@@ -1524,7 +1530,8 @@ function showEditChapterPart(courseId,chapterId) {
 											+'<div class="col-sm-6">'
 												+'<div class="input-group">'
 													+'<span class="input-group-addon">Course</span>'
-													+'<select class="form-control" name="courseId"></select>'
+													+'<select class="form-control" name="courseId" id="courseId1">'
+													+'<option value="-1">-- No course related --</option></select>'
 												+'</div>'
 											+'</div>'
 										+'</div>'
@@ -1537,9 +1544,11 @@ function showEditChapterPart(courseId,chapterId) {
 										+'</div>'
 									+'</form>'
 								);
+								fillCourseSelect(courseData,'courseId1','%english_name%','');
 							}
 						};
-
+						communityBuilder.getPage("courses/allCourse", 0, doneCourseLoad, fail);
+						}
 						communityBuilder.getChapterPartList(chapterId,"courses",done, fail);
 					});
 }
@@ -1587,7 +1596,8 @@ function addNewChapter(courseId,chapterId,index){
 				+'<div class="col-sm-6">'
 					+'<div class="input-group">'
 						+'<span class="input-group-addon">Course</span>'
-						+'<select class="form-control" name="courseId"></select>'
+						+'<select class="form-control" name="courseId" id="courseId'+(index+1)+'">'
+						+'<option value="-1">-- No course related --</option></select>'
 					+'</div>'
 				+'</div>'
 			+'</div>'
@@ -1604,6 +1614,7 @@ function addNewChapter(courseId,chapterId,index){
 			+'</div>'
 		+'</form>'
 			);
+	fillSelect('courseId'+(index+1),'courses/allCourse','%english_name%','');
 	/*update the following chapter parts*/
 	$('.paragraph').each(function(i,element){
 		if(i>index){
@@ -1638,6 +1649,7 @@ function cancelAddChapterPart(chapterId,index){
 }
 function editChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){	
 	$('#paragraph'+index+' .text_content').removeAttr("readonly");
+	$('#courseId'+index).removeAttr("disabled");
 	$('#paragraph'+index+' .picBar').html(
 			'<input type="file" class="form-control post-file" name="file" />'
 			+'<input type="button" onclick="uploadImage('+(index)+',\'course\','+courseId+','+chapterId+')" value="UploadFile" class="btn btn-primary upload-btn"/>'	
@@ -1665,11 +1677,18 @@ function editChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){
 	
 }
 function noEditChapterStyle(courseId,chapterId,chapterPartId,index,text,picture){
+	var picPath;
+	if(typeof(picture)=='undefined'){
+		picPath="#";
+	}
+	else
+		picPath=imgPath+picture;
 	$('#paragraph'+index+' .text_content').attr("readonly","readonly");
+	$('#courseId'+index).attr("disabled","true");
 	$('#paragraph'+index+' .picBar').html(
 			//'<span class="input-group-addon">Picture</span>'
 			'<img src="'
-			+imgPath+picture
+			+picPath
 			+'" width="100%;"/>');
 	$('#paragraph'+index+' .btn-bar').html(
 			'<button onclick="editChapterStyle('
@@ -1694,8 +1713,9 @@ function changeChapterPart(courseId,chapterId,chapterPartId,index){
 	var chinese_text=$('#paragraph'+index+' #chnText'+index+' .text_content').val();
 	var dutch_text=$('#paragraph'+index+' #dutText'+index+' .text_content').val();
 	var pictureId=$("#picId"+(index)).val();
+	var courseId=$("#courseId"+(index)).val();
 	console.log(pictureId);
-	var data="english_text="+english_text+"&chinese_text="+chinese_text+"&dutch_text="+dutch_text+"&pictureId="+pictureId;
+	var data="english_text="+english_text+"&chinese_text="+chinese_text+"&dutch_text="+dutch_text+"&pictureId="+pictureId+"&courseId="+courseId;
 	communityBuilder.changeChapterPart(chapterId,chapterPartId,data,"courses",
 			function(data){		
 				showEditChapterPart(courseId,chapterId);
@@ -1767,8 +1787,9 @@ function addChapterPart(courseId,chapterId,flag){
 	var dutch_text=$('#paragraph'+flag+' #dutText'+flag+' .text_content').val();
 
 	var pictureId=$("#picId"+(flag)).val();
+	var courseId=$("#courseId"+(flag)).val();
 	 
-	var data="english_text="+english_text+"&chinese_text="+chinese_text+"&dutch_text="+dutch_text+"&pictureId="+pictureId;
+	var data="english_text="+english_text+"&chinese_text="+chinese_text+"&dutch_text="+dutch_text+"&pictureId="+pictureId+"&courseId="+courseId;
 	communityBuilder.addChapterPartStep1(chapterId, data, "courses", function(data){		
 		/*insert new chapter id to the chapterid array(at "flag" position)*/
 		$("#chapterPartId"+flag).text(data.id);
